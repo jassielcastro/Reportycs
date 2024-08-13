@@ -1,0 +1,16 @@
+<resources>
+    <string name="splash_screen"> </string>
+    <string name="add_new_repository_screen">Add Repository</string>
+    <string name="dashboard_screen">Dashboard</string>
+    <string name="statics_screen">Statics</string>
+    <string name="back_button">Back</string>
+
+    <string name="add_new_repository_form">Add new Github Repository</string>
+    <string name="repository_owner">Repository owner</string>
+    <string name="repository_owner_placeholder">Owner</string>
+    <string name="repository_name">Repository name</string>
+    <string name="repository_name_placeholder">Name</string>
+    <string name="repository_token">Github Token</string>
+    <string name="repository_token_placeholder">Token</string>
+    <string name="add_button">Save repository</string>
+</resources>

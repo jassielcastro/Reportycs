@@ -1,0 +1,202 @@
+CREATE TABLE IF NOT EXISTS Repository (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    owner TEXT NOT NULL,
+    repository TEXT NOT NULL,
+    token TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS PullRequest (
+    id INTEGER NOT NULL PRIMARY KEY,
+    repositoryId INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    author TEXT NOT NULL,
+    avatar TEXT NOT NULL,
+    FOREIGN KEY (repositoryId) REFERENCES Repository(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Approves (
+    pr_id INTEGER NOT NULL,
+    user TEXT NOT NULL,
+    FOREIGN KEY (pr_id) REFERENCES PullRequest(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS PrComments (
+    pr_id INTEGER NOT NULL,
+    reviewCommentsCount INTEGER NOT NULL,
+    FOREIGN KEY (pr_id) REFERENCES PullRequest(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS LastDate (
+    date TEXT DEFAULT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Owners (
+    idOwner INTEGER NOT NULL PRIMARY KEY,
+    repositoryId INTEGER NOT NULL,
+    user TEXT NOT NULL,
+    FOREIGN KEY (repositoryId) REFERENCES Repository(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Metrics (
+    repositoryId INTEGER NOT NULL,
+    pullRequestSize INTEGER NOT NULL,
+    FOREIGN KEY (repositoryId) REFERENCES Repository(id) ON DELETE CASCADE
+);
+
+-- Repository CRUD
+
+insertRepository:
+INSERT OR REPLACE INTO
+    Repository(owner, repository, token)
+VALUES(?, ?, ?);
+
+selectAllRepositories:
+SELECT
+    Repository.id,
+    Repository.owner,
+    Repository.repository,
+    Repository.token
+FROM
+    Repository;
+
+selectRepository:
+SELECT
+    Repository.id,
+    Repository.owner,
+    Repository.repository,
+    Repository.token
+FROM
+    Repository
+WHERE
+    Repository.repository = ?;
+
+deleteRepository:
+DELETE FROM
+    Repository
+WHERE
+    Repository.id = ?;
+
+-- Owners CRUD
+
+insertOwners:
+INSERT OR REPLACE INTO
+    Owners(idOwner, repositoryId, user)
+VALUES(?, ?, ?);
+
+selectAllOwners:
+SELECT
+    Owners.idOwner,
+    Owners.repositoryId,
+    Owners.user
+FROM
+    Owners
+WHERE
+    Owners.repositoryId = ?;
+
+-- Metrics CRUD
+
+insertMetrics:
+INSERT OR REPLACE INTO
+    Metrics(repositoryId, pullRequestSize)
+VALUES(?, ?);
+
+updateMetrics:
+UPDATE Metrics
+    SET pullRequestSize = ?
+WHERE Metrics.repositoryId = ?;
+
+selectAllMetrics:
+SELECT
+    Metrics.repositoryId,
+    Metrics.pullRequestSize
+FROM
+    Metrics
+WHERE
+    Metrics.repositoryId = ?;
+
+-- PullRequest CRUD
+
+insertPullRequest:
+INSERT OR REPLACE INTO
+    PullRequest(id, repositoryId, title, author, avatar)
+VALUES(?, ?, ?, ?, ?);
+
+selectAllPullRequest:
+SELECT
+    PullRequest.id,
+    PullRequest.repositoryId,
+    PullRequest.title,
+    PullRequest.author,
+    PullRequest.avatar
+FROM
+    PullRequest
+WHERE
+    PullRequest.repositoryId = ?
+LIMIT ?;
+
+-- Approves CRUD
+
+insertApproves:
+INSERT OR REPLACE INTO
+    Approves(pr_id, user)
+VALUES(?, ?);
+
+selectApprovesCount:
+SELECT
+    COUNT(*)
+FROM
+    Approves
+WHERE
+    Approves.pr_id = ?;
+
+-- Comments CRUD
+
+insertComments:
+INSERT OR REPLACE INTO
+    PrComments(pr_id, reviewCommentsCount)
+VALUES(?, ?);
+
+selectCommentsCount:
+SELECT
+    COUNT(*)
+FROM
+    PrComments
+WHERE
+    PrComments.pr_id = ?;
+
+-- Date CRUD
+
+setDateOfInsertion:
+INSERT OR REPLACE INTO
+    LastDate(date)
+VALUES(?);
+
+selectLastInsertion:
+SELECT
+    LastDate.date
+FROM
+    LastDate;
+
+-- Statistics
+
+selectPullRequestStatistics:
+SELECT
+    PullRequest.id,
+    PullRequest.repositoryId,
+    PullRequest.title,
+    PullRequest.author,
+    PullRequest.avatar,
+    PrComments.reviewCommentsCount AS comments,
+    Approves.user AS approver
+FROM
+    PullRequest
+LEFT JOIN
+    Approves
+ON
+    PullRequest.id = Approves.pr_id
+LEFT JOIN
+    PrComments
+ON
+    PullRequest.id = PrComments.pr_id
+WHERE
+    PullRequest.repositoryId = ?;
