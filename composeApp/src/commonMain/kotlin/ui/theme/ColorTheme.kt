@@ -31,3 +31,9 @@ fun GithubButtonOutlinedColor(): ButtonColors = ButtonDefaults.buttonColors(
     containerColor = MaterialTheme.colorScheme.onPrimary,
     contentColor = MaterialTheme.colorScheme.onPrimary,
 )
+
+@Composable
+fun InverseGithubButtonOutlinedColor(): ButtonColors = ButtonDefaults.buttonColors(
+    containerColor = MaterialTheme.colorScheme.primary,
+    contentColor = MaterialTheme.colorScheme.primary,
+)

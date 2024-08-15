@@ -20,11 +20,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -39,14 +39,16 @@ import jirareports.composeapp.generated.resources.repository_name
 import jirareports.composeapp.generated.resources.repository_name_placeholder
 import jirareports.composeapp.generated.resources.repository_owner
 import jirareports.composeapp.generated.resources.repository_owner_placeholder
+import jirareports.composeapp.generated.resources.repository_owners
+import jirareports.composeapp.generated.resources.repository_owners_helper
+import jirareports.composeapp.generated.resources.repository_owners_placeholder
 import jirareports.composeapp.generated.resources.repository_token
 import jirareports.composeapp.generated.resources.repository_token_placeholder
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.rememberKoinInject
 import repository.model.RepositoryData
-import ui.components.ButtonLoader
+import ui.components.ReportycsButton
 import ui.model.UiState
 import ui.theme.GithubTextOutlinedColor
 
@@ -57,7 +59,6 @@ fun CreateNewRepositoryScreen(
 ) {
     val viewModel = rememberKoinInject<CreateNewRepositoryViewModel>()
     val saveRepositoryState by viewModel.saveRepoState.collectAsState()
-    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(saveRepositoryState) {
         when (saveRepositoryState) {
@@ -81,10 +82,8 @@ fun CreateNewRepositoryScreen(
             Row {
                 AddRepositoryForm(
                     isLoading = saveRepositoryState is UiState.Loading,
-                    onClick = { repository ->
-                        coroutineScope.launch {
-                            viewModel.saveRepository(repository)
-                        }
+                    onClick = { repository, owners ->
+                        viewModel.saveRepository(repository, owners)
                     }
                 )
 
@@ -112,7 +111,7 @@ fun CreateNewRepositoryScreen(
 fun AddRepositoryForm(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
-    onClick: (RepositoryData) -> Unit,
+    onClick: (RepositoryData, owners: String) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -123,6 +122,7 @@ fun AddRepositoryForm(
         var ownerText by remember { mutableStateOf("") }
         var repositoryText by remember { mutableStateOf("") }
         var tokenText by remember { mutableStateOf("") }
+        var ownersText by remember { mutableStateOf("") }
 
         Text(
             text = stringResource(Res.string.add_new_repository_form),
@@ -219,11 +219,51 @@ fun AddRepositoryForm(
                 shape = MaterialTheme.shapes.small,
                 colors = GithubTextOutlinedColor(),
                 modifier = Modifier
+                    .padding(bottom = 32.dp)
+                    .fillMaxWidth()
+            )
+
+            Text(
+                text = stringResource(Res.string.repository_owners),
+                color = MaterialTheme.colorScheme.onPrimary,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Light,
+                textAlign = TextAlign.Start,
+                modifier = Modifier
+                    .padding(bottom = 8.dp)
+                    .fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = ownersText,
+                onValueChange = { ownersText = it },
+                placeholder = { TextPlaceHolder(stringResource(Res.string.repository_owners_placeholder)) },
+                textStyle = TextStyle(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontWeight = FontWeight.Bold
+                ),
+                singleLine = true,
+                shape = MaterialTheme.shapes.small,
+                colors = GithubTextOutlinedColor(),
+                supportingText = {
+                    Text(
+                        text = stringResource(Res.string.repository_owners_helper),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 8.sp,
+                        fontWeight = FontWeight.Light,
+                        fontStyle = FontStyle.Italic,
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .fillMaxWidth()
+                    )
+                },
+                modifier = Modifier
                     .padding(bottom = 44.dp)
                     .fillMaxWidth()
             )
 
-            ButtonLoader(
+            ReportycsButton(
                 text = stringResource(Res.string.add_button),
                 isLoading = isLoading,
                 onClick = {
@@ -233,7 +273,8 @@ fun AddRepositoryForm(
                                 owner = ownerText,
                                 repository = repositoryText,
                                 token = tokenText,
-                            )
+                            ),
+                            ownersText
                         )
                     }
                 }

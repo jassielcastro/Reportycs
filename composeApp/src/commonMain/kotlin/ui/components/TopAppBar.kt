@@ -1,7 +1,6 @@
 package ui.components
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -41,7 +40,11 @@ fun GithubAppBar(
             )
         },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background,
+            containerColor = if (currentScreen != GithubScreen.Splash) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.background
+            },
             titleContentColor = MaterialTheme.colorScheme.primary
         ),
         modifier = modifier,
@@ -66,9 +69,9 @@ fun AppBarLogo(
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .padding(16.dp)
+            .padding(vertical = 16.dp)
             .fillMaxHeight(0.65f)
-            .fillMaxWidth(0.12f)
+            .fillMaxWidth(0.1f)
     ) {
         AnimatedVisibility(
             visible = showLogo
@@ -76,7 +79,7 @@ fun AppBarLogo(
             Icon(
                 painter = painterResource(Res.drawable.ic_reportycs_logo_small),
                 contentDescription = "Image",
-                tint = Color.Unspecified
+                tint = MaterialTheme.colorScheme.onPrimary
             )
         }
     }

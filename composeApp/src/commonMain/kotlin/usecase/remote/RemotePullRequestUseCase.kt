@@ -46,8 +46,8 @@ class RemotePullRequestUseCase(
         val token = cryptoHandler.decrypt(repository.token)
         return client.get("/repos/${repository.owner}/${repository.repo}/pulls") {
             bearerAuth(token)
+            parameter("page", stats.page)
             parameter("per_page", stats.perPage)
-            parameter("page", stats.perPage)
             parameter("base", stats.baseBranch)
             parameter("state", stats.state)
             parameter("sort", stats.sort)

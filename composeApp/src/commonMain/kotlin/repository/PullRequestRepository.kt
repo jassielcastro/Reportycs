@@ -77,14 +77,22 @@ class PullRequestRepository(
         }
     }
 
+    fun getPRsSizeToAnalyse(repositoryId: Int): Int {
+        return localUseCase.getPRSizeToAnalyse(repositoryId = repositoryId)
+    }
+
     suspend fun getPullRequest(
-        repositoryRequest: RepositoryRequest,
+        repositoryData: RepositoryData,
         statRequest: StatsRequest,
         reload: Boolean = false
     ): List<PullRequestData> {
-        val minCount = localUseCase.getPRSizeToAnalyse(repositoryId = repositoryRequest.id)
+        val repositoryRequest = repositoryData.toRepositoryRequest()
+        val minCount = getPRsSizeToAnalyse(repositoryId = repositoryRequest.id)
+        println("PullRequestRepository.getPullRequest ---> minCount: $minCount")
         if (!localUseCase.hasPullRequestUpdated() || reload) {
+            println("PullRequestRepository.getPullRequest ---> reload: $reload")
             val pullRequest = remoteUseCase.getPullRequest(repositoryRequest, statRequest)
+            println("PullRequestRepository.getPullRequest ---> new PRs: ${pullRequest.size}")
             localUseCase.addPullRequest(
                 pullRequest = pullRequest.map { pr ->
                     pr.toPullRequestDto(repositoryRequest.id)
@@ -95,11 +103,15 @@ class PullRequestRepository(
             pr.toPullRequestData()
         }
 
+        println("PullRequestRepository.getPullRequest ---> saved PRs: ${localPrs.size}")
+
         if (localPrs.size >= minCount) {
+            println("PullRequestRepository.getPullRequest ---> date updated")
             localUseCase.updateLastDateOfInsertions()
         } else {
+            println("PullRequestRepository.getPullRequest ---> needs reload")
             getPullRequest(
-                repositoryRequest = repositoryRequest,
+                repositoryData = repositoryData,
                 statRequest = statRequest.copy(page = statRequest.page + 1),
                 reload = true
             )
@@ -108,7 +120,8 @@ class PullRequestRepository(
         return localPrs
     }
 
-    suspend fun fetchPullRequestApproves(repositoryRequest: RepositoryRequest) {
+    suspend fun fetchPullRequestApproves(repositoryData: RepositoryData) {
+        val repositoryRequest = repositoryData.toRepositoryRequest()
         val pullRequest = localUseCase.getPullRequest(repositoryRequest.id)
         pullRequest.asyncMap { pr ->
             val hasApproves = localUseCase.hasApproves(pr.id)
@@ -122,7 +135,8 @@ class PullRequestRepository(
         }
     }
 
-    suspend fun fetchPullRequestComments(repositoryRequest: RepositoryRequest) {
+    suspend fun fetchPullRequestComments(repositoryData: RepositoryData) {
+        val repositoryRequest = repositoryData.toRepositoryRequest()
         val pullRequest = localUseCase.getPullRequest(repositoryRequest.id)
         pullRequest.asyncMap { pr ->
             val hasComments = localUseCase.hasComments(pr.id)

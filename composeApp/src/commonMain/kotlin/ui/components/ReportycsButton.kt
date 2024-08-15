@@ -26,10 +26,10 @@ import androidx.compose.ui.unit.sp
 import ui.theme.GithubButtonOutlinedColor
 
 @Composable
-fun ButtonLoader(
+fun ReportycsButton(
     text: String,
     onClick: () -> Unit,
-    isLoading: Boolean,
+    isLoading: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     OutlinedButton(

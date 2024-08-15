@@ -132,6 +132,7 @@ FROM
     PullRequest
 WHERE
     PullRequest.repositoryId = ?
+ORDER BY PullRequest.id DESC
 LIMIT ?;
 
 -- Approves CRUD

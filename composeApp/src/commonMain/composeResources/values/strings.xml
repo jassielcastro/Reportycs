@@ -12,5 +12,20 @@
     <string name="repository_name_placeholder">Name</string>
     <string name="repository_token">Github Token</string>
     <string name="repository_token_placeholder">Token</string>
+    <string name="repository_owners">Code owners (Github user name)</string>
+    <string name="repository_owners_placeholder">alan, rigo_tovar, mark_zucaritas</string>
+    <string name="repository_owners_helper">Add the Owners separated by comma, this will help to perform the metrics per user later on</string>
     <string name="add_button">Save repository</string>
+
+    <string name="dashboard_title">Dashboard</string>
+    <string name="generate_reports_button">Generate report</string>
+    <string name="dashboard_repositories_title">All repositories</string>
+
+    <string name="loading_info_message_1">Summoning the GitHub spirits... PRs inbound!</string>
+    <string name="loading_info_message_2">Hold on, reeling in those precious PRs!</string>
+    <string name="loading_info_message_3">Buckle up! GitHub PRs are rolling in!</string>
+    <string name="loading_info_message_4">Any bets on how many will pass review?</string>
+    <string name="loading_info_message_5">Fingers crossed for no merge conflicts!</string>
+
+    <string name="error_message">Oooooh no... something went wrong!!!!!</string>
 </resources>

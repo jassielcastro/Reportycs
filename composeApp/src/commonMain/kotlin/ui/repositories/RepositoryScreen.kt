@@ -69,7 +69,7 @@ fun RepositoryScreen(
             }
 
             UiState.Loading -> {
-                LoadingScreen(modifier = Modifier.fillMaxSize())
+                //LoadingScreen(modifier = Modifier.fillMaxSize())
             }
 
             is UiState.Success -> {
