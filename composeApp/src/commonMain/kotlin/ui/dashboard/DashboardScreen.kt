@@ -62,7 +62,8 @@ import ui.model.UiState
 
 @Composable
 fun DashboardScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onGenerateReports: (RepositoryData) -> Unit
 ) {
     val viewModel = rememberKoinInject<DashboardViewModel>()
     val repositoriesState by viewModel.repositoriesState.collectAsState()
@@ -107,7 +108,8 @@ fun DashboardScreen(
             is UiState.Success -> {
                 DashboardRepositoriesScreen(
                     repositories = state.data,
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    onGenerateReports = onGenerateReports
                 )
             }
         }
@@ -118,7 +120,8 @@ fun DashboardScreen(
 fun DashboardRepositoriesScreen(
     repositories: List<RepositoryData>,
     modifier: Modifier = Modifier,
-    viewModel: DashboardViewModel
+    viewModel: DashboardViewModel,
+    onGenerateReports: (RepositoryData) -> Unit
 ) {
 
     var repositorySelected by remember { mutableStateOf(repositories.first()) }
@@ -148,7 +151,7 @@ fun DashboardRepositoriesScreen(
                     viewModel.loadPRsToAnalyze(repositorySelected.id)
                 },
                 onGenerateReportsClicked = { repo ->
-
+                    onGenerateReports(repo)
                 }
             )
 

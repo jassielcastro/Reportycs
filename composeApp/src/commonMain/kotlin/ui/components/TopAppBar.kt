@@ -44,8 +44,7 @@ fun GithubAppBar(
                 MaterialTheme.colorScheme.primary
             } else {
                 MaterialTheme.colorScheme.background
-            },
-            titleContentColor = MaterialTheme.colorScheme.primary
+            }
         ),
         modifier = modifier,
         navigationIcon = {
@@ -53,7 +52,8 @@ fun GithubAppBar(
                 IconButton(onClick = navigateUp) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(Res.string.back_button)
+                        contentDescription = stringResource(Res.string.back_button),
+                        tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }

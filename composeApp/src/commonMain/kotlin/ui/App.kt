@@ -24,6 +24,7 @@ import ui.components.GithubAppBar
 import ui.dashboard.DashboardScreen
 import ui.repositories.create.CreateNewRepositoryScreen
 import ui.splash.SplashScreen
+import ui.statics.StaticsScreen
 import ui.theme.GithubStatsTheme
 
 /**
@@ -89,7 +90,15 @@ fun App(
                     }
 
                     composable(route = GithubScreen.Dashboard.name) {
-                        DashboardScreen()
+                        DashboardScreen(
+                            onGenerateReports = {
+                                navController.navigate(route = GithubScreen.Statics.name)
+                            }
+                        )
+                    }
+
+                    composable(route = GithubScreen.Statics.name) {
+                        StaticsScreen()
                     }
                 }
             }

@@ -88,11 +88,8 @@ class PullRequestRepository(
     ): List<PullRequestData> {
         val repositoryRequest = repositoryData.toRepositoryRequest()
         val minCount = getPRsSizeToAnalyse(repositoryId = repositoryRequest.id)
-        println("PullRequestRepository.getPullRequest ---> minCount: $minCount")
         if (!localUseCase.hasPullRequestUpdated() || reload) {
-            println("PullRequestRepository.getPullRequest ---> reload: $reload")
             val pullRequest = remoteUseCase.getPullRequest(repositoryRequest, statRequest)
-            println("PullRequestRepository.getPullRequest ---> new PRs: ${pullRequest.size}")
             localUseCase.addPullRequest(
                 pullRequest = pullRequest.map { pr ->
                     pr.toPullRequestDto(repositoryRequest.id)
@@ -103,13 +100,9 @@ class PullRequestRepository(
             pr.toPullRequestData()
         }
 
-        println("PullRequestRepository.getPullRequest ---> saved PRs: ${localPrs.size}")
-
         if (localPrs.size >= minCount) {
-            println("PullRequestRepository.getPullRequest ---> date updated")
             localUseCase.updateLastDateOfInsertions()
         } else {
-            println("PullRequestRepository.getPullRequest ---> needs reload")
             getPullRequest(
                 repositoryData = repositoryData,
                 statRequest = statRequest.copy(page = statRequest.page + 1),
