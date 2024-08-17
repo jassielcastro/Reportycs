@@ -6,6 +6,7 @@ import cache.model.OwnerEntity
 import cache.model.PrCommentsEntity
 import cache.model.PullRequestEntity
 import cache.model.RepositoryEntity
+import cache.model.StaticEntity
 import com.ajcm.jira.cache.AppDatabaseQueries
 import ext.now
 
@@ -63,7 +64,6 @@ class DataBase(
     fun addRepositoryOwners(owners: List<OwnerEntity>) {
         owners.forEach { owner ->
             dbQuery.insertOwners(
-                idOwner = owner.idOwner.toLong(),
                 repositoryId = owner.repositoryId.toLong(),
                 user = owner.user
             )
@@ -154,8 +154,8 @@ class DataBase(
 
     fun hasApproves(pullRequestId: Int): Boolean {
         val count = dbQuery.selectApprovesCount(pullRequestId.toLong())
-            .executeAsOneOrNull()
-        return (count ?: 0.0).toInt() > 0
+            .executeAsList()
+        return count.isNotEmpty()
     }
 
     /**
@@ -171,8 +171,8 @@ class DataBase(
 
     fun hasComments(pullRequestId: Int): Boolean {
         val count = dbQuery.selectCommentsCount(pullRequestId.toLong())
-            .executeAsOneOrNull()
-        return (count ?: 0.0).toInt() > 0
+            .executeAsList()
+        return count.isNotEmpty()
     }
 
     /**
@@ -193,26 +193,22 @@ class DataBase(
      * Statistics CRUD
      */
 
-    /*fun getAllPullRequest(repositoryId: Int): List<PullRequestStat> = with(dbQuery) {
-        return selectPullRequestInfo(repositoryId.toLong())
-            .executeAsList()
-            .groupBy { it.id }
+    fun getPullRequestInformation(repositoryId: Int): List<StaticEntity> {
+        val limit = getPullRequestSize(repositoryId)
+        return dbQuery.selectPullRequestStatistics(
+            repositoryId.toLong(),
+            limit.toLong()
+        ).executeAsList()
             .map { pullRequest ->
-                pullRequest.value.firstOrNull()?.let { pr ->
-                    PullRequestStat(
-                        id = pr.id.toInt(),
-                        repositoryId = repositoryId,
-                        title = pr.title,
-                        author = pr.author,
-                        avatar = pr.avatar,
-                        reviewCommentsCount = pr.reviewCommentsCount.toInt(),
-                        approves = pullRequest.value.map { approve ->
-                            Approve(approve.id.toInt(), approve.approver.orEmpty())
-                        }.filter { approve -> approve.user.isNotEmpty() },
-                    )
-                }
+                StaticEntity(
+                    id = pullRequest.id.toInt(),
+                    repositoryId = pullRequest.repositoryId.toInt(),
+                    title = pullRequest.title,
+                    author = pullRequest.author,
+                    avatar = pullRequest.avatar,
+                    reviewCommentsCount = pullRequest.comments?.toInt() ?: 0,
+                    approves = pullRequest.approvers.split(",").map { it.trim() },
+                )
             }
-            .filterNotNull()
-            .distinctBy { it.id }
-    }*/
+    }
 }

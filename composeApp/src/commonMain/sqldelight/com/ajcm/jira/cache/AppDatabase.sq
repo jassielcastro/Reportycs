@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS LastDate (
 );
 
 CREATE TABLE IF NOT EXISTS Owners (
-    idOwner INTEGER NOT NULL PRIMARY KEY,
+    idOwner INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     repositoryId INTEGER NOT NULL,
     user TEXT NOT NULL,
     FOREIGN KEY (repositoryId) REFERENCES Repository(id) ON DELETE CASCADE
@@ -80,8 +80,8 @@ WHERE
 
 insertOwners:
 INSERT OR REPLACE INTO
-    Owners(idOwner, repositoryId, user)
-VALUES(?, ?, ?);
+    Owners(repositoryId, user)
+VALUES(?, ?);
 
 selectAllOwners:
 SELECT
@@ -144,7 +144,7 @@ VALUES(?, ?);
 
 selectApprovesCount:
 SELECT
-    COUNT(*)
+    *
 FROM
     Approves
 WHERE
@@ -159,7 +159,7 @@ VALUES(?, ?);
 
 selectCommentsCount:
 SELECT
-    COUNT(*)
+    *
 FROM
     PrComments
 WHERE
@@ -188,7 +188,7 @@ SELECT
     PullRequest.author,
     PullRequest.avatar,
     PrComments.reviewCommentsCount AS comments,
-    Approves.user AS approver
+    COALESCE(GROUP_CONCAT(DISTINCT Approves.user), '') AS approvers
 FROM
     PullRequest
 LEFT JOIN
@@ -200,4 +200,8 @@ LEFT JOIN
 ON
     PullRequest.id = PrComments.pr_id
 WHERE
-    PullRequest.repositoryId = ?;
+    PullRequest.repositoryId = ?
+GROUP BY
+    PullRequest.id, PullRequest.repositoryId, PullRequest.title, PullRequest.author, PullRequest.avatar
+ORDER BY PullRequest.id DESC
+LIMIT ?;

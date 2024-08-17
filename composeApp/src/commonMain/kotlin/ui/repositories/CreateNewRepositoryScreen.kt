@@ -1,4 +1,4 @@
-package ui.repositories.create
+package ui.repositories
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -249,12 +249,12 @@ fun AddRepositoryForm(
                     Text(
                         text = stringResource(Res.string.repository_owners_helper),
                         color = MaterialTheme.colorScheme.onPrimary,
-                        fontSize = 8.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Light,
                         fontStyle = FontStyle.Italic,
                         textAlign = TextAlign.Start,
                         modifier = Modifier
-                            .padding(8.dp)
+                            .padding(horizontal = 8.dp)
                             .fillMaxWidth()
                     )
                 },

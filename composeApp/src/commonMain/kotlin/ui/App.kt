@@ -6,23 +6,20 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import di.appModule
-import jirareports.composeapp.generated.resources.Res
-import jirareports.composeapp.generated.resources.add_new_repository_screen
-import jirareports.composeapp.generated.resources.splash_screen
-import jirareports.composeapp.generated.resources.dashboard_screen
-import jirareports.composeapp.generated.resources.statics_screen
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinApplication
 import ui.components.GithubAppBar
 import ui.dashboard.DashboardScreen
-import ui.repositories.create.CreateNewRepositoryScreen
+import ui.repositories.CreateNewRepositoryScreen
 import ui.splash.SplashScreen
 import ui.statics.StaticsScreen
 import ui.theme.GithubStatsTheme
@@ -30,11 +27,35 @@ import ui.theme.GithubStatsTheme
 /**
  * enum values that represent the screens in the app
  */
-enum class GithubScreen(val title: StringResource) {
-    Splash(title = Res.string.splash_screen),
-    CreateRepository(title = Res.string.add_new_repository_screen),
-    Dashboard(title = Res.string.dashboard_screen),
-    Statics(title = Res.string.statics_screen)
+sealed class GithubScreen(
+    val destination: String,
+    val arguments: List<NamedNavArgument> = listOf()
+) {
+    data object Splash : GithubScreen(destination = "splash")
+
+    data object CreateRepository : GithubScreen(destination = "createRepository")
+
+    data object Dashboard : GithubScreen(destination = "dashboard")
+
+    data object Statics : GithubScreen(
+        destination = "statics/{repositoryName}",
+        arguments = listOf(navArgument("repositoryName") { type = NavType.StringType })
+    ) {
+        fun withArgs(repositoryName: String): String {
+            return "statics/$repositoryName"
+        }
+    }
+
+    companion object {
+        fun valueOf(destination: String): GithubScreen {
+            return when (destination) {
+                CreateRepository.destination -> CreateRepository
+                Dashboard.destination -> Dashboard
+                Statics.destination -> Statics
+                else -> Splash
+            }
+        }
+    }
 }
 
 @Composable
@@ -48,7 +69,7 @@ fun App(
         GithubStatsTheme {
             val backStackEntry by navController.currentBackStackEntryAsState()
             val currentScreen = GithubScreen.valueOf(
-                backStackEntry?.destination?.route ?: GithubScreen.Splash.name
+                backStackEntry?.destination?.route ?: GithubScreen.Splash.destination
             )
 
             Scaffold(
@@ -62,26 +83,26 @@ fun App(
             ) { innerPadding ->
                 NavHost(
                     navController = navController,
-                    startDestination = GithubScreen.Splash.name,
+                    startDestination = GithubScreen.Splash.destination,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    composable(route = GithubScreen.Splash.name) {
+                    composable(route = GithubScreen.Splash.destination) {
                         SplashScreen { destination ->
-                            navController.navigate(route = destination.name) {
-                                popUpTo(route = GithubScreen.Splash.name) {
+                            navController.navigate(route = destination.destination) {
+                                popUpTo(route = GithubScreen.Splash.destination) {
                                     inclusive = true
                                 }
                             }
                         }
                     }
 
-                    composable(route = GithubScreen.CreateRepository.name) {
+                    composable(route = GithubScreen.CreateRepository.destination) {
                         CreateNewRepositoryScreen(
                             onSuccess = {
-                                navController.navigate(route = GithubScreen.Dashboard.name) {
-                                    popUpTo(route = GithubScreen.CreateRepository.name) {
+                                navController.navigate(route = GithubScreen.Dashboard.destination) {
+                                    popUpTo(route = GithubScreen.CreateRepository.destination) {
                                         inclusive = true
                                     }
                                 }
@@ -89,16 +110,24 @@ fun App(
                         )
                     }
 
-                    composable(route = GithubScreen.Dashboard.name) {
+                    composable(route = GithubScreen.Dashboard.destination) {
                         DashboardScreen(
-                            onGenerateReports = {
-                                navController.navigate(route = GithubScreen.Statics.name)
+                            onGenerateReports = { repo ->
+                                navController.navigate(
+                                    route = GithubScreen.Statics.withArgs(repo.repository)
+                                )
                             }
                         )
                     }
 
-                    composable(route = GithubScreen.Statics.name) {
-                        StaticsScreen()
+                    composable(
+                        route = GithubScreen.Statics.destination,
+                        arguments = GithubScreen.Statics.arguments
+                    ) { entry ->
+                        val repositoryName = entry.arguments?.getString("repositoryName").orEmpty()
+                        StaticsScreen(
+                            repositoryName = repositoryName
+                        )
                     }
                 }
             }

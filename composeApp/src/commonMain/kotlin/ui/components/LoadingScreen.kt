@@ -34,7 +34,7 @@ data class LoadingItem(val imageResId: DrawableResource, val description: String
 fun LoadingScreen(
     modifier: Modifier,
     items: List<LoadingItem>,
-    displayTime: Long = 3_500L
+    displayTime: Long = 1_500L
 ) {
     var currentItemIndex by remember { mutableStateOf(0) }
 

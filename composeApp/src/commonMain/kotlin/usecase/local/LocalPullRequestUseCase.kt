@@ -10,9 +10,11 @@ import usecase.mapper.toPullRequestDto
 import usecase.mapper.toPullRequestEntity
 import usecase.mapper.toRepositoryDto
 import usecase.mapper.toRepositoryEntity
+import usecase.mapper.toStaticDto
 import usecase.model.OwnerDto
 import usecase.model.PullRequestDto
 import usecase.model.RepositoryDto
+import usecase.model.StaticDto
 
 class LocalPullRequestUseCase(
     private val dataBase: DataBase
@@ -132,5 +134,15 @@ class LocalPullRequestUseCase(
     fun hasPullRequestUpdated(): Boolean {
         val insertionDate = dataBase.getLastDateInsertion()
         return now() == insertionDate
+    }
+
+    /**
+     * Get Pull Request information
+     */
+
+    fun getPullRequestInformation(repositoryId: Int): List<StaticDto> {
+        return dataBase.getPullRequestInformation(repositoryId).map { entity ->
+            entity.toStaticDto()
+        }
     }
 }

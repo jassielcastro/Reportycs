@@ -9,7 +9,6 @@ import io.ktor.client.request.parameter
 import usecase.remote.model.request.RepositoryRequest
 import usecase.remote.model.request.StatsRequest
 import usecase.remote.model.response.ApproveResponse
-import usecase.remote.model.response.CodeOwner
 import usecase.remote.model.response.PullRequestResponse
 import usecase.remote.model.response.PullRequestInfoResponse
 
@@ -17,28 +16,6 @@ class RemotePullRequestUseCase(
     private val client: HttpClient,
     private val cryptoHandler: CryptoHandler
 ) {
-
-    suspend fun getCodeOwners(repository: RepositoryRequest): List<CodeOwner> {
-        val singlePr = getPullRequest(
-            repository = repository,
-            stats = StatsRequest(
-                perPage = 1
-            )
-        ).firstOrNull() ?: return emptyList()
-
-        val owners = mutableListOf(
-            CodeOwner(singlePr.user.name)
-        )
-
-        singlePr.requestedReviews.map { review ->
-            owners.add(
-                CodeOwner(review.name)
-            )
-        }
-
-        return owners
-    }
-
     suspend fun getPullRequest(
         repository: RepositoryRequest,
         stats: StatsRequest

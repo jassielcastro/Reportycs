@@ -1,4 +1,4 @@
-package ui.repositories.create
+package ui.repositories
 
 import androidx.lifecycle.ViewModel
 import crypt.CryptoHandler
@@ -30,7 +30,7 @@ class CreateNewRepositoryViewModel(
             _saveRepositoryState.value = UiState.Failure
         }
 
-        repository.setRepositoryMetrics(repo.id, 50)
+        repository.setRepositoryMetrics(repo.id, 100)
 
         val owners = generateOwners(codeOwners)
 
@@ -40,7 +40,9 @@ class CreateNewRepositoryViewModel(
     }
 
     private fun generateOwners(codeOwners: String): List<String> {
-        return codeOwners.split(",")
+        return codeOwners.trim()
+            .split(",")
             .map { it.trim() }
+            .filter { it.isNotEmpty() }
     }
 }

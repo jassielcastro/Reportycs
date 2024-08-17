@@ -6,13 +6,14 @@ import repository.mapper.toPullRequestDto
 import repository.mapper.toRepositoryData
 import repository.mapper.toRepositoryDto
 import repository.mapper.toRepositoryRequest
+import repository.mapper.toStaticData
 import repository.model.CodeOwnerData
 import repository.model.PullRequestData
 import repository.model.RepositoryData
+import repository.model.StaticData
 import usecase.local.LocalPullRequestUseCase
 import usecase.model.OwnerDto
 import usecase.remote.RemotePullRequestUseCase
-import usecase.remote.model.request.RepositoryRequest
 import usecase.remote.model.request.StatsRequest
 
 class PullRequestRepository(
@@ -56,22 +57,7 @@ class PullRequestRepository(
         )
     }
 
-    suspend fun getCodeOwners(repository: RepositoryData): List<CodeOwnerData> {
-        val codeOwners = localUseCase.getRepositoryOwners(repository.id)
-        if (codeOwners.isEmpty()) {
-            val remoteOwners = remoteUseCase.getCodeOwners(
-                repository.toRepositoryRequest()
-            )
-            localUseCase.addRepositoryOwners(
-                owners = remoteOwners.map { owner ->
-                    OwnerDto(
-                        user = owner.name,
-                        repositoryId = repository.id
-                    )
-                }
-            )
-        }
-
+    fun getCodeOwners(repository: RepositoryData): List<CodeOwnerData> {
         return localUseCase.getRepositoryOwners(repository.id).map { owner ->
             CodeOwnerData(owner.user)
         }
@@ -88,8 +74,11 @@ class PullRequestRepository(
     ): List<PullRequestData> {
         val repositoryRequest = repositoryData.toRepositoryRequest()
         val minCount = getPRsSizeToAnalyse(repositoryId = repositoryRequest.id)
+        val owners = getCodeOwners(repositoryData).map { it.name }
         if (!localUseCase.hasPullRequestUpdated() || reload) {
-            val pullRequest = remoteUseCase.getPullRequest(repositoryRequest, statRequest)
+            val pullRequest = remoteUseCase.getPullRequest(repositoryRequest, statRequest).filter {
+                owners.contains(it.user.name)
+            }
             localUseCase.addPullRequest(
                 pullRequest = pullRequest.map { pr ->
                     pr.toPullRequestDto(repositoryRequest.id)
@@ -142,6 +131,12 @@ class PullRequestRepository(
                     )
                 }
             }
+        }
+    }
+
+    fun getPullRequestInformation(repositoryId: Int): List<StaticData> {
+        return localUseCase.getPullRequestInformation(repositoryId).map { dto ->
+            dto.toStaticData()
         }
     }
 }

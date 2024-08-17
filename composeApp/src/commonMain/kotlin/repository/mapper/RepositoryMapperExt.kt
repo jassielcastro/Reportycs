@@ -2,8 +2,10 @@ package repository.mapper
 
 import repository.model.PullRequestData
 import repository.model.RepositoryData
+import repository.model.StaticData
 import usecase.model.PullRequestDto
 import usecase.model.RepositoryDto
+import usecase.model.StaticDto
 import usecase.remote.model.request.RepositoryRequest
 import usecase.remote.model.response.PullRequestResponse
 
@@ -51,5 +53,17 @@ fun PullRequestDto.toPullRequestData(): PullRequestData {
         title = this.title,
         author = this.author,
         avatar = this.avatar,
+    )
+}
+
+fun StaticDto.toStaticData(): StaticData {
+    return StaticData(
+        id = this.id,
+        repositoryId = this.repositoryId,
+        title = this.title,
+        author = this.author,
+        avatar = this.avatar,
+        reviewCommentsCount = this.reviewCommentsCount,
+        approves = this.approves,
     )
 }
