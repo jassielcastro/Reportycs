@@ -7,10 +7,9 @@ data class GithubStats(
     val pullRequestComments: List<PullRequestComments>,
     val ownerStats: List<OwnerStats>,
     val statsByType: List<PullRequestType>,
-    val activeDevelopers: Int
-) {
-
-}
+    val activeDevelopers: Int,
+    val ownerNames: List<String>
+)
 
 data class PullRequestByOwner(
     val author: String,

@@ -47,22 +47,37 @@ class StaticsViewModel(
 
         val stats = GithubStats(
             prsCount = pullRequestList.size,
-            pullRequestByOwner = calculatePrsCreatedByContributor(pullRequestList, activeOwners),
+            pullRequestByOwner = calculatePrsCreatedByContributor(
+                pullRequestList,
+                activeOwners
+            ), // Bars
             pullRequestReviewedByOwner = calculateApprovalsDistribution(
                 pullRequestList,
                 activeOwners
-            ),
-            pullRequestComments = calculateCommentsByPr(pullRequestList),
+            ), // Bars
+            pullRequestComments = calculateCommentsByPr(pullRequestList), // Line
             ownerStats = calculatePrsAndCommentsCorrelation(
                 pullRequestList,
                 activeOwners
-            ),
-            statsByType = calculateStatsByType(pullRequestList),
+            ), // Double bars
+            statsByType = calculateStatsByType(pullRequestList), // Bubble
             activeDevelopers = activeOwners.size,
+            ownerNames = generateOwnerNames(activeOwners)
         )
 
         println("StaticsViewModel.generateStatics ---> $stats")
         _pullRequestInfoState.value = UiState.Success(stats)
+    }
+
+    private fun generateOwnerNames(codeOwners: List<CodeOwnerData>): List<String> {
+        return codeOwners
+            .sortedBy { it.name }
+            .map {
+                it.name
+                    .split("_", "-")
+                    .firstOrNull()
+                    .orEmpty()
+            }
     }
 
     /**

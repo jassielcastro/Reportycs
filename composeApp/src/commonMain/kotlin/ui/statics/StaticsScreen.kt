@@ -177,10 +177,17 @@ fun StaticsItemsScreen(
         }
 
         item {
-            Spacer(
+            Surface (
+                shape = MaterialTheme.shapes.medium,
+                color = MaterialTheme.colorScheme.background,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
                 modifier = Modifier
-                    .height(16.dp)
-            )
+                    .padding(vertical = 16.dp)
+                    .fillMaxWidth()
+                    .height(120.dp)
+            ) {
+
+            }
         }
 
         item {
