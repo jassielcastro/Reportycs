@@ -1,5 +1,11 @@
 package ui.model
 
+import androidx.compose.runtime.Immutable
+import androidx.compose.ui.unit.dp
+import ui.components.charts.BarChartData
+import ui.theme.primaryLight
+
+@Immutable
 data class GithubStats(
     val prsCount: Int,
     val pullRequestByOwner: List<PullRequestByOwner>,
@@ -9,29 +15,51 @@ data class GithubStats(
     val statsByType: List<PullRequestType>,
     val activeDevelopers: Int,
     val ownerNames: List<String>
-)
+) {
 
+    val pullRequestByOwnerBarData: BarChartData by lazy {
+        val bars = pullRequestByOwner
+            .sortedBy { it.author }
+            .map { pr ->
+            BarChartData.Bar(
+                value = pr.pullRequestCreated.toFloat(),
+                color = primaryLight,
+            )
+        }
+        BarChartData(
+            bars = bars,
+            roundToIntegers = true,
+            barWidth = 80.dp,
+        )
+    }
+}
+
+@Immutable
 data class PullRequestByOwner(
     val author: String,
     val pullRequestCreated: Int
 )
 
+@Immutable
 data class PullRequestReviewedByOwner(
     val user: String,
     val pullRequestReviewed: Int
 )
 
+@Immutable
 data class PullRequestComments(
     val pullRequestId: Int,
     val reviewCommentsCount: Int
 )
 
+@Immutable
 data class OwnerStats(
     val user: String,
     val pullRequestCreated: Int,
     val commentsByPr: Int
 )
 
+@Immutable
 data class PullRequestType(
     val type: String,
     val count: Int

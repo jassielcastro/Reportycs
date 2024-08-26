@@ -74,9 +74,6 @@ class StaticsViewModel(
             .sortedBy { it.name }
             .map {
                 it.name
-                    .split("_", "-")
-                    .firstOrNull()
-                    .orEmpty()
             }
     }
 

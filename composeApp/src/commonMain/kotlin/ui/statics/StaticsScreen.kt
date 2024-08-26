@@ -46,6 +46,7 @@ import ui.components.FailureScreen
 import ui.components.IdleScreen
 import ui.components.LoadingItem
 import ui.components.LoadingScreen
+import ui.components.charts.BarChart
 import ui.model.GithubStats
 import ui.model.UiState
 
@@ -171,13 +172,19 @@ fun StaticsItemsScreen(
                     modifier = Modifier
                         .fillMaxSize()
                 ) {
-
+                    BarChart(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        title = "PullRequest merged",
+                        barChartData = githubStats.pullRequestByOwnerBarData,
+                        labels = githubStats.ownerNames
+                    )
                 }
             }
         }
 
         item {
-            Surface (
+            Surface(
                 shape = MaterialTheme.shapes.medium,
                 color = MaterialTheme.colorScheme.background,
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
