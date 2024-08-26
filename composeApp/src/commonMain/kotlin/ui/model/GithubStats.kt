@@ -49,6 +49,10 @@ data class GithubStats(
             barWidth = 80.dp,
         )
     }
+
+    val pullRequestCommentsLineData: List<Int> by lazy {
+        pullRequestComments.map { it.reviewCommentsCount }
+    }
 }
 
 @Immutable

@@ -47,6 +47,7 @@ import ui.components.IdleScreen
 import ui.components.LoadingItem
 import ui.components.LoadingScreen
 import ui.components.charts.BarChart
+import ui.components.charts.LineChart
 import ui.model.GithubStats
 import ui.model.UiState
 
@@ -206,6 +207,22 @@ fun StaticsItemsScreen(
                         title = "Owner participation (reviews)",
                         barChartData = githubStats.pullRequestReviewsByOwnerBarData,
                         labels = githubStats.ownerNames
+                    )
+                }
+
+                Surface(
+                    shape = MaterialTheme.shapes.medium,
+                    color = MaterialTheme.colorScheme.background,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                ) {
+                    LineChart(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        title = "Change request in PR",
+                        dataPoints = githubStats.pullRequestCommentsLineData,
                     )
                 }
             }
