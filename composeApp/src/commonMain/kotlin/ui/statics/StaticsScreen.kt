@@ -184,16 +184,30 @@ fun StaticsItemsScreen(
         }
 
         item {
-            Surface(
-                shape = MaterialTheme.shapes.medium,
-                color = MaterialTheme.colorScheme.background,
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier
                     .padding(vertical = 16.dp)
                     .fillMaxWidth()
-                    .height(120.dp)
+                    .height(320.dp)
             ) {
 
+                Surface(
+                    shape = MaterialTheme.shapes.medium,
+                    color = MaterialTheme.colorScheme.background,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .fillMaxHeight()
+                ) {
+                    BarChart(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        title = "Owner participation (reviews)",
+                        barChartData = githubStats.pullRequestReviewsByOwnerBarData,
+                        labels = githubStats.ownerNames
+                    )
+                }
             }
         }
 

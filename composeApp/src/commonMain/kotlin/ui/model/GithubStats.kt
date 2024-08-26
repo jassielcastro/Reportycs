@@ -32,6 +32,23 @@ data class GithubStats(
             barWidth = 80.dp,
         )
     }
+
+    val pullRequestReviewsByOwnerBarData: BarChartData by lazy {
+        val bars = pullRequestReviewedByOwner
+            .sortedBy { it.user }
+            .map { pr ->
+                BarChartData.Bar(
+                    value = pr.pullRequestReviewed.toFloat(),
+                    color = primaryLight,
+                )
+            }
+        BarChartData(
+            bars = bars,
+            maxBarValue = prsCount.toFloat(),
+            roundToIntegers = true,
+            barWidth = 80.dp,
+        )
+    }
 }
 
 @Immutable

@@ -45,12 +45,10 @@ import androidx.compose.ui.unit.sp
 @Immutable
 data class BarChartData(
     val bars: List<Bar>,
+    val maxBarValue: Float = bars.maxOfOrNull { it.value } ?: 0f,
     val roundToIntegers: Boolean = false,
     val barWidth: Dp,
 ) {
-    val maxBarValue: Float
-        get() = bars.maxOfOrNull { it.value } ?: 0f
-
     @Immutable
     data class Bar(
         val value: Float,
@@ -79,22 +77,33 @@ fun SimpleBarDrawer(
         )
     )
 
+    var valueTextTop by remember { mutableStateOf(1000f) }
+    val animatedTextTop: Float by animateFloatAsState(
+        targetValue = valueTextTop,
+        animationSpec = tween(
+            durationMillis = 200,
+            easing = LinearOutSlowInEasing
+        )
+    )
+
     LaunchedEffect(barData) {
         animationEnabled = true
     }
 
     Canvas(modifier = modifier) {
         val barContainerHeight = size.height
-        val barHeight = ((barContainerHeight * (barData.value / maxValue)) * animatedHeight).coerceAtLeast(0f)
+        val barHeight =
+            ((barContainerHeight * (barData.value / maxValue)) * animatedHeight).coerceAtLeast(0f)
         val barWidth = size.width.dp
-        val numberCenter = (size.width / 2f) - 7f
+        val minTextYPosition = (barContainerHeight * 0.8f)
+
+        val numberCenter = (size.width / 2f) - 10f
         val barTopY = barContainerHeight - barHeight
-        val valueTop: Float
         var textStyle = outTextStyle
-        if (barTopY == barContainerHeight) {
-            valueTop = (barTopY - 28f).coerceAtLeast(0f)
+        if (barTopY > minTextYPosition) {
+            valueTextTop = (barTopY - 28f).coerceAtLeast(0f)
         } else {
-            valueTop = (barTopY + 8f).coerceAtMost(barContainerHeight)
+            valueTextTop = (barTopY + 8f).coerceAtMost(barContainerHeight)
             textStyle = innerTextStyle
         }
 
@@ -116,7 +125,7 @@ fun SimpleBarDrawer(
                 textMeasurer = textMeasurer,
                 text = AnnotatedString(valueFormatter(barData.value)),
                 style = textStyle,
-                topLeft = Offset(numberCenter, valueTop)
+                topLeft = Offset(numberCenter, animatedTextTop.coerceAtMost(barContainerHeight))
             )
         }
     }
