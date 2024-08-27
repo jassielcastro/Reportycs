@@ -75,19 +75,29 @@ class PullRequestRepository(
         val repositoryRequest = repositoryData.toRepositoryRequest()
         val minCount = getPRsSizeToAnalyse(repositoryId = repositoryRequest.id)
         val owners = getCodeOwners(repositoryData).map { it.name }
+
+        fun loadSavedPullRequest() =
+            localUseCase.getPullRequest(repositoryId = repositoryRequest.id).map { pr ->
+                pr.toPullRequestData()
+            }
+
         if (!localUseCase.hasPullRequestUpdated() || reload) {
             val pullRequest = remoteUseCase.getPullRequest(repositoryRequest, statRequest).filter {
                 owners.contains(it.user.name)
             }
+
+            if (pullRequest.isEmpty()) {
+                return loadSavedPullRequest()
+            }
+
             localUseCase.addPullRequest(
                 pullRequest = pullRequest.map { pr ->
                     pr.toPullRequestDto(repositoryRequest.id)
                 }
             )
         }
-        val localPrs = localUseCase.getPullRequest(repositoryId = repositoryRequest.id).map { pr ->
-            pr.toPullRequestData()
-        }
+
+        val localPrs = loadSavedPullRequest()
 
         if (localPrs.size >= minCount) {
             localUseCase.updateLastDateOfInsertions()
