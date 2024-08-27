@@ -116,6 +116,11 @@ fun App(
                                 navController.navigate(
                                     route = GithubScreen.Statics.withArgs(repo.repository)
                                 )
+                            },
+                            addNewRepository = {
+                                navController.navigate(
+                                    route = GithubScreen.CreateRepository.destination
+                                )
                             }
                         )
                     }

@@ -20,6 +20,7 @@
     <string name="dashboard_title">Dashboard</string>
     <string name="generate_reports_button">Generate report</string>
     <string name="dashboard_repositories_title">All repositories</string>
+    <string name="dashboard_add_new_repositories_button">Add new Repository</string>
 
     <string name="loading_info_message_1">Summoning the GitHub spirits... PRs inbound!</string>
     <string name="loading_info_message_2">Hold on, reeling in those precious PRs!</string>

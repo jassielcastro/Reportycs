@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -16,9 +17,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import jirareports.composeapp.generated.resources.Res
 import jirareports.composeapp.generated.resources.analytics_pana
 import jirareports.composeapp.generated.resources.analytics_rafiki
+import jirareports.composeapp.generated.resources.dashboard_add_new_repositories_button
 import jirareports.composeapp.generated.resources.dashboard_repositories_title
 import jirareports.composeapp.generated.resources.dashboard_title
 import jirareports.composeapp.generated.resources.generate_reports_button
@@ -63,7 +67,8 @@ import ui.model.UiState
 @Composable
 fun DashboardScreen(
     modifier: Modifier = Modifier,
-    onGenerateReports: (RepositoryData) -> Unit
+    onGenerateReports: (RepositoryData) -> Unit,
+    addNewRepository: () -> Unit
 ) {
     val viewModel = rememberKoinInject<DashboardViewModel>()
     val repositoriesState by viewModel.repositoriesState.collectAsState()
@@ -109,7 +114,8 @@ fun DashboardScreen(
                 DashboardRepositoriesScreen(
                     repositories = state.data,
                     viewModel = viewModel,
-                    onGenerateReports = onGenerateReports
+                    onGenerateReports = onGenerateReports,
+                    addNewRepository = addNewRepository
                 )
             }
         }
@@ -121,7 +127,8 @@ fun DashboardRepositoriesScreen(
     repositories: List<RepositoryData>,
     modifier: Modifier = Modifier,
     viewModel: DashboardViewModel,
-    onGenerateReports: (RepositoryData) -> Unit
+    onGenerateReports: (RepositoryData) -> Unit,
+    addNewRepository: () -> Unit
 ) {
 
     var repositorySelected by remember { mutableStateOf(repositories.first()) }
@@ -136,10 +143,12 @@ fun DashboardRepositoriesScreen(
             modifier = Modifier
                 .padding(top = 12.dp, bottom = 24.dp)
                 .fillMaxWidth(0.15f)
-                .fillMaxHeight()
-        ) { selected ->
-            repositorySelected = selected
-        }
+                .fillMaxHeight(),
+            onSelected = { selected ->
+                repositorySelected = selected
+            },
+            addNewRepository = addNewRepository
+        )
 
         Column(
             modifier = Modifier
@@ -221,7 +230,7 @@ fun PullRequestScreen(
 ) {
     val pullRequestState by viewModel.pullRequestState.collectAsState()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(repositorySelected) {
         repositorySelected?.let { viewModel.loadPullRequest(it) }
     }
 
@@ -310,7 +319,8 @@ fun StartDrawerComponent(
     repositories: List<RepositoryData>,
     selectedId: Int,
     modifier: Modifier = Modifier,
-    onSelected: (RepositoryData) -> Unit
+    onSelected: (RepositoryData) -> Unit,
+    addNewRepository: () -> Unit
 ) {
     LazyColumn(
         modifier = modifier
@@ -333,6 +343,29 @@ fun StartDrawerComponent(
                 repositoryData = repo
             ) { selected ->
                 onSelected(selected)
+            }
+        }
+
+        item {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .clickable {
+                        addNewRepository()
+                    }
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                shape = ShapeDefaults.Medium,
+                color = MaterialTheme.colorScheme.tertiary
+            ) {
+                Text(
+                    text = stringResource(Res.string.dashboard_add_new_repositories_button),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                )
             }
         }
     }
