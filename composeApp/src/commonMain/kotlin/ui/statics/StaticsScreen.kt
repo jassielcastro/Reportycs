@@ -227,34 +227,5 @@ fun StaticsItemsScreen(
                 }
             }
         }
-
-        item {
-            Surface(
-                shape = MaterialTheme.shapes.medium,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp)
-            ) {
-
-            }
-        }
-
-        item {
-            Spacer(
-                modifier = Modifier
-                    .height(16.dp)
-            )
-        }
-
-        item {
-            Surface(
-                shape = MaterialTheme.shapes.medium,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp)
-            ) {
-
-            }
-        }
     }
 }
