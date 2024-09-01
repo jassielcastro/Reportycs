@@ -9,7 +9,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -17,11 +18,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,6 +63,7 @@ import ui.components.LoadingItem
 import ui.components.LoadingScreen
 import ui.components.NormalReportycsButton
 import ui.components.PullRequestItem
+import ui.components.ReportycsButton
 import ui.model.UiState
 
 @Composable
@@ -143,50 +145,40 @@ fun DashboardRepositoriesScreen(
             modifier = Modifier
                 .padding(top = 12.dp, bottom = 24.dp)
                 .fillMaxWidth(0.15f)
-                .fillMaxHeight(),
+                .fillMaxHeight()
+                .clip(RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp))
+                .background(MaterialTheme.colorScheme.secondary),
             onSelected = { selected ->
                 repositorySelected = selected
             },
             addNewRepository = addNewRepository
         )
 
-        Column(
+        PullRequestScreen(
             modifier = Modifier
-                .fillMaxSize()
-        ) {
-            RepositoryHeader(
-                repositoryData = repositorySelected,
-                pullRequestToAnalyze = {
-                    viewModel.loadPRsToAnalyze(repositorySelected.id)
-                },
-                onGenerateReportsClicked = { repo ->
-                    onGenerateReports(repo)
-                }
-            )
-
-            PullRequestScreen(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
-                    .fillMaxSize(),
-                viewModel = viewModel,
-                repositorySelected = repositorySelected
-            )
-        }
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .fillMaxSize(),
+            viewModel = viewModel,
+            repositorySelected = repositorySelected,
+            onGenerateReportsClicked = { repo ->
+                onGenerateReports(repo)
+            }
+        )
     }
 }
 
 @Composable
 fun RepositoryHeader(
     modifier: Modifier = Modifier,
-    repositoryData: RepositoryData,
     pullRequestToAnalyze: () -> Int,
-    onGenerateReportsClicked: (RepositoryData) -> Unit
+    onGenerateReportsClicked: () -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .padding(top = 16.dp)
             .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.secondary)
+            .padding(top = 16.dp)
     ) {
 
         Column(
@@ -196,16 +188,18 @@ fun RepositoryHeader(
         ) {
             Text(
                 text = stringResource(Res.string.dashboard_title),
-                color = MaterialTheme.colorScheme.primary,
+                color = MaterialTheme.colorScheme.onPrimary,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
 
             Text(
                 text = "${pullRequestToAnalyze()} PRs to analyze",
-                color = MaterialTheme.colorScheme.tertiary,
+                color = MaterialTheme.colorScheme.onPrimary,
                 fontSize = 12.sp,
-                fontWeight = FontWeight.Light
+                fontWeight = FontWeight.Light,
+                modifier = Modifier
+                    .padding(bottom = 16.dp)
             )
         }
 
@@ -216,7 +210,7 @@ fun RepositoryHeader(
                 .height(48.dp),
             text = stringResource(Res.string.generate_reports_button),
             onClick = {
-                onGenerateReportsClicked(repositoryData)
+                onGenerateReportsClicked()
             }
         )
     }
@@ -226,7 +220,8 @@ fun RepositoryHeader(
 fun PullRequestScreen(
     modifier: Modifier = Modifier,
     viewModel: DashboardViewModel,
-    repositorySelected: RepositoryData?
+    repositorySelected: RepositoryData?,
+    onGenerateReportsClicked: (RepositoryData) -> Unit
 ) {
     val pullRequestState by viewModel.pullRequestState.collectAsState()
 
@@ -281,30 +276,52 @@ fun PullRequestScreen(
 
             is UiState.Success -> {
                 PullRequestListScreen(
-                    pullRequest = state.data
+                    pullRequest = state.data,
+                    pullRequestToAnalyze = {
+                        repositorySelected?.let { selected ->
+                            viewModel.loadPRsToAnalyze(selected.id)
+                        } ?: 0
+                    },
+                    onGenerateReportsClicked = {
+                        if (repositorySelected != null) {
+                            onGenerateReportsClicked(repositorySelected)
+                        }
+                    }
                 )
             }
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PullRequestListScreen(
     modifier: Modifier = Modifier,
-    pullRequest: List<PullRequestData>
+    pullRequest: List<PullRequestData>,
+    pullRequestToAnalyze: () -> Int,
+    onGenerateReportsClicked: () -> Unit
 ) {
     Surface(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
         shape = MaterialTheme.shapes.medium,
-        color = MaterialTheme.colorScheme.background,
+        color = MaterialTheme.colorScheme.secondary,
         modifier = modifier
             .fillMaxSize()
     ) {
         LazyColumn(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 24.dp)
                 .fillMaxSize()
         ) {
+
+            stickyHeader {
+                RepositoryHeader(
+                    pullRequestToAnalyze = pullRequestToAnalyze,
+                    onGenerateReportsClicked = onGenerateReportsClicked
+                )
+            }
+
             items(pullRequest) { pr ->
                 PullRequestItem(
                     pullRequestData = pr
@@ -322,51 +339,44 @@ fun StartDrawerComponent(
     onSelected: (RepositoryData) -> Unit,
     addNewRepository: () -> Unit
 ) {
-    LazyColumn(
+    Column(
         modifier = modifier
     ) {
-        item {
-            Text(
-                text = stringResource(Res.string.dashboard_repositories_title),
-                color = MaterialTheme.colorScheme.tertiary,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Light,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
-            )
-        }
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.9f)
+        ) {
 
-        items(repositories) { repo ->
-            DrawerItem(
-                isSelected = repo.id == selectedId,
-                repositoryData = repo
-            ) { selected ->
-                onSelected(selected)
-            }
-        }
-
-        item {
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .clickable {
-                        addNewRepository()
-                    }
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                shape = ShapeDefaults.Medium,
-                color = MaterialTheme.colorScheme.tertiary
-            ) {
+            item {
                 Text(
-                    text = stringResource(Res.string.dashboard_add_new_repositories_button),
+                    text = stringResource(Res.string.dashboard_repositories_title),
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.Light,
                     modifier = Modifier
-                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                        .padding(horizontal = 24.dp)
+                        .padding(top = 24.dp, bottom = 12.dp)
+                        .fillMaxWidth()
                 )
             }
+
+            items(repositories) { repo ->
+                DrawerItem(
+                    isSelected = repo.id == selectedId,
+                    repositoryData = repo
+                ) { selected ->
+                    onSelected(selected)
+                }
+            }
         }
+
+        ReportycsButton(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxSize(),
+            text = stringResource(Res.string.dashboard_add_new_repositories_button),
+            onClick = addNewRepository
+        )
     }
 }

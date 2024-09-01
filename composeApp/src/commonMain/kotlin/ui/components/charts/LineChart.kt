@@ -28,17 +28,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextMeasurer
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ui.theme.errorLight
-import ui.theme.surfaceLight
 
 sealed class BezierCurveStyle {
     class Fill(val brush: Brush) : BezierCurveStyle()
@@ -62,6 +70,9 @@ fun BezierCurve(
     minPoint: Float? = null,
     maxPoint: Float? = null,
     style: BezierCurveStyle,
+    textMeasurer: TextMeasurer,
+    textStyle: TextStyle,
+    valueFormatter: (Float) -> String = { it.toString() },
 ) {
     var size by remember {
         mutableStateOf(IntSize.Zero)
@@ -95,9 +106,58 @@ fun BezierCurve(
                     fixedMaxPoint = maxPoint,
                     style = style,
                 )
+
+                drawDottedLines(
+                    maxValue = points.max().coerceAtLeast(10f),
+                    textMeasurer = textMeasurer,
+                    textStyle = textStyle,
+                    valueFormatter = valueFormatter,
+                )
             }
         },
     )
+}
+
+private fun DrawScope.drawDottedLines(
+    maxValue: Float,
+    textMeasurer: TextMeasurer,
+    textStyle: TextStyle,
+    valueFormatter: (Float) -> String = { it.toString() },
+) {
+    val dotRadius = 5.dp.toPx()
+    val spacing = 10.dp.toPx()
+
+    val dashPaint = Paint().apply {
+        color = Color.Black
+        strokeWidth = 2.dp.toPx()
+        pathEffect = PathEffect.dashPathEffect(floatArrayOf(dotRadius, spacing))
+    }
+
+    val linePosition = listOf(
+        1f to 0f,
+        0.5f to 0.5f
+    )
+
+    linePosition.forEach { position ->
+        // Draw number
+        drawContext.canvas.nativeCanvas.apply {
+            drawText(
+                textMeasurer = textMeasurer,
+                text = AnnotatedString(valueFormatter(maxValue * position.first)),
+                style = textStyle,
+                topLeft = Offset(10f, position.second * size.height)
+            )
+        }
+
+        // Draw dotted line
+        drawLine(
+            color = Color.White.copy(alpha = 0.5f),
+            start = Offset(50.dp.toPx(), (position.second * size.height).plus(12f)),
+            end = Offset(size.width, (position.second * size.height).plus(12f)),
+            strokeWidth = 2.dp.toPx(),
+            pathEffect = dashPaint.pathEffect,
+        )
+    }
 }
 
 private fun DrawScope.drawBezierCurve(
@@ -194,13 +254,15 @@ fun LineChart(
     dataPoints: List<Int>,
     modifier: Modifier = Modifier,
 ) {
+    val textMeasure = rememberTextMeasurer()
+
     Column(
         modifier = modifier
     ) {
 
         Text(
             text = title,
-            color = MaterialTheme.colorScheme.primary,
+            color = MaterialTheme.colorScheme.onPrimary,
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
@@ -223,8 +285,8 @@ fun LineChart(
             )
 
             Text(
-                text = "High concurrency",
-                color = MaterialTheme.colorScheme.primary,
+                text = "High comments concurrency",
+                color = MaterialTheme.colorScheme.onPrimary,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier
@@ -243,17 +305,26 @@ fun LineChart(
                     modifier = Modifier
                         .padding(top = 8.dp)
                         .fillMaxHeight()
-                        .width((50 * dataPoints.size).dp),
+                        .width((20 * dataPoints.size).dp),
                     points = dataPoints.map { it.toFloat() },
                     style = BezierCurveStyle.Fill(
                         brush = Brush.verticalGradient(
                             listOf(
                                 errorLight,
-                                surfaceLight,
-                                surfaceLight.copy(alpha = 0.2f)
+                                Color(0xffbb582e),
+                                Color(0xfffebe54)
                             )
                         )
-                    )
+                    ),
+                    textMeasurer = textMeasure,
+                    textStyle = TextStyle(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                    ),
+                    valueFormatter = { value ->
+                        value.toInt().toString()
+                    },
                 )
             }
         }

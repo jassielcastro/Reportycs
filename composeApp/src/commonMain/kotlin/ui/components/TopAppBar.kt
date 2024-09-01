@@ -16,7 +16,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import jirareports.composeapp.generated.resources.Res
 import jirareports.composeapp.generated.resources.back_button
@@ -40,11 +39,11 @@ fun GithubAppBar(
             )
         },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = if (currentScreen != GithubScreen.Splash) {
+            containerColor = MaterialTheme.colorScheme.primary/*if (currentScreen != GithubScreen.Splash) {
                 MaterialTheme.colorScheme.primary
             } else {
                 MaterialTheme.colorScheme.background
-            }
+            }*/
         ),
         modifier = modifier,
         navigationIcon = {

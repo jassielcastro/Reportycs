@@ -8,8 +8,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -33,13 +31,10 @@ fun ReportycsButton(
     modifier: Modifier = Modifier
 ) {
     OutlinedButton(
-        shape = MaterialTheme.shapes.small,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onPrimary),
+        shape = MaterialTheme.shapes.medium,
         onClick = onClick,
         colors = GithubButtonOutlinedColor(),
         modifier = modifier
-            .fillMaxWidth(0.4f)
-            .height(48.dp)
     ) {
         AnimatedContent(
             targetState = isLoading,
@@ -62,7 +57,7 @@ fun ReportycsButton(
             } else {
                 Text(
                     text = text,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier

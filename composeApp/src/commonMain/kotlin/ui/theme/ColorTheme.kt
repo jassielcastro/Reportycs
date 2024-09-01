@@ -28,8 +28,8 @@ fun GithubTextOutlinedColor(): TextFieldColors = OutlinedTextFieldDefaults.color
 
 @Composable
 fun GithubButtonOutlinedColor(): ButtonColors = ButtonDefaults.buttonColors(
-    containerColor = MaterialTheme.colorScheme.onPrimary,
-    contentColor = MaterialTheme.colorScheme.onPrimary,
+    containerColor = MaterialTheme.colorScheme.primary,
+    contentColor = MaterialTheme.colorScheme.primary,
 )
 
 @Composable

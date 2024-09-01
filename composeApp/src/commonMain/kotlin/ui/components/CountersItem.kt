@@ -29,10 +29,9 @@ fun CountersItem(
     icon: DrawableResource,
     modifier: Modifier = Modifier
 ) {
-
     Surface(
         shape = MaterialTheme.shapes.medium,
-        color = MaterialTheme.colorScheme.primary,
+        color = MaterialTheme.colorScheme.secondary,
         modifier = modifier
     ) {
 

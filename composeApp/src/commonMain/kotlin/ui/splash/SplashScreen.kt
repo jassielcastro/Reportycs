@@ -3,10 +3,12 @@ package ui.splash
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import jirareports.composeapp.generated.resources.Res
 import jirareports.composeapp.generated.resources.reportycs_logo
 import kotlinx.coroutines.delay
@@ -16,7 +18,7 @@ import ui.GithubScreen
 
 @Composable
 fun SplashScreen(
-    durationMillisAnimation: Long = 1500,
+    durationMillisAnimation: Long = 1_500,
     modifier: Modifier = Modifier,
     onFinish: (GithubScreen) -> Unit
 ) {
@@ -35,7 +37,8 @@ fun SplashScreen(
         Image(
             painterResource(Res.drawable.reportycs_logo),
             contentDescription = "",
-            modifier = Modifier.fillMaxSize(0.35f)
+            modifier = Modifier.fillMaxSize(0.35f),
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
         )
     }
 }

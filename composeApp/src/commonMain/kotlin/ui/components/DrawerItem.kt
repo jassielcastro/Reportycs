@@ -6,12 +6,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,12 +27,13 @@ fun DrawerItem(
 ) {
     Surface(
         modifier = modifier
+            .padding(top = 8.dp, bottom = 8.dp, start = 16.dp)
             .fillMaxWidth()
             .wrapContentHeight()
-            .clickable { onClicked(repositoryData) }
-            .padding(16.dp),
-        shape = ShapeDefaults.Medium,
-        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background
+            .clip(RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp))
+            .clickable { onClicked(repositoryData) },
+        shape = RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp),
+        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(2.dp),
@@ -40,7 +42,7 @@ fun DrawerItem(
         ) {
             Text(
                 text = repositoryData.owner,
-                color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onBackground,
+                color = MaterialTheme.colorScheme.onPrimary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
@@ -49,7 +51,7 @@ fun DrawerItem(
 
             Text(
                 text = repositoryData.repository,
-                color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onBackground,
+                color = MaterialTheme.colorScheme.onPrimary,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Light,
                 modifier = Modifier

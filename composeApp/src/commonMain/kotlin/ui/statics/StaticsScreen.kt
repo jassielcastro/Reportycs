@@ -12,7 +12,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -129,7 +128,6 @@ fun StaticsItemsScreen(
     ) {
 
         item {
-
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier
@@ -168,7 +166,7 @@ fun StaticsItemsScreen(
 
                 Surface(
                     shape = MaterialTheme.shapes.medium,
-                    color = MaterialTheme.colorScheme.background,
+                    color = MaterialTheme.colorScheme.secondary,
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
                     modifier = Modifier
                         .fillMaxSize()
@@ -195,7 +193,7 @@ fun StaticsItemsScreen(
 
                 Surface(
                     shape = MaterialTheme.shapes.medium,
-                    color = MaterialTheme.colorScheme.background,
+                    color = MaterialTheme.colorScheme.secondary,
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
                     modifier = Modifier
                         .fillMaxWidth(0.5f)
@@ -212,7 +210,7 @@ fun StaticsItemsScreen(
 
                 Surface(
                     shape = MaterialTheme.shapes.medium,
-                    color = MaterialTheme.colorScheme.background,
+                    color = MaterialTheme.colorScheme.secondary,
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
                     modifier = Modifier
                         .fillMaxWidth()

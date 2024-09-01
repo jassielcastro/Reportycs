@@ -42,7 +42,7 @@ fun PullRequestItem(
         Icon(
             painterResource(Res.drawable.ic_pull_request),
             contentDescription = "",
-            tint = MaterialTheme.colorScheme.tertiary,
+            tint = MaterialTheme.colorScheme.onPrimary,
             modifier = Modifier
                 .padding(horizontal = 8.dp)
                 .requiredSize(32.dp)
@@ -54,7 +54,7 @@ fun PullRequestItem(
         ) {
             Text(
                 text = pullRequestData.title,
-                color = MaterialTheme.colorScheme.primary,
+                color = MaterialTheme.colorScheme.onPrimary,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
@@ -63,7 +63,7 @@ fun PullRequestItem(
 
             Text(
                 text = annotatedString,
-                color = MaterialTheme.colorScheme.tertiary,
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Light,
                 modifier = Modifier
@@ -72,8 +72,7 @@ fun PullRequestItem(
 
             Divider(
                 modifier = Modifier
-                    .padding(vertical = 8.dp, horizontal = 16.dp),
-                color = MaterialTheme.colorScheme.surface
+                    .padding(vertical = 8.dp, horizontal = 16.dp)
             )
         }
     }

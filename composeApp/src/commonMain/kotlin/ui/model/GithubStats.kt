@@ -1,6 +1,7 @@
 package ui.model
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import ui.components.charts.BarChartData
 import ui.theme.primaryLight
@@ -23,13 +24,14 @@ data class GithubStats(
             .map { pr ->
             BarChartData.Bar(
                 value = pr.pullRequestCreated.toFloat(),
-                color = primaryLight,
+                color = Color(0xfffebe54),
+                background = primaryLight
             )
         }
         BarChartData(
             bars = bars,
             roundToIntegers = true,
-            barWidth = 80.dp,
+            barWidth = 60.dp,
         )
     }
 
@@ -39,14 +41,15 @@ data class GithubStats(
             .map { pr ->
                 BarChartData.Bar(
                     value = pr.pullRequestReviewed.toFloat(),
-                    color = primaryLight,
+                    color = Color(0xff895765),
+                    background = primaryLight
                 )
             }
         BarChartData(
             bars = bars,
             maxBarValue = prsCount.toFloat(),
             roundToIntegers = true,
-            barWidth = 80.dp,
+            barWidth = 60.dp,
         )
     }
 

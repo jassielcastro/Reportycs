@@ -53,6 +53,7 @@ data class BarChartData(
     data class Bar(
         val value: Float,
         val color: Color,
+        val background: Color
     )
 }
 
@@ -108,7 +109,7 @@ fun SimpleBarDrawer(
         }
 
         drawRoundRect(
-            color = barData.color.copy(alpha = 0.1f),
+            color = barData.background,
             size = Size(barWidth.toPx(), barContainerHeight),
             cornerRadius = CornerRadius(8f)
         )
@@ -146,7 +147,7 @@ fun BarChart(
 
         Text(
             text = title,
-            color = MaterialTheme.colorScheme.primary,
+            color = MaterialTheme.colorScheme.onPrimary,
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
@@ -185,7 +186,7 @@ fun BarChart(
                             fontWeight = FontWeight.ExtraBold,
                         ),
                         outTextStyle = TextStyle(
-                            color = MaterialTheme.colorScheme.primary,
+                            color = barData.color,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.ExtraBold,
                         ),
@@ -200,7 +201,7 @@ fun BarChart(
 
                     Text(
                         text = labels.getOrNull(index).orEmpty(),
-                        color = MaterialTheme.colorScheme.primary,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
