@@ -44,6 +44,7 @@ import jirareports.composeapp.generated.resources.dashboard_add_new_repositories
 import jirareports.composeapp.generated.resources.dashboard_repositories_title
 import jirareports.composeapp.generated.resources.dashboard_title
 import jirareports.composeapp.generated.resources.generate_reports_button
+import jirareports.composeapp.generated.resources.ic_delete_forever
 import jirareports.composeapp.generated.resources.loading_info_message_1
 import jirareports.composeapp.generated.resources.loading_info_message_2
 import jirareports.composeapp.generated.resources.loading_info_message_3
@@ -56,6 +57,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.rememberKoinInject
 import repository.model.PullRequestData
 import repository.model.RepositoryData
+import ui.components.DeleteButton
 import ui.components.DrawerItem
 import ui.components.FailureScreen
 import ui.components.IdleScreen
@@ -171,7 +173,8 @@ fun DashboardRepositoriesScreen(
 fun RepositoryHeader(
     modifier: Modifier = Modifier,
     pullRequestToAnalyze: () -> Int,
-    onGenerateReportsClicked: () -> Unit
+    onGenerateReportsClicked: () -> Unit,
+    onDeleteClicked: () -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -184,7 +187,7 @@ fun RepositoryHeader(
         Column(
             modifier = Modifier
                 .padding(top = 4.dp, start = 16.dp)
-                .fillMaxWidth(0.75f)
+                .fillMaxWidth(0.65f)
         ) {
             Text(
                 text = stringResource(Res.string.dashboard_title),
@@ -206,11 +209,22 @@ fun RepositoryHeader(
         NormalReportycsButton(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(0.8f)
                 .height(48.dp),
             text = stringResource(Res.string.generate_reports_button),
             onClick = {
                 onGenerateReportsClicked()
+            }
+        )
+
+        DeleteButton(
+            icon = Res.drawable.ic_delete_forever,
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth()
+                .height(48.dp),
+            onClick = {
+                onDeleteClicked()
             }
         )
     }
@@ -286,6 +300,11 @@ fun PullRequestScreen(
                         if (repositorySelected != null) {
                             onGenerateReportsClicked(repositorySelected)
                         }
+                    },
+                    onDeleteClicked = {
+                        if (repositorySelected != null) {
+                            viewModel.deleteRepository(repositorySelected.id)
+                        }
                     }
                 )
             }
@@ -299,7 +318,8 @@ fun PullRequestListScreen(
     modifier: Modifier = Modifier,
     pullRequest: List<PullRequestData>,
     pullRequestToAnalyze: () -> Int,
-    onGenerateReportsClicked: () -> Unit
+    onGenerateReportsClicked: () -> Unit,
+    onDeleteClicked: () -> Unit,
 ) {
     Surface(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
@@ -318,7 +338,8 @@ fun PullRequestListScreen(
             stickyHeader {
                 RepositoryHeader(
                     pullRequestToAnalyze = pullRequestToAnalyze,
-                    onGenerateReportsClicked = onGenerateReportsClicked
+                    onGenerateReportsClicked = onGenerateReportsClicked,
+                    onDeleteClicked = onDeleteClicked
                 )
             }
 

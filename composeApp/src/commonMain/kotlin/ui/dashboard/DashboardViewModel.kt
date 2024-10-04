@@ -51,4 +51,9 @@ class DashboardViewModel(
     fun loadPRsToAnalyze(repositoryId: Int): Int {
         return repository.getPRsSizeToAnalyse(repositoryId)
     }
+
+    fun deleteRepository(repositoryId: Int) {
+        repository.deleteRepository(repositoryId)
+        loadRepositories()
+    }
 }
