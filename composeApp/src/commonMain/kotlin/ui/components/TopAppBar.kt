@@ -19,9 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import jirareports.composeapp.generated.resources.Res
 import jirareports.composeapp.generated.resources.back_button
+import jirareports.composeapp.generated.resources.ic_arrow_back
 import jirareports.composeapp.generated.resources.ic_reportycs_logo_small
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
 import ui.GithubScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,18 +41,14 @@ fun GithubAppBar(
             )
         },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary/*if (currentScreen != GithubScreen.Splash) {
-                MaterialTheme.colorScheme.primary
-            } else {
-                MaterialTheme.colorScheme.background
-            }*/
+            containerColor = MaterialTheme.colorScheme.primary
         ),
         modifier = modifier,
         navigationIcon = {
             if (canNavigateBack) {
                 IconButton(onClick = navigateUp) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        imageVector = vectorResource(Res.drawable.ic_arrow_back),
                         contentDescription = stringResource(Res.string.back_button),
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
