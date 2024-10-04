@@ -168,7 +168,7 @@ private fun DrawScope.drawBezierCurve(
     fixedMaxPoint: Float? = null,
     style: BezierCurveStyle,
 ) {
-    val maxPoint = fixedMaxPoint ?: points.max()
+    val maxPoint = (fixedMaxPoint ?: points.max()).coerceAtLeast(10f)
     val minPoint = fixedMinPoint ?: points.min()
     val total = maxPoint - minPoint
     val height = size.height.toFloat()

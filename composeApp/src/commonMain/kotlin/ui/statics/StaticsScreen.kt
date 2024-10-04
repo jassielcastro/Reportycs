@@ -47,6 +47,7 @@ import ui.components.LoadingItem
 import ui.components.LoadingScreen
 import ui.components.charts.BarChart
 import ui.components.charts.LineChart
+import ui.components.charts.PieChart
 import ui.model.GithubStats
 import ui.model.UiState
 
@@ -186,26 +187,49 @@ fun StaticsItemsScreen(
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier
-                    .padding(vertical = 16.dp)
                     .fillMaxWidth()
-                    .height(320.dp)
+                    .height(640.dp)
             ) {
 
-                Surface(
-                    shape = MaterialTheme.shapes.medium,
-                    color = MaterialTheme.colorScheme.secondary,
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier
-                        .fillMaxWidth(0.5f)
+                        .padding(vertical = 16.dp)
+                        .fillMaxWidth(0.45f)
                         .fillMaxHeight()
                 ) {
-                    BarChart(
+                    Surface(
+                        shape = MaterialTheme.shapes.medium,
+                        color = MaterialTheme.colorScheme.secondary,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
                         modifier = Modifier
-                            .fillMaxSize(),
-                        title = "Owner participation (reviews)",
-                        barChartData = githubStats.pullRequestReviewsByOwnerBarData,
-                        labels = githubStats.ownerNames
-                    )
+                            .fillMaxWidth()
+                            .fillMaxHeight(0.5f)
+                    ) {
+                        BarChart(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            title = "Owner participation (reviews)",
+                            barChartData = githubStats.pullRequestReviewsByOwnerBarData,
+                            labels = githubStats.ownerNames
+                        )
+                    }
+
+                    Surface(
+                        shape = MaterialTheme.shapes.medium,
+                        color = MaterialTheme.colorScheme.secondary,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight()
+                    ) {
+                        LineChart(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            title = "Change request in PR",
+                            dataPoints = githubStats.pullRequestCommentsLineData,
+                        )
+                    }
                 }
 
                 Surface(
@@ -213,14 +237,15 @@ fun StaticsItemsScreen(
                     color = MaterialTheme.colorScheme.secondary,
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight()
+                        .padding(vertical = 16.dp)
+                        .fillMaxSize()
                 ) {
-                    LineChart(
+                    PieChart(
                         modifier = Modifier
+                            .padding(16.dp)
                             .fillMaxSize(),
-                        title = "Change request in PR",
-                        dataPoints = githubStats.pullRequestCommentsLineData,
+                        title = "Comments received in PRs",
+                        pieChartData = githubStats.givenCommentsPieChartData,
                     )
                 }
             }

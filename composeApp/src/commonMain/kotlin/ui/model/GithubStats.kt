@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import ui.components.charts.BarChartData
+import ui.components.charts.PieChartData
 import ui.theme.primaryLight
 
 @Immutable
@@ -17,6 +18,29 @@ data class GithubStats(
     val activeDevelopers: Int,
     val ownerNames: List<String>
 ) {
+
+    private val colors: List<Color> by lazy {
+        listOf(
+            Color(0xff45496a),
+            Color(0xff7d8bae),
+            Color(0xffe5857b),
+            Color(0xfff1b2b2),
+            Color(0xffe8ccc7),
+            Color(0xff8e65ab),
+            Color(0xffdc94b0),
+            Color(0xffdc94b0),
+            Color(0xffed884c),
+            Color(0xffbd2630),
+            Color(0xff991b27),
+            Color(0xff9ac5e5),
+            Color(0xff4fb19d),
+            Color(0xffc98c9a),
+            Color(0xff065758),
+            Color(0xffa9d4d6),
+            Color(0xffa9d4d6),
+            Color(0xff82c3c5),
+        )
+    }
 
     val pullRequestByOwnerBarData: BarChartData by lazy {
         val bars = pullRequestByOwner
@@ -55,6 +79,18 @@ data class GithubStats(
 
     val pullRequestCommentsLineData: List<Int> by lazy {
         pullRequestComments.map { it.reviewCommentsCount }
+    }
+
+    val givenCommentsPieChartData: PieChartData by lazy {
+        PieChartData(
+            slices = ownerStats.sortedByDescending { it.commentsByPr }.mapIndexed { index, ownerStats ->
+                PieChartData.Slice(
+                    title = ownerStats.user,
+                    value = ownerStats.commentsByPr,
+                    color = colors[index % colors.size]
+                )
+            }
+        )
     }
 }
 
