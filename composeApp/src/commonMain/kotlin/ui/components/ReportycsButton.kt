@@ -28,11 +28,13 @@ fun ReportycsButton(
     text: String,
     onClick: () -> Unit,
     isLoading: Boolean = false,
+    enabled: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     OutlinedButton(
         shape = MaterialTheme.shapes.medium,
         onClick = onClick,
+        enabled = enabled,
         colors = GithubButtonOutlinedColor(),
         modifier = modifier
     ) {

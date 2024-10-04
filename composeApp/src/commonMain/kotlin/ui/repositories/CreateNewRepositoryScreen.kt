@@ -22,6 +22,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,7 +38,9 @@ import androidx.compose.ui.unit.sp
 import jirareports.composeapp.generated.resources.Res
 import jirareports.composeapp.generated.resources.add_button
 import jirareports.composeapp.generated.resources.add_new_repository_form
+import jirareports.composeapp.generated.resources.add_new_repository_form_helper
 import jirareports.composeapp.generated.resources.ic_analytics_bro
+import jirareports.composeapp.generated.resources.repository_error_field
 import jirareports.composeapp.generated.resources.repository_name
 import jirareports.composeapp.generated.resources.repository_name_placeholder
 import jirareports.composeapp.generated.resources.repository_owner
@@ -92,9 +95,7 @@ fun CreateNewRepositoryScreen(
                         .fillMaxWidth(0.47f)
                         .fillMaxHeight(),
                     isLoading = saveRepositoryState is UiState.Loading,
-                    onClick = { data, owners ->
-                        viewModel.saveRepository(data, owners)
-                    }
+                    viewModel = viewModel
                 )
 
                 Box(
@@ -119,12 +120,14 @@ fun CreateNewRepositoryScreen(
 fun AddRepositoryForm(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
-    onClick: (RepositoryData, owners: String) -> Unit,
+    viewModel: CreateNewRepositoryViewModel,
 ) {
     var ownerText by remember { mutableStateOf("") }
     var repositoryText by remember { mutableStateOf("") }
     var tokenText by remember { mutableStateOf("") }
     var ownersText by remember { mutableStateOf("") }
+
+    val createStateError  by viewModel.createState.collectAsState()
 
     Column(
         modifier = modifier,
@@ -141,7 +144,7 @@ fun AddRepositoryForm(
         )
 
         TextPlaceHolder(
-            text = "Enter your repository details below",
+            text = stringResource(Res.string.add_new_repository_form_helper),
             modifier = Modifier
                 .padding(bottom = 24.dp)
                 .fillMaxWidth()
@@ -160,17 +163,26 @@ fun AddRepositoryForm(
 
         OutlinedTextField(
             value = ownerText,
-            onValueChange = { ownerText = it },
+            onValueChange = {
+                ownerText = it
+                viewModel.updateOwnerErrorState(ownerText.isEmpty())
+            },
             placeholder = { TextPlaceHolder(stringResource(Res.string.repository_owner_placeholder)) },
             textStyle = TextStyle(
                 color = MaterialTheme.colorScheme.onPrimary,
                 fontWeight = FontWeight.Bold
             ),
             singleLine = true,
+            isError = createStateError.hasOwnerError,
+            supportingText = {
+                if (createStateError.hasOwnerError) {
+                    TextErrorHelper(stringResource(Res.string.repository_error_field))
+                }
+            },
             shape = MaterialTheme.shapes.small,
             colors = GithubTextOutlinedColor(),
             modifier = Modifier
-                .padding(bottom = 32.dp)
+                .padding(bottom = 24.dp)
                 .fillMaxWidth()
         )
 
@@ -187,17 +199,26 @@ fun AddRepositoryForm(
 
         OutlinedTextField(
             value = repositoryText,
-            onValueChange = { repositoryText = it },
+            onValueChange = {
+                repositoryText = it
+                viewModel.updateNameErrorState(repositoryText.isEmpty())
+            },
             placeholder = { TextPlaceHolder(stringResource(Res.string.repository_name_placeholder)) },
             textStyle = TextStyle(
                 color = MaterialTheme.colorScheme.onPrimary,
                 fontWeight = FontWeight.Bold
             ),
             singleLine = true,
+            isError = createStateError.hasNameError,
+            supportingText = {
+                if (createStateError.hasNameError) {
+                    TextErrorHelper(stringResource(Res.string.repository_error_field))
+                }
+            },
             shape = MaterialTheme.shapes.small,
             colors = GithubTextOutlinedColor(),
             modifier = Modifier
-                .padding(bottom = 32.dp)
+                .padding(bottom = 24.dp)
                 .fillMaxWidth()
         )
 
@@ -214,7 +235,10 @@ fun AddRepositoryForm(
 
         OutlinedTextField(
             value = tokenText,
-            onValueChange = { tokenText = it },
+            onValueChange = {
+                tokenText = it
+                viewModel.updateTokenErrorState(tokenText.isEmpty())
+            },
             placeholder = { TextPlaceHolder(stringResource(Res.string.repository_token_placeholder)) },
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -223,10 +247,16 @@ fun AddRepositoryForm(
                 fontWeight = FontWeight.Bold
             ),
             singleLine = true,
+            isError = createStateError.hasTokenError,
+            supportingText = {
+                if (createStateError.hasTokenError) {
+                    TextErrorHelper(stringResource(Res.string.repository_error_field))
+                }
+            },
             shape = MaterialTheme.shapes.small,
             colors = GithubTextOutlinedColor(),
             modifier = Modifier
-                .padding(bottom = 32.dp)
+                .padding(bottom = 24.dp)
                 .fillMaxWidth()
         )
 
@@ -243,30 +273,38 @@ fun AddRepositoryForm(
 
         OutlinedTextField(
             value = ownersText,
-            onValueChange = { ownersText = it },
+            onValueChange = {
+                ownersText = it
+                viewModel.updateCodeOwnerErrorState(ownersText.isEmpty())
+            },
             placeholder = { TextPlaceHolder(stringResource(Res.string.repository_owners_placeholder)) },
             textStyle = TextStyle(
                 color = MaterialTheme.colorScheme.onPrimary,
                 fontWeight = FontWeight.Bold
             ),
             singleLine = true,
+            isError = createStateError.hasCodeOwnersError,
             shape = MaterialTheme.shapes.small,
             colors = GithubTextOutlinedColor(),
             supportingText = {
-                Text(
-                    text = stringResource(Res.string.repository_owners_helper),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Light,
-                    fontStyle = FontStyle.Italic,
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                        .fillMaxWidth()
-                )
+                if (createStateError.hasCodeOwnersError) {
+                    TextErrorHelper(stringResource(Res.string.repository_error_field))
+                } else {
+                    Text(
+                        text = stringResource(Res.string.repository_owners_helper),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Light,
+                        fontStyle = FontStyle.Italic,
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .fillMaxWidth()
+                    )
+                }
             },
             modifier = Modifier
-                .padding(bottom = 48.dp)
+                .padding(bottom = 32.dp)
                 .fillMaxWidth()
         )
 
@@ -277,7 +315,7 @@ fun AddRepositoryForm(
             text = stringResource(Res.string.add_button),
             isLoading = isLoading,
             onClick = {
-                onClick(
+                viewModel.saveRepository(
                     RepositoryData(
                         owner = ownerText,
                         repository = repositoryText,
@@ -300,3 +338,15 @@ fun TextPlaceHolder(text: String, modifier: Modifier = Modifier) {
         modifier = modifier
     )
 }
+
+@Composable
+fun TextErrorHelper(text: String, modifier: Modifier = Modifier) {
+    Text(
+        text = text,
+        color = MaterialTheme.colorScheme.error,
+        fontSize = 12.sp,
+        fontWeight = FontWeight.Light,
+        modifier = modifier
+    )
+}
+
