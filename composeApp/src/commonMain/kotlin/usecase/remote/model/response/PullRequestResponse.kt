@@ -9,7 +9,9 @@ data class PullRequestResponse(
     val title: String,
     val user: User,
     @SerialName("requested_reviewers")
-    val requestedReviews: List<User>
+    val requestedReviews: List<User>,
+    @SerialName("merged_at")
+    val mergedAt: String?
 )
 
 @Serializable

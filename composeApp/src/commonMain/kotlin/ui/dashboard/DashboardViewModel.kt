@@ -7,6 +7,8 @@ import repository.PullRequestRepository
 import repository.model.PullRequestData
 import repository.model.RepositoryData
 import ui.model.UiState
+import usecase.model.ErrorStatus
+import usecase.model.ResponseStatus
 import usecase.remote.model.request.StatsRequest
 
 class DashboardViewModel(
@@ -42,9 +44,26 @@ class DashboardViewModel(
                 statRequest = StatsRequest()
             )
         }.onSuccess { pullRequest ->
-            _pullRequestState.value = UiState.Success(pullRequest)
+            handlePullRequestLoad(pullRequest)
         }.onFailure {
             _pullRequestState.value = UiState.Failure
+        }
+    }
+
+    private fun handlePullRequestLoad(status: ResponseStatus<List<PullRequestData>>) {
+        when (status) {
+            is ResponseStatus.Error -> {
+                _pullRequestState.value = when (status.status) {
+                    ErrorStatus.NO_INTERNET -> UiState.NoInternet
+                    ErrorStatus.UNAUTHORIZED -> UiState.Unauthorized
+                    ErrorStatus.EMPTY -> UiState.Success(emptyList())
+                    else -> UiState.Failure
+                }
+            }
+
+            is ResponseStatus.Success -> {
+                _pullRequestState.value = UiState.Success(status.response)
+            }
         }
     }
 

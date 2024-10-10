@@ -6,8 +6,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun FailureScreen(modifier: Modifier) {
+fun FailureScreen(
+    modifier: Modifier,
+    message: String
+) {
     Box(modifier = modifier) {
-        Text("Ha ocurrido un error...")
+        Text(message)
     }
 }

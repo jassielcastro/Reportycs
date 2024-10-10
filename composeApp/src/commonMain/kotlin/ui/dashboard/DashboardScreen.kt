@@ -93,10 +93,6 @@ fun DashboardScreen(
         modifier = modifier
     ) { state ->
         when (state) {
-            UiState.Failure -> {
-                FailureScreen(modifier = Modifier.fillMaxSize())
-            }
-
             UiState.Idle -> {
                 IdleScreen(modifier = Modifier.fillMaxSize())
             }
@@ -120,6 +116,13 @@ fun DashboardScreen(
                     viewModel = viewModel,
                     onGenerateReports = onGenerateReports,
                     addNewRepository = addNewRepository
+                )
+            }
+
+            else -> {
+                FailureScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    message = "Ooooh no... algo raro ha pasdo..."
                 )
             }
         }
@@ -256,7 +259,24 @@ fun PullRequestScreen(
     ) { state ->
         when (state) {
             UiState.Failure -> {
-                FailureScreen(modifier = Modifier.fillMaxSize())
+                FailureScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    message = "Ooooh no... algo raro ha pasdo..."
+                )
+            }
+
+            UiState.Unauthorized -> {
+                FailureScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    message = "Ooooh no... Creo que no estás autorizado para realizar esta acción"
+                )
+            }
+
+            UiState.NoInternet -> {
+                FailureScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    message = "Ooooh no... Creo que no tienes interneto!"
+                )
             }
 
             UiState.Idle -> {

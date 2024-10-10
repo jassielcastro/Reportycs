@@ -12,7 +12,9 @@ import repository.model.PullRequestData
 import repository.model.RepositoryData
 import repository.model.StaticData
 import usecase.local.LocalPullRequestUseCase
+import usecase.model.ErrorStatus
 import usecase.model.OwnerDto
+import usecase.model.ResponseStatus
 import usecase.remote.RemotePullRequestUseCase
 import usecase.remote.model.request.StatsRequest
 
@@ -71,10 +73,12 @@ class PullRequestRepository(
         repositoryData: RepositoryData,
         statRequest: StatsRequest,
         reload: Boolean = false
-    ): List<PullRequestData> {
+    ): ResponseStatus<List<PullRequestData>> {
         val repositoryRequest = repositoryData.toRepositoryRequest()
         val minCount = getPRsSizeToAnalyse(repositoryId = repositoryRequest.id)
         val owners = getCodeOwners(repositoryData).map { it.name }
+
+        var forceReload = true
 
         fun loadSavedPullRequest() =
             localUseCase.getPullRequest(repositoryId = repositoryRequest.id).map { pr ->
@@ -82,24 +86,39 @@ class PullRequestRepository(
             }
 
         if (!localUseCase.hasPullRequestUpdated() || reload) {
-            val pullRequest = remoteUseCase.getPullRequest(repositoryRequest, statRequest).filter {
-                owners.contains(it.user.name)
-            }
+            val remotePullRequest = remoteUseCase.getPullRequest(repositoryRequest, statRequest)
 
-            if (pullRequest.isEmpty()) {
-                return loadSavedPullRequest()
-            }
-
-            localUseCase.addPullRequest(
-                pullRequest = pullRequest.map { pr ->
-                    pr.toPullRequestDto(repositoryRequest.id)
+            when (remotePullRequest) {
+                is ResponseStatus.Error -> {
+                    when (remotePullRequest.status) {
+                        ErrorStatus.EMPTY -> forceReload = false
+                        else -> {
+                            return ResponseStatus.Error(remotePullRequest.status)
+                        }
+                    }
                 }
-            )
+
+                is ResponseStatus.Success -> {
+                    val pullRequest = remotePullRequest.response.filter {
+                        owners.contains(it.user.name)
+                    }
+
+                    if (pullRequest.isNotEmpty()) {
+                        localUseCase.addPullRequest(
+                            pullRequest = pullRequest.map { pr ->
+                                pr.toPullRequestDto(repositoryRequest.id)
+                            }
+                        )
+                    } else {
+                        forceReload = false
+                    }
+                }
+            }
         }
 
         val localPrs = loadSavedPullRequest()
 
-        if (localPrs.size >= minCount) {
+        if (localPrs.size >= minCount || !forceReload) {
             localUseCase.updateLastDateOfInsertions()
         } else {
             getPullRequest(
@@ -109,7 +128,11 @@ class PullRequestRepository(
             )
         }
 
-        return localPrs
+        if (localPrs.isEmpty()) {
+            return ResponseStatus.Error(ErrorStatus.EMPTY)
+        }
+
+        return ResponseStatus.Success(localPrs)
     }
 
     suspend fun fetchPullRequestApproves(repositoryData: RepositoryData) {
@@ -119,10 +142,16 @@ class PullRequestRepository(
             val hasApproves = localUseCase.hasApproves(pr.id)
             if (!hasApproves) {
                 val approves = remoteUseCase.getPullRequestApproves(repositoryRequest, pr.id)
-                localUseCase.addApprovesByPR(
-                    pullRequestId = pr.id,
-                    approves = approves.map { approve -> approve.user.name }
-                )
+                when (approves) {
+                    is ResponseStatus.Success -> {
+                        localUseCase.addApprovesByPR(
+                            pullRequestId = pr.id,
+                            approves = approves.response.map { approve -> approve.user.name }
+                        )
+                    }
+
+                    else -> Unit
+                }
             }
         }
     }
@@ -133,12 +162,17 @@ class PullRequestRepository(
         pullRequest.asyncMap { pr ->
             val hasComments = localUseCase.hasComments(pr.id)
             if (!hasComments) {
-                val info = remoteUseCase.getPullRequestInfo(repositoryRequest, pr.id)
-                if (info.merged) {
-                    localUseCase.addCommentsByPR(
-                        pullRequestId = pr.id,
-                        commentsCount = info.reviewComments
-                    )
+                when (val info = remoteUseCase.getPullRequestInfo(repositoryRequest, pr.id)) {
+                    is ResponseStatus.Success -> {
+                        if (info.response.merged) {
+                            localUseCase.addCommentsByPR(
+                                pullRequestId = pr.id,
+                                commentsCount = info.response.reviewComments
+                            )
+                        }
+                    }
+
+                    else -> Unit
                 }
             }
         }
