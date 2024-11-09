@@ -76,6 +76,11 @@ DELETE FROM
 WHERE
     Repository.id = ?;
 
+updateRepositoryToken:
+UPDATE Repository
+    SET token = ?
+WHERE Repository.id = ?;
+
 -- Owners CRUD
 
 insertOwners:

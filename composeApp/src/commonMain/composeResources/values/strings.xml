@@ -21,8 +21,15 @@
 
     <string name="dashboard_title">Dashboard</string>
     <string name="generate_reports_button">Generate report</string>
+    <string name="restart_token_button">Restart Token</string>
     <string name="dashboard_repositories_title">All repositories</string>
     <string name="dashboard_add_new_repositories_button">Add new Repository</string>
+
+    <string name="refresh_token_screen_title">Update the Github token</string>
+    <string name="refresh_token_screen_subtitle">Changing this token could affect the new requests... so be careful!</string>
+    <string name="refresh_token_screen_helper">New Github Token</string>
+    <string name="refresh_token_screen_placeholder">Token</string>
+    <string name="refresh_token_screen_button">Update</string>
 
     <string name="loading_info_message_1">Summoning the GitHub spirits... PRs inbound!</string>
     <string name="loading_info_message_2">Hold on, reeling in those precious PRs!</string>

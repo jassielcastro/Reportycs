@@ -41,6 +41,10 @@ class PullRequestRepository(
         localUseCase.removeRepository(repositoryId)
     }
 
+    fun updateRepositoryToken(repositoryId: Int, newToken: String) {
+        localUseCase.updateRepositoryToken(repositoryId, newToken)
+    }
+
     fun setRepositoryMetrics(repositoryId: Int, prsToAnalyze: Int) {
         localUseCase.updatePRSizeToAnalyze(
             repositoryId = repositoryId,

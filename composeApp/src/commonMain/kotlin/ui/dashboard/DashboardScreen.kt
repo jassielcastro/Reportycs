@@ -21,15 +21,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,14 +55,16 @@ import jirareports.composeapp.generated.resources.loading_info_message_2
 import jirareports.composeapp.generated.resources.loading_info_message_3
 import jirareports.composeapp.generated.resources.loading_info_message_4
 import jirareports.composeapp.generated.resources.loading_info_message_5
+import jirareports.composeapp.generated.resources.restart_token_button
 import jirareports.composeapp.generated.resources.team_goals_rafiki
 import jirareports.composeapp.generated.resources.version_control_bro
 import jirareports.composeapp.generated.resources.version_control_rafiki
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.rememberKoinInject
 import repository.model.PullRequestData
 import repository.model.RepositoryData
-import ui.components.DeleteButton
+import ui.components.IconButton
 import ui.components.DrawerItem
 import ui.components.FailureScreen
 import ui.components.IdleScreen
@@ -66,8 +73,10 @@ import ui.components.LoadingScreen
 import ui.components.NormalReportycsButton
 import ui.components.PullRequestItem
 import ui.components.ReportycsButton
+import ui.dashboard.token.RestartTokenScreen
 import ui.model.UiState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
     modifier: Modifier = Modifier,
@@ -77,53 +86,87 @@ fun DashboardScreen(
     val viewModel = rememberKoinInject<DashboardViewModel>()
     val repositoriesState by viewModel.repositoriesState.collectAsState()
 
+    val sheetState = rememberModalBottomSheetState()
+    var selectedRepositoryToUpdateToken by remember { mutableStateOf(-1) }
+    val scope = rememberCoroutineScope()
+
     LaunchedEffect(Unit) {
         viewModel.loadRepositories()
     }
 
-    AnimatedContent(
-        targetState = repositoriesState,
-        transitionSpec = {
-            fadeIn() + slideInVertically(animationSpec = spring(
-                dampingRatio = 0.8f,
-                stiffness = Spring.StiffnessLow
-            ), initialOffsetY = { fullHeight -> fullHeight }) togetherWith
-                    fadeOut(animationSpec = tween(200))
-        },
-        modifier = modifier
-    ) { state ->
-        when (state) {
-            UiState.Idle -> {
-                IdleScreen(modifier = Modifier.fillMaxSize())
-            }
+    Scaffold { padding ->
+        AnimatedContent(
+            targetState = repositoriesState,
+            transitionSpec = {
+                fadeIn() + slideInVertically(animationSpec = spring(
+                    dampingRatio = 0.8f,
+                    stiffness = Spring.StiffnessLow
+                ), initialOffsetY = { fullHeight -> fullHeight }) togetherWith
+                        fadeOut(animationSpec = tween(200))
+            },
+            modifier = modifier
+                .padding(padding)
+        ) { state ->
+            when (state) {
+                UiState.Idle -> {
+                    IdleScreen(modifier = Modifier.fillMaxSize())
+                }
 
-            UiState.Loading -> {
-                LoadingScreen(
-                    modifier = Modifier.fillMaxSize(),
-                    items = listOf(
-                        LoadingItem(Res.drawable.analytics_pana, Res.string.loading_info_message_1),
-                        LoadingItem(
-                            Res.drawable.analytics_rafiki,
-                            Res.string.loading_info_message_2
+                UiState.Loading -> {
+                    LoadingScreen(
+                        modifier = Modifier.fillMaxSize(),
+                        items = listOf(
+                            LoadingItem(
+                                Res.drawable.analytics_pana,
+                                Res.string.loading_info_message_1
+                            ),
+                            LoadingItem(
+                                Res.drawable.analytics_rafiki,
+                                Res.string.loading_info_message_2
+                            )
                         )
                     )
-                )
-            }
+                }
 
-            is UiState.Success -> {
-                DashboardRepositoriesScreen(
-                    repositories = state.data,
-                    viewModel = viewModel,
-                    onGenerateReports = onGenerateReports,
-                    addNewRepository = addNewRepository
-                )
-            }
+                is UiState.Success -> {
+                    DashboardRepositoriesScreen(
+                        repositories = state.data,
+                        viewModel = viewModel,
+                        onGenerateReports = onGenerateReports,
+                        addNewRepository = addNewRepository,
+                        onRestartTokenClicked = { repositorySelected ->
+                            selectedRepositoryToUpdateToken = repositorySelected
+                        }
+                    )
+                }
 
-            else -> {
-                FailureScreen(
-                    modifier = Modifier.fillMaxSize(),
-                    message = "Ooooh no... algo raro ha pasdo..."
-                )
+                else -> {
+                    FailureScreen(
+                        modifier = Modifier.fillMaxSize(),
+                        message = "Ooooh no... algo raro ha pasdo..."
+                    )
+                }
+            }
+        }
+
+        if (selectedRepositoryToUpdateToken > 0) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    selectedRepositoryToUpdateToken = -1
+                },
+                containerColor = MaterialTheme.colorScheme.primary,
+                sheetState = sheetState
+            ) {
+                RestartTokenScreen(selectedRepositoryToUpdateToken) {
+                    scope.launch {
+                        viewModel.loadRepositories()
+                        sheetState.hide()
+                    }.invokeOnCompletion {
+                        if (!sheetState.isVisible) {
+                            selectedRepositoryToUpdateToken = -1
+                        }
+                    }
+                }
             }
         }
     }
@@ -135,6 +178,7 @@ fun DashboardRepositoriesScreen(
     modifier: Modifier = Modifier,
     viewModel: DashboardViewModel,
     onGenerateReports: (RepositoryData) -> Unit,
+    onRestartTokenClicked: (repositorySelected: Int) -> Unit,
     addNewRepository: () -> Unit
 ) {
 
@@ -165,6 +209,9 @@ fun DashboardRepositoriesScreen(
                 .fillMaxSize(),
             viewModel = viewModel,
             repositorySelected = repositorySelected,
+            onRestartTokenClicked = {
+                onRestartTokenClicked(repositorySelected.id)
+            },
             onGenerateReportsClicked = { repo ->
                 onGenerateReports(repo)
             }
@@ -177,6 +224,7 @@ fun RepositoryHeader(
     modifier: Modifier = Modifier,
     pullRequestToAnalyze: () -> Int,
     onGenerateReportsClicked: () -> Unit,
+    onRestartTokenClicked: () -> Unit,
     onDeleteClicked: () -> Unit
 ) {
     Row(
@@ -190,7 +238,7 @@ fun RepositoryHeader(
         Column(
             modifier = Modifier
                 .padding(top = 4.dp, start = 16.dp)
-                .fillMaxWidth(0.65f)
+                .fillMaxWidth(0.45f)
         ) {
             Text(
                 text = stringResource(Res.string.dashboard_title),
@@ -212,7 +260,7 @@ fun RepositoryHeader(
         NormalReportycsButton(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
-                .fillMaxWidth(0.8f)
+                .fillMaxWidth(0.4f)
                 .height(48.dp),
             text = stringResource(Res.string.generate_reports_button),
             onClick = {
@@ -220,7 +268,18 @@ fun RepositoryHeader(
             }
         )
 
-        DeleteButton(
+        NormalReportycsButton(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth(0.6f)
+                .height(48.dp),
+            text = stringResource(Res.string.restart_token_button),
+            onClick = {
+                onRestartTokenClicked()
+            }
+        )
+
+        IconButton(
             icon = Res.drawable.ic_delete_forever,
             modifier = Modifier
                 .padding(horizontal = 16.dp)
@@ -238,7 +297,8 @@ fun PullRequestScreen(
     modifier: Modifier = Modifier,
     viewModel: DashboardViewModel,
     repositorySelected: RepositoryData?,
-    onGenerateReportsClicked: (RepositoryData) -> Unit
+    onGenerateReportsClicked: (RepositoryData) -> Unit,
+    onRestartTokenClicked: () -> Unit,
 ) {
     val pullRequestState by viewModel.pullRequestState.collectAsState()
 
@@ -321,6 +381,7 @@ fun PullRequestScreen(
                             onGenerateReportsClicked(repositorySelected)
                         }
                     },
+                    onRestartTokenClicked = onRestartTokenClicked,
                     onDeleteClicked = {
                         if (repositorySelected != null) {
                             viewModel.deleteRepository(repositorySelected.id)
@@ -339,6 +400,7 @@ fun PullRequestListScreen(
     pullRequest: List<PullRequestData>,
     pullRequestToAnalyze: () -> Int,
     onGenerateReportsClicked: () -> Unit,
+    onRestartTokenClicked: () -> Unit,
     onDeleteClicked: () -> Unit,
 ) {
     Surface(
@@ -359,6 +421,7 @@ fun PullRequestListScreen(
                 RepositoryHeader(
                     pullRequestToAnalyze = pullRequestToAnalyze,
                     onGenerateReportsClicked = onGenerateReportsClicked,
+                    onRestartTokenClicked = onRestartTokenClicked,
                     onDeleteClicked = onDeleteClicked
                 )
             }

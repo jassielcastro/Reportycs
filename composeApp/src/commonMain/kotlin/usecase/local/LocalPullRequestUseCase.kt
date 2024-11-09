@@ -43,6 +43,10 @@ class LocalPullRequestUseCase(
         dataBase.removeRepository(repositoryId)
     }
 
+    fun updateRepositoryToken(repositoryId: Int, newToken: String) {
+        dataBase.updateRepositoryToken(repositoryId, newToken)
+    }
+
     /**
      * Owners CRUD
      */

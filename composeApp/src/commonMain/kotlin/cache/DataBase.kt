@@ -57,6 +57,11 @@ class DataBase(
         dbQuery.deleteRepository(repositoryId.toLong())
     }
 
+    fun updateRepositoryToken(repositoryId: Int, newToken: String) {
+        dbQuery.setDateOfInsertion(null)
+        dbQuery.updateRepositoryToken(newToken, repositoryId.toLong())
+    }
+
     /**
      * Owners CRUD
      */

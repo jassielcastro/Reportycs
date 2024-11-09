@@ -10,10 +10,11 @@ import org.jetbrains.compose.resources.painterResource
 import ui.theme.InverseDeleteButtonOutlinedColor
 
 @Composable
-fun DeleteButton(
+fun IconButton(
     icon: DrawableResource,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    contentDescription: String = "Icon button"
 ) {
     OutlinedButton(
         shape = MaterialTheme.shapes.small,
@@ -23,7 +24,7 @@ fun DeleteButton(
     ) {
         Icon(
             painter = painterResource(icon),
-            contentDescription = "Delete button"
+            contentDescription = contentDescription
         )
     }
 }
