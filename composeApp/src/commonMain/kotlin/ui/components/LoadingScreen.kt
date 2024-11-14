@@ -1,13 +1,10 @@
 package ui.components
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,47 +19,72 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import jirareports.composeapp.generated.resources.Res
+import jirareports.composeapp.generated.resources.loading_info_message_loading
 import kotlinx.coroutines.delay
-import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-
-data class LoadingItem(val imageResId: DrawableResource, val description: StringResource)
+import ui.components.dots.ConnectedDotsScreen
 
 @Composable
 fun LoadingScreen(
     modifier: Modifier,
-    items: List<LoadingItem>,
+    loadingText: List<StringResource>,
     displayTime: Long = 1_500L
+) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
+
+        ConnectedDotsScreen(
+            modifier = Modifier
+                .fillMaxSize(),
+            dotsSize = 300,
+            dimension = 1,
+            dotColors = listOf(
+                MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f)
+            )
+        )
+
+        LoadingText(loadingText, displayTime)
+    }
+}
+
+@Composable
+private fun LoadingText(
+    loadingText: List<StringResource>,
+    displayTime: Long = 2_500L
 ) {
     var currentItemIndex by remember { mutableStateOf(0) }
 
     LaunchedEffect(currentItemIndex) {
         delay(displayTime)
-        currentItemIndex = (currentItemIndex + 1) % items.size
+        currentItemIndex = (currentItemIndex + 1) % loadingText.size
     }
 
-    val currentItem = items[currentItemIndex]
+    val currentItem = loadingText[currentItemIndex]
 
     Column(
-        modifier = modifier
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            painter = painterResource(currentItem.imageResId),
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.7f)
-        )
-        Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = stringResource(currentItem.description),
-            color = MaterialTheme.colorScheme.primary,
-            fontSize = 24.sp,
+            text = stringResource(Res.string.loading_info_message_loading),
+            color = MaterialTheme.colorScheme.onPrimary,
+            fontSize = 34.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+        )
+
+        Spacer(
+            modifier = Modifier
+                .size(14.dp)
+        )
+
+        Text(
+            text = stringResource(currentItem),
+            color = MaterialTheme.colorScheme.onPrimary,
+            fontSize = 34.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
         )

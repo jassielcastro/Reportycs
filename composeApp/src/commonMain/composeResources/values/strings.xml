@@ -31,6 +31,7 @@
     <string name="refresh_token_screen_placeholder">Token</string>
     <string name="refresh_token_screen_button">Update</string>
 
+    <string name="loading_info_message_loading">Loading...</string>
     <string name="loading_info_message_1">Summoning the GitHub spirits... PRs inbound!</string>
     <string name="loading_info_message_2">Hold on, reeling in those precious PRs!</string>
     <string name="loading_info_message_3">Buckle up! GitHub PRs are rolling in!</string>

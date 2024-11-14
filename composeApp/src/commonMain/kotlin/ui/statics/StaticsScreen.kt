@@ -27,8 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import jirareports.composeapp.generated.resources.Res
-import jirareports.composeapp.generated.resources.analytics_pana
-import jirareports.composeapp.generated.resources.analytics_rafiki
 import jirareports.composeapp.generated.resources.ic_git_merge
 import jirareports.composeapp.generated.resources.ic_team
 import jirareports.composeapp.generated.resources.loading_info_message_1
@@ -36,14 +34,10 @@ import jirareports.composeapp.generated.resources.loading_info_message_2
 import jirareports.composeapp.generated.resources.loading_info_message_3
 import jirareports.composeapp.generated.resources.loading_info_message_4
 import jirareports.composeapp.generated.resources.loading_info_message_5
-import jirareports.composeapp.generated.resources.team_goals_rafiki
-import jirareports.composeapp.generated.resources.version_control_bro
-import jirareports.composeapp.generated.resources.version_control_rafiki
 import org.koin.compose.rememberKoinInject
 import ui.components.CountersItem
 import ui.components.FailureScreen
 import ui.components.IdleScreen
-import ui.components.LoadingItem
 import ui.components.LoadingScreen
 import ui.components.charts.BarChart
 import ui.components.charts.LineChart
@@ -104,24 +98,12 @@ fun StaticsScreen(
             UiState.Loading -> {
                 LoadingScreen(
                     modifier = Modifier.fillMaxSize(),
-                    items = listOf(
-                        LoadingItem(Res.drawable.analytics_pana, Res.string.loading_info_message_1),
-                        LoadingItem(
-                            Res.drawable.analytics_rafiki,
-                            Res.string.loading_info_message_2
-                        ),
-                        LoadingItem(
-                            Res.drawable.team_goals_rafiki,
-                            Res.string.loading_info_message_3
-                        ),
-                        LoadingItem(
-                            Res.drawable.version_control_bro,
-                            Res.string.loading_info_message_4
-                        ),
-                        LoadingItem(
-                            Res.drawable.version_control_rafiki,
-                            Res.string.loading_info_message_5
-                        )
+                    loadingText = listOf(
+                        Res.string.loading_info_message_1,
+                        Res.string.loading_info_message_2,
+                        Res.string.loading_info_message_3,
+                        Res.string.loading_info_message_4,
+                        Res.string.loading_info_message_5
                     )
                 )
             }

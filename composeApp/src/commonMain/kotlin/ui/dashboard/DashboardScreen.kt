@@ -43,8 +43,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import jirareports.composeapp.generated.resources.Res
-import jirareports.composeapp.generated.resources.analytics_pana
-import jirareports.composeapp.generated.resources.analytics_rafiki
 import jirareports.composeapp.generated.resources.dashboard_add_new_repositories_button
 import jirareports.composeapp.generated.resources.dashboard_repositories_title
 import jirareports.composeapp.generated.resources.dashboard_title
@@ -56,19 +54,15 @@ import jirareports.composeapp.generated.resources.loading_info_message_3
 import jirareports.composeapp.generated.resources.loading_info_message_4
 import jirareports.composeapp.generated.resources.loading_info_message_5
 import jirareports.composeapp.generated.resources.restart_token_button
-import jirareports.composeapp.generated.resources.team_goals_rafiki
-import jirareports.composeapp.generated.resources.version_control_bro
-import jirareports.composeapp.generated.resources.version_control_rafiki
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.rememberKoinInject
 import repository.model.PullRequestData
 import repository.model.RepositoryData
-import ui.components.IconButton
 import ui.components.DrawerItem
 import ui.components.FailureScreen
+import ui.components.IconButton
 import ui.components.IdleScreen
-import ui.components.LoadingItem
 import ui.components.LoadingScreen
 import ui.components.NormalReportycsButton
 import ui.components.PullRequestItem
@@ -115,15 +109,12 @@ fun DashboardScreen(
                 UiState.Loading -> {
                     LoadingScreen(
                         modifier = Modifier.fillMaxSize(),
-                        items = listOf(
-                            LoadingItem(
-                                Res.drawable.analytics_pana,
-                                Res.string.loading_info_message_1
-                            ),
-                            LoadingItem(
-                                Res.drawable.analytics_rafiki,
-                                Res.string.loading_info_message_2
-                            )
+                        loadingText = listOf(
+                            Res.string.loading_info_message_1,
+                            Res.string.loading_info_message_2,
+                            Res.string.loading_info_message_3,
+                            Res.string.loading_info_message_4,
+                            Res.string.loading_info_message_5
                         )
                     )
                 }
@@ -346,24 +337,12 @@ fun PullRequestScreen(
             UiState.Loading -> {
                 LoadingScreen(
                     modifier = Modifier.fillMaxSize(),
-                    items = listOf(
-                        LoadingItem(Res.drawable.analytics_pana, Res.string.loading_info_message_1),
-                        LoadingItem(
-                            Res.drawable.analytics_rafiki,
-                            Res.string.loading_info_message_2
-                        ),
-                        LoadingItem(
-                            Res.drawable.team_goals_rafiki,
-                            Res.string.loading_info_message_3
-                        ),
-                        LoadingItem(
-                            Res.drawable.version_control_bro,
-                            Res.string.loading_info_message_4
-                        ),
-                        LoadingItem(
-                            Res.drawable.version_control_rafiki,
-                            Res.string.loading_info_message_5
-                        )
+                    loadingText = listOf(
+                        Res.string.loading_info_message_1,
+                        Res.string.loading_info_message_2,
+                        Res.string.loading_info_message_3,
+                        Res.string.loading_info_message_4,
+                        Res.string.loading_info_message_5
                     )
                 )
             }

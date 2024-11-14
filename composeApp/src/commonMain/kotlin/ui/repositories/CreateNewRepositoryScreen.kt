@@ -1,7 +1,5 @@
 package ui.repositories
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +20,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +36,6 @@ import jirareports.composeapp.generated.resources.Res
 import jirareports.composeapp.generated.resources.add_button
 import jirareports.composeapp.generated.resources.add_new_repository_form
 import jirareports.composeapp.generated.resources.add_new_repository_form_helper
-import jirareports.composeapp.generated.resources.ic_analytics_bro
 import jirareports.composeapp.generated.resources.repository_error_field
 import jirareports.composeapp.generated.resources.repository_name
 import jirareports.composeapp.generated.resources.repository_name_placeholder
@@ -50,11 +46,11 @@ import jirareports.composeapp.generated.resources.repository_owners_helper
 import jirareports.composeapp.generated.resources.repository_owners_placeholder
 import jirareports.composeapp.generated.resources.repository_token
 import jirareports.composeapp.generated.resources.repository_token_placeholder
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.rememberKoinInject
 import repository.model.RepositoryData
 import ui.components.ReportycsButton
+import ui.components.dots.ConnectedDotsScreen
 import ui.model.UiState
 import ui.theme.GithubTextOutlinedColor
 
@@ -98,19 +94,17 @@ fun CreateNewRepositoryScreen(
                     viewModel = viewModel
                 )
 
-                Box(
+                ConnectedDotsScreen(
                     modifier = Modifier
-                        .padding(24.dp)
                         .fillMaxSize()
-                        .clip(MaterialTheme.shapes.medium)
-                        .background(MaterialTheme.colorScheme.onPrimary)
-                ) {
-                    Image(
-                        painterResource(Res.drawable.ic_analytics_bro),
-                        contentDescription = "",
-                        modifier = Modifier.fillMaxSize()
+                        .clip(MaterialTheme.shapes.medium),
+                    dotsSize = 100,
+                    dimension = 2,
+                    dotColors = listOf(
+                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.25f),
+                        MaterialTheme.colorScheme.onPrimary
                     )
-                }
+                )
             }
         }
     }
