@@ -25,6 +25,11 @@
     <string name="dashboard_repositories_title">All repositories</string>
     <string name="dashboard_add_new_repositories_button">Add new Repository</string>
 
+    <string name="general_no_internet_error_message">Ooooh no... something weird happened...</string>
+    <string name="general_unauthorized_error_message">Ooooh no... I think you are not authorized to perform this action, try refreshing your token.</string>
+    <string name="general_failure_error_message">Ooooh no... I think you don't have internet!</string>
+    <string name="general_retry_button">Retry</string>
+
     <string name="refresh_token_screen_title">Update the Github token</string>
     <string name="refresh_token_screen_subtitle">Changing this token could affect the new requests... so be careful!</string>
     <string name="refresh_token_screen_helper">New Github Token</string>

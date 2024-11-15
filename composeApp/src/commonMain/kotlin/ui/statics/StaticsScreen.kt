@@ -24,9 +24,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import jirareports.composeapp.generated.resources.Res
+import jirareports.composeapp.generated.resources.general_failure_error_message
+import jirareports.composeapp.generated.resources.general_no_internet_error_message
+import jirareports.composeapp.generated.resources.general_unauthorized_error_message
 import jirareports.composeapp.generated.resources.ic_git_merge
 import jirareports.composeapp.generated.resources.ic_team
 import jirareports.composeapp.generated.resources.loading_info_message_1
@@ -34,6 +38,7 @@ import jirareports.composeapp.generated.resources.loading_info_message_2
 import jirareports.composeapp.generated.resources.loading_info_message_3
 import jirareports.composeapp.generated.resources.loading_info_message_4
 import jirareports.composeapp.generated.resources.loading_info_message_5
+import kotlinx.coroutines.launch
 import org.koin.compose.rememberKoinInject
 import ui.components.CountersItem
 import ui.components.FailureScreen
@@ -53,6 +58,7 @@ fun StaticsScreen(
 
     val viewModel = rememberKoinInject<StaticsViewModel>()
     val pullRequestInfoState by viewModel.pullRequestInfoState.collectAsState()
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.fetchPullRequestInformation(repositoryName)
@@ -73,22 +79,34 @@ fun StaticsScreen(
             UiState.Failure -> {
                 FailureScreen(
                     modifier = Modifier.fillMaxSize(),
-                    message = "Ooooh no... algo raro ha pasdo..."
-                )
+                    message = Res.string.general_failure_error_message
+                ) {
+                    scope.launch {
+                        viewModel.fetchPullRequestInformation(repositoryName)
+                    }
+                }
             }
 
             UiState.Unauthorized -> {
                 FailureScreen(
                     modifier = Modifier.fillMaxSize(),
-                    message = "Ooooh no... Creo que no estás autorizado para realizar esta acción"
-                )
+                    message = Res.string.general_unauthorized_error_message
+                ) {
+                    scope.launch {
+                        viewModel.fetchPullRequestInformation(repositoryName)
+                    }
+                }
             }
 
             UiState.NoInternet -> {
                 FailureScreen(
                     modifier = Modifier.fillMaxSize(),
-                    message = "Ooooh no... Creo que no tienes interneto!"
-                )
+                    message = Res.string.general_no_internet_error_message
+                ) {
+                    scope.launch {
+                        viewModel.fetchPullRequestInformation(repositoryName)
+                    }
+                }
             }
 
             UiState.Idle -> {

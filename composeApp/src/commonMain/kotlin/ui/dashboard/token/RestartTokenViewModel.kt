@@ -10,6 +10,7 @@ class RestartTokenViewModel(
 ) : ViewModel() {
     fun updateRepositoryToken(repositoryId: Int, newToken: String) {
         val encryptedToken = cryptoHandler.encrypt(newToken)
+        repository.clearRepositoryPullRequest(repositoryId)
         repository.updateRepositoryToken(repositoryId, encryptedToken)
     }
 }

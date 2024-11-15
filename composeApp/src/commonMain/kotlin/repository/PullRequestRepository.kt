@@ -45,6 +45,10 @@ class PullRequestRepository(
         localUseCase.updateRepositoryToken(repositoryId, newToken)
     }
 
+    fun clearRepositoryPullRequest(repositoryId: Int) {
+        localUseCase.clearPullRequest(repositoryId)
+    }
+
     fun setRepositoryMetrics(repositoryId: Int, prsToAnalyze: Int) {
         localUseCase.updatePRSizeToAnalyze(
             repositoryId = repositoryId,
@@ -78,6 +82,10 @@ class PullRequestRepository(
         statRequest: StatsRequest,
         reload: Boolean = false
     ): ResponseStatus<List<PullRequestData>> {
+        if (localUseCase.needResetPullRequest()) {
+            localUseCase.clearPullRequest(repositoryData.id)
+        }
+
         val repositoryRequest = repositoryData.toRepositoryRequest()
         val minCount = getPRsSizeToAnalyse(repositoryId = repositoryRequest.id)
         val owners = getCodeOwners(repositoryData).map { it.name }

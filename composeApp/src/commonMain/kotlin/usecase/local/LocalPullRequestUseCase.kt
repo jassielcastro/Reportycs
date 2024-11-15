@@ -15,6 +15,9 @@ import usecase.model.OwnerDto
 import usecase.model.PullRequestDto
 import usecase.model.RepositoryDto
 import usecase.model.StaticDto
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 class LocalPullRequestUseCase(
     private val dataBase: DataBase
@@ -96,6 +99,10 @@ class LocalPullRequestUseCase(
         )
     }
 
+    fun clearPullRequest(repositoryId: Int) {
+        dataBase.clearPullRequest(repositoryId)
+    }
+
     /**
      * Approves CRUD
      */
@@ -138,6 +145,20 @@ class LocalPullRequestUseCase(
     fun hasPullRequestUpdated(): Boolean {
         val insertionDate = dataBase.getLastDateInsertion()
         return now() == insertionDate
+    }
+
+    fun needResetPullRequest(): Boolean {
+        val insertionDate = dataBase.getLastDateInsertion() ?: return false
+        val now = now()
+        val diff = daysBetweenDates(insertionDate, now) > 2
+        return diff
+    }
+
+    private fun daysBetweenDates(date1: String, date2: String): Long {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val firstDate = LocalDate.parse(date1, formatter)
+        val secondDate = LocalDate.parse(date2, formatter)
+        return ChronoUnit.DAYS.between(firstDate, secondDate)
     }
 
     /**

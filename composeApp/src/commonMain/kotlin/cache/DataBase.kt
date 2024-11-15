@@ -144,6 +144,10 @@ class DataBase(
         }
     }
 
+    fun clearPullRequest(repositoryId: Int) {
+        dbQuery.clearPullRequest(repositoryId.toLong())
+    }
+
     /**
      * Approves CRUD
      */

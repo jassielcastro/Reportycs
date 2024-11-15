@@ -140,6 +140,12 @@ WHERE
 ORDER BY PullRequest.id DESC
 LIMIT ?;
 
+clearPullRequest:
+DELETE FROM
+    PullRequest
+WHERE
+    PullRequest.repositoryId = ?;
+
 -- Approves CRUD
 
 insertApproves:

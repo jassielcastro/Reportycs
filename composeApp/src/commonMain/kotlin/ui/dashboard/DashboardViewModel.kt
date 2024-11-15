@@ -24,8 +24,6 @@ class DashboardViewModel(
     val pullRequestState = _pullRequestState.asStateFlow()
 
     fun loadRepositories() {
-        _repositoriesState.value = UiState.Loading
-
         runCatching {
             repository.getAllRepositories()
         }.onSuccess { repositories ->

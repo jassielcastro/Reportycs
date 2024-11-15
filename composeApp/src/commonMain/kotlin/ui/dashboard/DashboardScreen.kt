@@ -8,9 +8,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -18,14 +17,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -38,7 +36,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,13 +43,12 @@ import jirareports.composeapp.generated.resources.Res
 import jirareports.composeapp.generated.resources.dashboard_add_new_repositories_button
 import jirareports.composeapp.generated.resources.dashboard_repositories_title
 import jirareports.composeapp.generated.resources.dashboard_title
+import jirareports.composeapp.generated.resources.general_failure_error_message
+import jirareports.composeapp.generated.resources.general_no_internet_error_message
+import jirareports.composeapp.generated.resources.general_unauthorized_error_message
 import jirareports.composeapp.generated.resources.generate_reports_button
 import jirareports.composeapp.generated.resources.ic_delete_forever
-import jirareports.composeapp.generated.resources.loading_info_message_1
 import jirareports.composeapp.generated.resources.loading_info_message_2
-import jirareports.composeapp.generated.resources.loading_info_message_3
-import jirareports.composeapp.generated.resources.loading_info_message_4
-import jirareports.composeapp.generated.resources.loading_info_message_5
 import jirareports.composeapp.generated.resources.restart_token_button
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -70,109 +66,64 @@ import ui.components.ReportycsButton
 import ui.dashboard.token.RestartTokenScreen
 import ui.model.UiState
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
     modifier: Modifier = Modifier,
-    onGenerateReports: (RepositoryData) -> Unit,
-    addNewRepository: () -> Unit
+    navigateToGenerateReports: (RepositoryData) -> Unit,
+    navigateToAddNewRepository: () -> Unit
 ) {
     val viewModel = rememberKoinInject<DashboardViewModel>()
     val repositoriesState by viewModel.repositoriesState.collectAsState()
-
-    val sheetState = rememberModalBottomSheetState()
-    var selectedRepositoryToUpdateToken by remember { mutableStateOf(-1) }
-    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.loadRepositories()
     }
 
-    Scaffold { padding ->
-        AnimatedContent(
-            targetState = repositoriesState,
-            transitionSpec = {
-                fadeIn() + slideInVertically(animationSpec = spring(
-                    dampingRatio = 0.8f,
-                    stiffness = Spring.StiffnessLow
-                ), initialOffsetY = { fullHeight -> fullHeight }) togetherWith
-                        fadeOut(animationSpec = tween(200))
-            },
-            modifier = modifier
-                .padding(padding)
-        ) { state ->
-            when (state) {
-                UiState.Idle -> {
-                    IdleScreen(modifier = Modifier.fillMaxSize())
-                }
+    AnimatedContent(
+        targetState = repositoriesState,
+        transitionSpec = {
+            fadeIn() + slideInVertically(animationSpec = spring(
+                dampingRatio = 0.8f,
+                stiffness = Spring.StiffnessLow
+            ), initialOffsetY = { fullHeight -> fullHeight }) togetherWith
+                    fadeOut(animationSpec = tween(200))
+        },
+        modifier = modifier
+    ) { state ->
+        when (state) {
+            is UiState.Success -> {
+                DashboardRepositoriesScreen(
+                    repositories = state.data,
+                    viewModel = viewModel,
+                    navigateToGenerateReports = navigateToGenerateReports,
+                    navigateToAddNewRepository = navigateToAddNewRepository,
+                )
+            }
 
-                UiState.Loading -> {
-                    LoadingScreen(
-                        modifier = Modifier.fillMaxSize(),
-                        loadingText = listOf(
-                            Res.string.loading_info_message_1,
-                            Res.string.loading_info_message_2,
-                            Res.string.loading_info_message_3,
-                            Res.string.loading_info_message_4,
-                            Res.string.loading_info_message_5
-                        )
-                    )
-                }
-
-                is UiState.Success -> {
-                    DashboardRepositoriesScreen(
-                        repositories = state.data,
-                        viewModel = viewModel,
-                        onGenerateReports = onGenerateReports,
-                        addNewRepository = addNewRepository,
-                        onRestartTokenClicked = { repositorySelected ->
-                            selectedRepositoryToUpdateToken = repositorySelected
-                        }
-                    )
-                }
-
-                else -> {
-                    FailureScreen(
-                        modifier = Modifier.fillMaxSize(),
-                        message = "Ooooh no... algo raro ha pasdo..."
-                    )
+            UiState.Failure,
+            UiState.NoInternet,
+            UiState.Unauthorized -> {
+                FailureScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    message = Res.string.general_failure_error_message
+                ) {
+                    viewModel.loadRepositories()
                 }
             }
-        }
 
-        if (selectedRepositoryToUpdateToken > 0) {
-            ModalBottomSheet(
-                onDismissRequest = {
-                    selectedRepositoryToUpdateToken = -1
-                },
-                containerColor = MaterialTheme.colorScheme.primary,
-                sheetState = sheetState
-            ) {
-                RestartTokenScreen(selectedRepositoryToUpdateToken) {
-                    scope.launch {
-                        viewModel.loadRepositories()
-                        sheetState.hide()
-                    }.invokeOnCompletion {
-                        if (!sheetState.isVisible) {
-                            selectedRepositoryToUpdateToken = -1
-                        }
-                    }
-                }
-            }
+            else -> IdleScreen(modifier = Modifier.fillMaxSize())
         }
     }
 }
 
 @Composable
 fun DashboardRepositoriesScreen(
-    repositories: List<RepositoryData>,
     modifier: Modifier = Modifier,
+    repositories: List<RepositoryData>,
     viewModel: DashboardViewModel,
-    onGenerateReports: (RepositoryData) -> Unit,
-    onRestartTokenClicked: (repositorySelected: Int) -> Unit,
-    addNewRepository: () -> Unit
+    navigateToGenerateReports: (RepositoryData) -> Unit,
+    navigateToAddNewRepository: () -> Unit
 ) {
-
     var repositorySelected by remember { mutableStateOf(repositories.first()) }
 
     Row(
@@ -183,15 +134,13 @@ fun DashboardRepositoriesScreen(
             repositories = repositories,
             selectedId = repositorySelected.id,
             modifier = Modifier
-                .padding(top = 12.dp, bottom = 24.dp)
                 .fillMaxWidth(0.15f)
                 .fillMaxHeight()
-                .clip(RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp))
                 .background(MaterialTheme.colorScheme.secondary),
             onSelected = { selected ->
                 repositorySelected = selected
             },
-            addNewRepository = addNewRepository
+            addNewRepository = navigateToAddNewRepository
         )
 
         PullRequestScreen(
@@ -200,19 +149,195 @@ fun DashboardRepositoriesScreen(
                 .fillMaxSize(),
             viewModel = viewModel,
             repositorySelected = repositorySelected,
-            onRestartTokenClicked = {
-                onRestartTokenClicked(repositorySelected.id)
-            },
             onGenerateReportsClicked = { repo ->
-                onGenerateReports(repo)
+                navigateToGenerateReports(repo)
             }
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PullRequestScreen(
+    modifier: Modifier = Modifier,
+    viewModel: DashboardViewModel,
+    repositorySelected: RepositoryData?,
+    onGenerateReportsClicked: (RepositoryData) -> Unit,
+) {
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+    var showBottomSheet by remember { mutableStateOf(false) }
+    var showActionsOnSuccess by remember { mutableStateOf(false) }
+
+    Scaffold(
+        modifier = modifier
+    ) { padding ->
+        Column(
+            modifier = modifier
+                .padding(padding)
+                .fillMaxSize()
+                .padding(top = 16.dp)
+        ) {
+            RepositoryHeader(
+                showActions = showActionsOnSuccess,
+                pullRequestToAnalyze = {
+                    repositorySelected?.let { selected ->
+                        viewModel.loadPRsToAnalyze(selected.id)
+                    } ?: 0
+                },
+                onGenerateReportsClicked = {
+                    repositorySelected?.let { onGenerateReportsClicked(it) }
+                },
+                onRestartTokenClicked = {
+                    showBottomSheet = true
+                },
+                onDeleteClicked = {
+                    repositorySelected?.let { viewModel.deleteRepository(it.id) }
+                }
+            )
+
+            PullRequestListScreen(
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .fillMaxSize(),
+                viewModel = viewModel,
+                repositorySelected = repositorySelected,
+                onUnauthorizedToken = {
+                    showBottomSheet = true
+                },
+                onStatusChanged = { showButton ->
+                    showActionsOnSuccess = showButton
+                }
+            )
+        }
+
+        if (showBottomSheet && repositorySelected != null) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    showBottomSheet = false
+                },
+                containerColor = MaterialTheme.colorScheme.primary,
+                sheetState = sheetState
+            ) {
+                RestartTokenScreen(repositorySelected.id) {
+                    scope.launch {
+                        viewModel.loadRepositories()
+                        sheetState.hide()
+                    }.invokeOnCompletion {
+                        if (!sheetState.isVisible) {
+                            showBottomSheet = false
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun PullRequestListScreen(
+    modifier: Modifier = Modifier,
+    viewModel: DashboardViewModel,
+    repositorySelected: RepositoryData?,
+    onUnauthorizedToken: () -> Unit,
+    onStatusChanged: (Boolean) -> Unit
+) {
+    val pullRequestState by viewModel.pullRequestState.collectAsState()
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(repositorySelected) {
+        repositorySelected?.let { viewModel.loadPullRequest(it) }
+    }
+
+    AnimatedContent(
+        targetState = pullRequestState,
+        transitionSpec = {
+            fadeIn() + slideInVertically(animationSpec = spring(
+                dampingRatio = 0.8f,
+                stiffness = Spring.StiffnessLow
+            ), initialOffsetY = { fullHeight -> fullHeight }) togetherWith
+                    fadeOut(animationSpec = tween(200))
+        },
+        modifier = modifier
+    ) { state ->
+        onStatusChanged(state is UiState.Success)
+        when (state) {
+            UiState.Failure -> {
+                FailureScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    message = Res.string.general_failure_error_message
+                ) {
+                    scope.launch {
+                        repositorySelected?.let { viewModel.loadPullRequest(it) }
+                    }
+                }
+            }
+
+            UiState.Unauthorized -> {
+                FailureScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    message = Res.string.general_unauthorized_error_message,
+                    retryMessage = Res.string.restart_token_button,
+                    retry = onUnauthorizedToken
+                )
+            }
+
+            UiState.NoInternet -> {
+                FailureScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    message = Res.string.general_no_internet_error_message
+                ) {
+                    scope.launch {
+                        repositorySelected?.let { viewModel.loadPullRequest(it) }
+                    }
+                }
+            }
+
+            UiState.Idle -> {
+                IdleScreen(modifier = Modifier.fillMaxSize())
+            }
+
+            UiState.Loading -> {
+                LoadingScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    loadingText = listOf(
+                        Res.string.loading_info_message_2,
+                    )
+                )
+            }
+
+            is UiState.Success -> {
+                PullRequestItemListScreen(
+                    pullRequest = state.data
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun PullRequestItemListScreen(
+    modifier: Modifier = Modifier,
+    pullRequest: List<PullRequestData>,
+) {
+    LazyColumn(
+        modifier = modifier
+            .padding(horizontal = 16.dp)
+            .padding(bottom = 24.dp)
+            .fillMaxSize()
+    ) {
+        items(pullRequest) { pr ->
+            PullRequestItem(
+                pullRequestData = pr
+            )
+        }
     }
 }
 
 @Composable
 fun RepositoryHeader(
     modifier: Modifier = Modifier,
+    showActions: Boolean,
     pullRequestToAnalyze: () -> Int,
     onGenerateReportsClicked: () -> Unit,
     onRestartTokenClicked: () -> Unit,
@@ -222,8 +347,7 @@ fun RepositoryHeader(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.secondary)
-            .padding(top = 16.dp)
+            .padding(top = 8.dp)
     ) {
 
         Column(
@@ -248,168 +372,46 @@ fun RepositoryHeader(
             )
         }
 
-        NormalReportycsButton(
+        Row(
             modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth(0.4f)
-                .height(48.dp),
-            text = stringResource(Res.string.generate_reports_button),
-            onClick = {
-                onGenerateReportsClicked()
-            }
-        )
-
-        NormalReportycsButton(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth(0.6f)
-                .height(48.dp),
-            text = stringResource(Res.string.restart_token_button),
-            onClick = {
-                onRestartTokenClicked()
-            }
-        )
-
-        IconButton(
-            icon = Res.drawable.ic_delete_forever,
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth()
-                .height(48.dp),
-            onClick = {
-                onDeleteClicked()
-            }
-        )
-    }
-}
-
-@Composable
-fun PullRequestScreen(
-    modifier: Modifier = Modifier,
-    viewModel: DashboardViewModel,
-    repositorySelected: RepositoryData?,
-    onGenerateReportsClicked: (RepositoryData) -> Unit,
-    onRestartTokenClicked: () -> Unit,
-) {
-    val pullRequestState by viewModel.pullRequestState.collectAsState()
-
-    LaunchedEffect(repositorySelected) {
-        repositorySelected?.let { viewModel.loadPullRequest(it) }
-    }
-
-    AnimatedContent(
-        targetState = pullRequestState,
-        transitionSpec = {
-            fadeIn() + slideInVertically(animationSpec = spring(
-                dampingRatio = 0.8f,
-                stiffness = Spring.StiffnessLow
-            ), initialOffsetY = { fullHeight -> fullHeight }) togetherWith
-                    fadeOut(animationSpec = tween(200))
-        },
-        modifier = modifier
-    ) { state ->
-        when (state) {
-            UiState.Failure -> {
-                FailureScreen(
-                    modifier = Modifier.fillMaxSize(),
-                    message = "Ooooh no... algo raro ha pasdo..."
-                )
-            }
-
-            UiState.Unauthorized -> {
-                FailureScreen(
-                    modifier = Modifier.fillMaxSize(),
-                    message = "Ooooh no... Creo que no estás autorizado para realizar esta acción"
-                )
-            }
-
-            UiState.NoInternet -> {
-                FailureScreen(
-                    modifier = Modifier.fillMaxSize(),
-                    message = "Ooooh no... Creo que no tienes interneto!"
-                )
-            }
-
-            UiState.Idle -> {
-                IdleScreen(modifier = Modifier.fillMaxSize())
-            }
-
-            UiState.Loading -> {
-                LoadingScreen(
-                    modifier = Modifier.fillMaxSize(),
-                    loadingText = listOf(
-                        Res.string.loading_info_message_1,
-                        Res.string.loading_info_message_2,
-                        Res.string.loading_info_message_3,
-                        Res.string.loading_info_message_4,
-                        Res.string.loading_info_message_5
-                    )
-                )
-            }
-
-            is UiState.Success -> {
-                PullRequestListScreen(
-                    pullRequest = state.data,
-                    pullRequestToAnalyze = {
-                        repositorySelected?.let { selected ->
-                            viewModel.loadPRsToAnalyze(selected.id)
-                        } ?: 0
-                    },
-                    onGenerateReportsClicked = {
-                        if (repositorySelected != null) {
-                            onGenerateReportsClicked(repositorySelected)
-                        }
-                    },
-                    onRestartTokenClicked = onRestartTokenClicked,
-                    onDeleteClicked = {
-                        if (repositorySelected != null) {
-                            viewModel.deleteRepository(repositorySelected.id)
-                        }
+                .padding(top = 4.dp, start = 16.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            if (showActions) {
+                NormalReportycsButton(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .wrapContentWidth()
+                        .height(48.dp),
+                    text = stringResource(Res.string.generate_reports_button),
+                    onClick = {
+                        onGenerateReportsClicked()
                     }
                 )
             }
-        }
-    }
-}
 
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun PullRequestListScreen(
-    modifier: Modifier = Modifier,
-    pullRequest: List<PullRequestData>,
-    pullRequestToAnalyze: () -> Int,
-    onGenerateReportsClicked: () -> Unit,
-    onRestartTokenClicked: () -> Unit,
-    onDeleteClicked: () -> Unit,
-) {
-    Surface(
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
-        shape = MaterialTheme.shapes.medium,
-        color = MaterialTheme.colorScheme.secondary,
-        modifier = modifier
-            .fillMaxSize()
-    ) {
-        LazyColumn(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 24.dp)
-                .fillMaxSize()
-        ) {
+            NormalReportycsButton(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .wrapContentWidth()
+                    .height(48.dp),
+                text = stringResource(Res.string.restart_token_button),
+                onClick = {
+                    onRestartTokenClicked()
+                }
+            )
 
-            stickyHeader {
-                RepositoryHeader(
-                    pullRequestToAnalyze = pullRequestToAnalyze,
-                    onGenerateReportsClicked = onGenerateReportsClicked,
-                    onRestartTokenClicked = onRestartTokenClicked,
-                    onDeleteClicked = onDeleteClicked
-                )
-            }
-
-            items(pullRequest) { pr ->
-                PullRequestItem(
-                    pullRequestData = pr
-                )
-            }
+            IconButton(
+                icon = Res.drawable.ic_delete_forever,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .wrapContentWidth()
+                    .height(48.dp),
+                onClick = {
+                    onDeleteClicked()
+                }
+            )
         }
     }
 }

@@ -112,12 +112,12 @@ fun App(
 
                     composable(route = GithubScreen.Dashboard.destination) {
                         DashboardScreen(
-                            onGenerateReports = { repo ->
+                            navigateToGenerateReports = { repo ->
                                 navController.navigate(
                                     route = GithubScreen.Statics.withArgs(repo.repository)
                                 )
                             },
-                            addNewRepository = {
+                            navigateToAddNewRepository = {
                                 navController.navigate(
                                     route = GithubScreen.CreateRepository.destination
                                 )
