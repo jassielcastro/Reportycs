@@ -5,6 +5,14 @@
     <string name="statics_screen">Statics</string>
     <string name="back_button">Back</string>
 
+    <string name="github_selector_repository_title">Repositories</string>
+    <string name="github_selector_repository_message">Manage, browse and view statistics of your repositories</string>
+    <string name="github_selector_repository_large_message">Access detailed information about your projects, partners and more.</string>
+
+    <string name="github_selector_user_title">Users</string>
+    <string name="github_selector_user_message">View and manage registered user information</string>
+    <string name="github_selector_user_large_message">Analyze profiles, activities and statistics of your platform users.</string>
+
     <string name="add_new_repository_form">Add new Github Repository</string>
     <string name="add_new_repository_form_helper">Enter your repository details below</string>
     <string name="repository_owner">Repository owner</string>

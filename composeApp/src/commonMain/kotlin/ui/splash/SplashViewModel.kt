@@ -14,7 +14,7 @@ class SplashViewModel(
         return if (repos.isEmpty()) {
             GithubScreen.CreateRepository
         } else {
-            GithubScreen.Dashboard
+            GithubScreen.Selector
         }
     }
 }
