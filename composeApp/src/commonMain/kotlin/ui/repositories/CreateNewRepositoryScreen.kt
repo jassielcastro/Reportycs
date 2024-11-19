@@ -53,22 +53,13 @@ import ui.components.ReportycsButton
 import ui.components.dots.ConnectedDotsScreen
 import ui.model.UiState
 import ui.theme.GithubTextOutlinedColor
+import ui.theme.dashboardColor
 
 @Composable
 fun CreateNewRepositoryScreen(
     onSuccess: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val viewModel = rememberKoinInject<CreateNewRepositoryViewModel>()
-    val saveRepositoryState by viewModel.saveRepoState.collectAsState()
-
-    LaunchedEffect(saveRepositoryState) {
-        when (saveRepositoryState) {
-            is UiState.Success -> onSuccess()
-            else -> Unit
-        }
-    }
-
     Box(
         modifier = modifier
             .fillMaxSize(),
@@ -90,8 +81,7 @@ fun CreateNewRepositoryScreen(
                         .padding(24.dp)
                         .fillMaxWidth(0.47f)
                         .fillMaxHeight(),
-                    isLoading = saveRepositoryState is UiState.Loading,
-                    viewModel = viewModel
+                    onSuccess = onSuccess
                 )
 
                 ConnectedDotsScreen(
@@ -101,8 +91,8 @@ fun CreateNewRepositoryScreen(
                     dotsSize = 100,
                     dimension = 2,
                     dotColors = listOf(
-                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.25f),
-                        MaterialTheme.colorScheme.onPrimary
+                        dashboardColor.copy(alpha = 0.15f),
+                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.25f)
                     )
                 )
             }
@@ -110,18 +100,28 @@ fun CreateNewRepositoryScreen(
     }
 }
 
+
 @Composable
 fun AddRepositoryForm(
     modifier: Modifier = Modifier,
-    isLoading: Boolean,
-    viewModel: CreateNewRepositoryViewModel,
+    onSuccess: () -> Unit
 ) {
+    val viewModel = rememberKoinInject<CreateNewRepositoryViewModel>()
+    val saveRepositoryState by viewModel.saveRepoState.collectAsState()
+
+    LaunchedEffect(saveRepositoryState) {
+        when (saveRepositoryState) {
+            is UiState.Success -> onSuccess()
+            else -> Unit
+        }
+    }
+
     var ownerText by remember { mutableStateOf("") }
     var repositoryText by remember { mutableStateOf("") }
     var tokenText by remember { mutableStateOf("") }
     var ownersText by remember { mutableStateOf("") }
 
-    val createStateError  by viewModel.createState.collectAsState()
+    val createStateError by viewModel.createState.collectAsState()
 
     Column(
         modifier = modifier,
@@ -307,7 +307,7 @@ fun AddRepositoryForm(
                 .fillMaxWidth()
                 .height(56.dp),
             text = stringResource(Res.string.add_button),
-            isLoading = isLoading,
+            isLoading = saveRepositoryState is UiState.Loading,
             onClick = {
                 viewModel.saveRepository(
                     RepositoryData(
@@ -343,4 +343,3 @@ fun TextErrorHelper(text: String, modifier: Modifier = Modifier) {
         modifier = modifier
     )
 }
-

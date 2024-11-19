@@ -22,6 +22,7 @@ import jirareports.composeapp.generated.resources.Res
 import jirareports.composeapp.generated.resources.ic_pull_request
 import org.jetbrains.compose.resources.painterResource
 import repository.model.PullRequestData
+import ui.theme.dashboardColor
 
 @Composable
 fun PullRequestItem(
@@ -42,7 +43,7 @@ fun PullRequestItem(
         Icon(
             painterResource(Res.drawable.ic_pull_request),
             contentDescription = "",
-            tint = MaterialTheme.colorScheme.onPrimary,
+            tint = dashboardColor,
             modifier = Modifier
                 .padding(horizontal = 8.dp)
                 .requiredSize(32.dp)
@@ -72,7 +73,8 @@ fun PullRequestItem(
 
             Divider(
                 modifier = Modifier
-                    .padding(vertical = 8.dp, horizontal = 16.dp)
+                    .padding(16.dp),
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.03f)
             )
         }
     }

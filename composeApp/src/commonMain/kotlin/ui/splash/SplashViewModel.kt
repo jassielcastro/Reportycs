@@ -8,13 +8,13 @@ class SplashViewModel(
     private val repository: PullRequestRepository
 ) : ViewModel() {
 
-    fun getDestinationScreen(): GithubScreen {
+    fun getRepositoriesDestinationScreen(): GithubScreen {
         val repos = repository.getAllRepositories()
 
         return if (repos.isEmpty()) {
             GithubScreen.CreateRepository
         } else {
-            GithubScreen.Selector
+            GithubScreen.Dashboard
         }
     }
 }

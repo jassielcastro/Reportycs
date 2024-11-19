@@ -38,6 +38,8 @@ val surfaceContainerLight = Color(0xFFEDEDF4)
 val surfaceContainerHighLight = Color(0xFFE7E8EE)
 val surfaceContainerHighestLight = Color(0xFFE2E2E9)
 
+val dashboardColor = Color(0xff9395D3)
+
 val chartBarsColor = Color(0xff9395D3)
 val chartBarsColor2 = Color(0xfff56565)
 val chartBarsColor3 = Color(0xffBA7BA1)

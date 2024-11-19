@@ -20,7 +20,6 @@ import org.koin.compose.KoinApplication
 import ui.components.GithubAppBar
 import ui.dashboard.DashboardScreen
 import ui.repositories.CreateNewRepositoryScreen
-import ui.selector.GithubStatsSelectorScreen
 import ui.splash.SplashScreen
 import ui.statics.StaticsScreen
 import ui.theme.GithubStatsTheme
@@ -35,8 +34,6 @@ sealed class GithubScreen(
     data object Splash : GithubScreen(destination = "splash")
 
     data object CreateRepository : GithubScreen(destination = "createRepository")
-
-    data object Selector : GithubScreen(destination = "selector")
 
     data object Dashboard : GithubScreen(destination = "dashboard")
 
@@ -54,7 +51,6 @@ sealed class GithubScreen(
             return when (destination) {
                 CreateRepository.destination -> CreateRepository
                 Dashboard.destination -> Dashboard
-                Selector.destination -> Selector
                 Statics.destination -> Statics
                 else -> Splash
             }
@@ -110,19 +106,6 @@ fun App(
                                         inclusive = true
                                     }
                                 }
-                            }
-                        )
-                    }
-
-                    composable(route = GithubScreen.Selector.destination) {
-                        GithubStatsSelectorScreen(
-                            navigateToRepositories = {
-                                navController.navigate(
-                                    route = GithubScreen.Dashboard.destination
-                                )
-                            },
-                            navigateToUsers = {
-
                             }
                         )
                     }
