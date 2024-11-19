@@ -1,8 +1,9 @@
 <div style="display: flex; justify-content: center;">
     <div style="border: 0px solid black; padding: 15px; margin: 5px;">
-      <img src="" alt="reportycs" width="20%" />
+      <img src="https://github.com/user-attachments/assets/88ba330a-bf95-4636-b0da-1367995dd693" alt="reportycs" width="60%" />
     </div>
 </div>
+
 
 **Reportycs** is a cross-platform desktop application designed to provide insightful GitHub
 repository statistics. Built with **Kotlin Multiplatform** and **Jetpack Compose**, this tool
