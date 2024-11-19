@@ -251,6 +251,7 @@ private fun buildCurveLine(path: Path, startPoint: Offset, endPoint: Offset) {
 @Composable
 fun LineChart(
     title: String,
+    message: String,
     dataPoints: List<Int>,
     modifier: Modifier = Modifier,
 ) {
@@ -285,7 +286,7 @@ fun LineChart(
             )
 
             Text(
-                text = "High comments concurrency",
+                text = message,
                 color = MaterialTheme.colorScheme.onPrimary,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Normal,

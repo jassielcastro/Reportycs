@@ -38,7 +38,16 @@ import jirareports.composeapp.generated.resources.loading_info_message_2
 import jirareports.composeapp.generated.resources.loading_info_message_3
 import jirareports.composeapp.generated.resources.loading_info_message_4
 import jirareports.composeapp.generated.resources.loading_info_message_5
+import jirareports.composeapp.generated.resources.statics_screen_analyzed_prs_title
+import jirareports.composeapp.generated.resources.statics_screen_change_request_title
+import jirareports.composeapp.generated.resources.statics_screen_code_owners_title
+import jirareports.composeapp.generated.resources.statics_screen_comments_received_in_prs_title
+import jirareports.composeapp.generated.resources.statics_screen_high_comments_concurrency_message
+import jirareports.composeapp.generated.resources.statics_screen_issue_types_title
+import jirareports.composeapp.generated.resources.statics_screen_owner_participation_title
+import jirareports.composeapp.generated.resources.statics_screen_prs_merged_title
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.rememberKoinInject
 import ui.components.CountersItem
 import ui.components.FailureScreen
@@ -161,7 +170,7 @@ fun StaticsItemsScreen(
                         .fillMaxHeight()
                 ) {
                     CountersItem(
-                        title = "Analyzed PRs",
+                        title = stringResource(Res.string.statics_screen_analyzed_prs_title),
                         count = {
                             "${githubStats.prsCount}"
                         },
@@ -172,7 +181,7 @@ fun StaticsItemsScreen(
                     )
 
                     CountersItem(
-                        title = "Code owners",
+                        title = stringResource(Res.string.statics_screen_code_owners_title),
                         count = {
                             "${githubStats.activeDevelopers}"
                         },
@@ -200,7 +209,7 @@ fun StaticsItemsScreen(
                         BarChart(
                             modifier = Modifier
                                 .fillMaxSize(),
-                            title = "PullRequest merged",
+                            title = stringResource(Res.string.statics_screen_prs_merged_title),
                             barChartData = githubStats.pullRequestByOwner,
                         )
                     }
@@ -216,7 +225,7 @@ fun StaticsItemsScreen(
                         BarChart(
                             modifier = Modifier
                                 .fillMaxSize(),
-                            title = "Owner participation (reviews)",
+                            title = stringResource(Res.string.statics_screen_owner_participation_title),
                             barChartData = githubStats.pullRequestReviewedByOwner,
                         )
                     }
@@ -244,7 +253,7 @@ fun StaticsItemsScreen(
                         modifier = Modifier
                             .padding(16.dp)
                             .fillMaxSize(),
-                        title = "Comments received in PRs",
+                        title = stringResource(Res.string.statics_screen_comments_received_in_prs_title),
                         pieChartData = githubStats.ownerStats,
                     )
                 }
@@ -262,7 +271,7 @@ fun StaticsItemsScreen(
                         modifier = Modifier
                             .padding(16.dp)
                             .fillMaxSize(),
-                        title = "Issue types",
+                        title = stringResource(Res.string.statics_screen_issue_types_title),
                         barChartData = githubStats.statsByType,
                     )
                 }
@@ -281,7 +290,8 @@ fun StaticsItemsScreen(
                 LineChart(
                     modifier = Modifier
                         .fillMaxSize(),
-                    title = "Change request in PR",
+                    title = stringResource(Res.string.statics_screen_change_request_title),
+                    message = stringResource(Res.string.statics_screen_high_comments_concurrency_message),
                     dataPoints = githubStats.pullRequestComments,
                 )
             }
