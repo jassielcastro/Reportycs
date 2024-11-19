@@ -1,8 +1,9 @@
 <div style="display: flex; justify-content: center;">
     <div style="border: 0px solid black; padding: 15px; margin: 5px;">
-      <img src="" alt="reportycs" width="20%" />
+      <img src="https://github.com/user-attachments/assets/88ba330a-bf95-4636-b0da-1367995dd693" alt="reportycs" width="60%" />
     </div>
 </div>
+
 
 **Reportycs** is a cross-platform desktop application designed to provide insightful GitHub
 repository statistics. Built with **Kotlin Multiplatform** and **Jetpack Compose**, this tool
@@ -25,6 +26,8 @@ With **Reportycs**, you can easily access repository statistics such as:
 - **Jetpack Compose**: Provides a modern, declarative UI framework for an intuitive and elegant user
   experience.
 - **GitHub API**: Powers the application's data by fetching live statistics from your repositories.
+- **SQLDelight**: Manages and creates structured, type-safe databases for efficient local data storage.
+- **Encrypted Data Storage**: All sensitive information, such as GitHub tokens, is securely encrypted to ensure user privacy and safety.
 
 ## 🌟 Why Reportycs?
 
@@ -63,6 +66,7 @@ possible:
 - [Kotlin](https://kotlinlang.org/)
 - [Jetpack Compose](https://developer.android.com/jetpack/compose)
 - [GitHub API](https://docs.github.com/en/rest)
+- [SQLDelight](https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-ktor-sqldelight.html)
 
 ## 💬 Let's Connect
 
