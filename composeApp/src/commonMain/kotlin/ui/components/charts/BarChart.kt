@@ -5,15 +5,20 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,19 +46,22 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ui.theme.chartBarsColor
+import ui.theme.primaryLight
 
 @Immutable
 data class BarChartData(
     val bars: List<Bar>,
     val maxBarValue: Float = bars.maxOfOrNull { it.value } ?: 0f,
     val roundToIntegers: Boolean = false,
-    val barWidth: Dp,
+    val barSize: Dp = 50.dp,
 ) {
     @Immutable
     data class Bar(
+        val key: String,
         val value: Float,
-        val color: Color,
-        val background: Color
+        val color: Color = chartBarsColor,
+        val background: Color = primaryLight
     )
 }
 
@@ -65,6 +73,7 @@ fun SimpleBarDrawer(
     textMeasurer: TextMeasurer,
     innerTextStyle: TextStyle,
     outTextStyle: TextStyle,
+    isVertical: Boolean = true,
     valueFormatter: (Float) -> String = { it.toString() },
 ) {
 
@@ -92,41 +101,80 @@ fun SimpleBarDrawer(
     }
 
     Canvas(modifier = modifier) {
-        val barContainerHeight = size.height
-        val barHeight =
-            ((barContainerHeight * (barData.value / maxValue)) * animatedHeight).coerceAtLeast(0f)
-        val barWidth = size.width.dp
-        val minTextYPosition = (barContainerHeight * 0.8f)
+        val barContainerLongitude = if (isVertical) size.height else size.width
+        val barLongitude =
+            ((barContainerLongitude * (barData.value / maxValue)) * animatedHeight).coerceAtLeast(0f)
+        val barSize = if (isVertical) size.width.dp else size.height.dp
+        val minTextYPosition = (barContainerLongitude * 0.8f)
 
-        val numberCenter = (size.width / 2f) - 10f
-        val barTopY = barContainerHeight - barHeight
-        var textStyle = outTextStyle
-        if (barTopY > minTextYPosition) {
-            valueTextTop = (barTopY - 28f).coerceAtLeast(0f)
+        val numberCenter = if (isVertical) {
+            size.width
         } else {
-            valueTextTop = (barTopY + 8f).coerceAtMost(barContainerHeight)
-            textStyle = innerTextStyle
+            size.height
+        }.div(2).minus(10f)
+
+        val barEnd = if (isVertical) {
+            barContainerLongitude - barLongitude
+        } else {
+            barLongitude
+        }
+
+        var textStyle = outTextStyle
+        when {
+            isVertical && barEnd > minTextYPosition -> {
+                valueTextTop = (barEnd - 28f).coerceAtLeast(0f)
+            }
+
+            isVertical && barEnd < minTextYPosition -> {
+                valueTextTop = (barEnd + 8f).coerceAtMost(barContainerLongitude)
+                textStyle = innerTextStyle
+            }
+
+            !isVertical && barEnd < minTextYPosition -> {
+                valueTextTop = (barEnd + 8f).coerceAtMost(barContainerLongitude)
+            }
+
+            !isVertical && barEnd > minTextYPosition -> {
+                valueTextTop = (barEnd - 28f).coerceAtLeast(0f)
+                textStyle = innerTextStyle
+            }
         }
 
         drawRoundRect(
             color = barData.background,
-            size = Size(barWidth.toPx(), barContainerHeight),
+            size = if (isVertical) {
+                Size(barSize.toPx(), barContainerLongitude)
+            } else {
+                Size(barContainerLongitude, barSize.toPx())
+            },
             cornerRadius = CornerRadius(8f)
         )
 
-        drawRoundRect(
-            color = barData.color,
-            size = Size(barWidth.toPx(), barHeight),
-            topLeft = Offset(0f, barTopY),
-            cornerRadius = CornerRadius(8f)
-        )
+        if (isVertical) {
+            drawRoundRect(
+                color = barData.color,
+                size = Size(barSize.toPx(), barLongitude),
+                topLeft = Offset(0f, barEnd),
+                cornerRadius = CornerRadius(8f)
+            )
+        } else {
+            drawRoundRect(
+                color = barData.color,
+                size = Size(barLongitude, barSize.toPx()),
+                cornerRadius = CornerRadius(8f)
+            )
+        }
 
         drawContext.canvas.nativeCanvas.apply {
             drawText(
                 textMeasurer = textMeasurer,
                 text = AnnotatedString(valueFormatter(barData.value)),
                 style = textStyle,
-                topLeft = Offset(numberCenter, animatedTextTop.coerceAtMost(barContainerHeight))
+                topLeft = if (isVertical) {
+                    Offset(numberCenter, animatedTextTop.coerceAtMost(barContainerLongitude))
+                } else {
+                    Offset(animatedTextTop.coerceAtMost(barContainerLongitude), numberCenter)
+                }
             )
         }
     }
@@ -136,7 +184,6 @@ fun SimpleBarDrawer(
 fun BarChart(
     title: String,
     barChartData: BarChartData,
-    labels: List<String>,
     modifier: Modifier = Modifier,
 ) {
     val textMeasure = rememberTextMeasurer()
@@ -151,7 +198,7 @@ fun BarChart(
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
-                .padding(16.dp)
+                .padding(12.dp)
                 .wrapContentSize()
         )
 
@@ -167,11 +214,11 @@ fun BarChart(
                 )
             }
 
-            itemsIndexed(barChartData.bars) { index, barData ->
+            items(barChartData.bars) { barData ->
                 Column(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .width(barChartData.barWidth)
+                        .width(barChartData.barSize)
                 ) {
                     SimpleBarDrawer(
                         modifier = Modifier
@@ -182,12 +229,12 @@ fun BarChart(
                         textMeasurer = textMeasure,
                         innerTextStyle = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimary,
-                            fontSize = 20.sp,
+                            fontSize = 16.sp,
                             fontWeight = FontWeight.ExtraBold,
                         ),
                         outTextStyle = TextStyle(
                             color = barData.color,
-                            fontSize = 20.sp,
+                            fontSize = 16.sp,
                             fontWeight = FontWeight.ExtraBold,
                         ),
                         valueFormatter = {
@@ -200,9 +247,9 @@ fun BarChart(
                     )
 
                     Text(
-                        text = labels.getOrNull(index).orEmpty(),
+                        text = barData.key,
                         color = MaterialTheme.colorScheme.onPrimary,
-                        fontSize = 16.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
                         maxLines = 1,
@@ -214,7 +261,98 @@ fun BarChart(
 
                 Spacer(
                     modifier = Modifier
-                        .width(40.dp)
+                        .width(24.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun HorizontalBarChart(
+    title: String,
+    barChartData: BarChartData,
+    modifier: Modifier = Modifier,
+) {
+    val textMeasure = rememberTextMeasurer()
+
+    Column(
+        modifier = modifier
+    ) {
+
+        Text(
+            text = title,
+            color = MaterialTheme.colorScheme.onPrimary,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .padding(12.dp)
+                .wrapContentSize()
+        )
+
+        LazyColumn(
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 16.dp)
+        ) {
+            item {
+                Spacer(
+                    modifier = Modifier
+                        .height(16.dp)
+                )
+            }
+
+            items(barChartData.bars) { barData ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                ) {
+                    Text(
+                        text = barData.key,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.End,
+                        maxLines = 1,
+                        overflow = TextOverflow.Clip,
+                        modifier = Modifier
+                            .wrapContentSize()
+                            .padding(bottom = 8.dp)
+                    )
+
+                    SimpleBarDrawer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(barChartData.barSize),
+                        barData = barData,
+                        maxValue = barChartData.maxBarValue,
+                        textMeasurer = textMeasure,
+                        innerTextStyle = TextStyle(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                        ),
+                        outTextStyle = TextStyle(
+                            color = barData.color,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                        ),
+                        valueFormatter = {
+                            if (barChartData.roundToIntegers) {
+                                it.toInt().toString()
+                            } else {
+                                it.toString()
+                            }
+                        },
+                        isVertical = false
+                    )
+                }
+
+                Spacer(
+                    modifier = Modifier
+                        .height(20.dp)
                 )
             }
         }

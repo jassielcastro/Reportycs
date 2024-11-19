@@ -2,6 +2,7 @@ package ui.components.charts
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,6 +27,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.center
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextMeasurer
@@ -42,6 +45,7 @@ import kotlin.math.sin
 data class PieChartData(
     val slices: List<Slice>,
     val total: Int = slices.sumOf { it.value },
+    val max: Int = slices.maxByOrNull { it.value }?.value ?: 0,
 ) {
     @Immutable
     data class Slice(
@@ -55,6 +59,9 @@ data class PieChartData(
 fun PieChart(
     modifier: Modifier = Modifier,
     data: PieChartData,
+    gapAngle: Float = 2f,
+    highlightFactor: Float = 1.05f,
+    strokeWidth: Float = 65f
 ) {
     Canvas(modifier = modifier) {
         val chartRadius = size.minDimension / 2.5f
@@ -62,22 +69,26 @@ fun PieChart(
 
         data.slices.forEach { slice ->
             val percentage = slice.value.toFloat() / data.total.toFloat()
-            val sweepAngle = percentage * 360f
-            val color = slice.color
+            val sweepAngle = percentage * 360f - gapAngle
+            val isHighlight = slice.value == data.max
+
+            val sliceRadius = if (isHighlight) chartRadius * highlightFactor else chartRadius
+            val offset = if (isHighlight) sliceRadius * 0.1f else 0f
 
             drawArc(
-                color = color,
+                color = slice.color,
                 startAngle = startAngle,
                 sweepAngle = sweepAngle,
-                useCenter = true,
-                size = Size(chartRadius * 2, chartRadius * 2),
+                useCenter = false,
+                style = Stroke(width = strokeWidth),
+                size = Size(sliceRadius * 2, sliceRadius * 2),
                 topLeft = Offset(
-                    (size.minDimension - chartRadius * 2) / 2,
-                    (size.minDimension - chartRadius * 2) / 2
+                    (size.width - sliceRadius * 2) / 2 + offset * cos(Math.toRadians(startAngle.toDouble() + sweepAngle / 2)).toFloat(),
+                    (size.height - sliceRadius * 2) / 2 + offset * sin(Math.toRadians(startAngle.toDouble() + sweepAngle / 2)).toFloat()
                 )
             )
 
-            startAngle += sweepAngle
+            startAngle += sweepAngle + gapAngle
         }
     }
 }
@@ -105,19 +116,22 @@ fun PieChart(
 
         Row(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
 
             PieChart(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .fillMaxWidth(0.6f),
+                    .fillMaxWidth(0.5f),
                 data = pieChartData,
             )
 
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Center
             ) {
                 items(pieChartData.slices) { slice ->
                     Spacer(
@@ -128,6 +142,7 @@ fun PieChart(
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End,
                         modifier = Modifier
                             .fillMaxWidth()
                             .wrapContentHeight()
@@ -135,8 +150,8 @@ fun PieChart(
 
                         Spacer(
                             modifier = Modifier
-                                .size(12.dp)
-                                .background(slice.color, shape = MaterialTheme.shapes.medium)
+                                .size(24.dp)
+                                .background(slice.color, shape = MaterialTheme.shapes.small)
                         )
 
                         Text(
@@ -149,7 +164,8 @@ fun PieChart(
 
                         Text(
                             modifier = Modifier
-                                .padding(start = 8.dp, end = 16.dp),
+                                .padding(start = 8.dp, end = 16.dp)
+                                .width(200.dp),
                             text = slice.title,
                             color = MaterialTheme.colorScheme.onPrimary,
                             maxLines = 1

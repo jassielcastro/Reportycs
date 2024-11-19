@@ -45,6 +45,7 @@ import ui.components.FailureScreen
 import ui.components.IdleScreen
 import ui.components.LoadingScreen
 import ui.components.charts.BarChart
+import ui.components.charts.HorizontalBarChart
 import ui.components.charts.LineChart
 import ui.components.charts.PieChart
 import ui.model.GithubStats
@@ -182,53 +183,25 @@ fun StaticsItemsScreen(
                     )
                 }
 
-                Surface(
-                    shape = MaterialTheme.shapes.medium,
-                    color = MaterialTheme.colorScheme.secondary,
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier
-                        .fillMaxSize()
-                ) {
-                    BarChart(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        title = "PullRequest merged",
-                        barChartData = githubStats.pullRequestByOwnerBarData,
-                        labels = githubStats.ownerNames
-                    )
-                }
-            }
-        }
-
-        item {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(640.dp)
-            ) {
-
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier
-                        .padding(vertical = 16.dp)
-                        .fillMaxWidth(0.45f)
-                        .fillMaxHeight()
+                        .fillMaxWidth()
+                        .height(320.dp)
                 ) {
                     Surface(
                         shape = MaterialTheme.shapes.medium,
                         color = MaterialTheme.colorScheme.secondary,
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight(0.5f)
+                            .fillMaxWidth(0.45f)
+                            .fillMaxHeight()
                     ) {
                         BarChart(
                             modifier = Modifier
                                 .fillMaxSize(),
-                            title = "Owner participation (reviews)",
-                            barChartData = githubStats.pullRequestReviewsByOwnerBarData,
-                            labels = githubStats.ownerNames
+                            title = "PullRequest merged",
+                            barChartData = githubStats.pullRequestByOwner,
                         )
                     }
 
@@ -240,13 +213,40 @@ fun StaticsItemsScreen(
                             .fillMaxWidth()
                             .fillMaxHeight()
                     ) {
-                        LineChart(
+                        BarChart(
                             modifier = Modifier
                                 .fillMaxSize(),
-                            title = "Change request in PR",
-                            dataPoints = githubStats.pullRequestCommentsLineData,
+                            title = "Owner participation (reviews)",
+                            barChartData = githubStats.pullRequestReviewedByOwner,
                         )
                     }
+                }
+            }
+        }
+
+        item {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(640.dp)
+            ) {
+                Surface(
+                    shape = MaterialTheme.shapes.medium,
+                    color = MaterialTheme.colorScheme.secondary,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
+                    modifier = Modifier
+                        .padding(vertical = 16.dp)
+                        .fillMaxWidth(0.45f)
+                        .fillMaxHeight()
+                ) {
+                    PieChart(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxSize(),
+                        title = "Comments received in PRs",
+                        pieChartData = githubStats.ownerStats,
+                    )
                 }
 
                 Surface(
@@ -255,16 +255,35 @@ fun StaticsItemsScreen(
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
                     modifier = Modifier
                         .padding(vertical = 16.dp)
-                        .fillMaxSize()
+                        .fillMaxWidth()
+                        .fillMaxHeight()
                 ) {
-                    PieChart(
+                    HorizontalBarChart(
                         modifier = Modifier
                             .padding(16.dp)
                             .fillMaxSize(),
-                        title = "Comments received in PRs",
-                        pieChartData = githubStats.givenCommentsPieChartData,
+                        title = "Issue types",
+                        barChartData = githubStats.statsByType,
                     )
                 }
+            }
+        }
+
+        item {
+            Surface(
+                shape = MaterialTheme.shapes.medium,
+                color = MaterialTheme.colorScheme.secondary,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(320.dp)
+            ) {
+                LineChart(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    title = "Change request in PR",
+                    dataPoints = githubStats.pullRequestComments,
+                )
             }
         }
     }

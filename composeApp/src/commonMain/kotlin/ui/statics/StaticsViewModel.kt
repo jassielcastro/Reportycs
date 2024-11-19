@@ -8,13 +8,13 @@ import repository.PullRequestRepository
 import repository.model.CodeOwnerData
 import repository.model.RepositoryData
 import repository.model.StaticData
+import ui.components.charts.BarChartData
+import ui.components.charts.PieChartData
 import ui.model.GithubStats
-import ui.model.OwnerStats
-import ui.model.PullRequestByOwner
-import ui.model.PullRequestComments
-import ui.model.PullRequestReviewedByOwner
-import ui.model.PullRequestType
 import ui.model.UiState
+import ui.theme.chartBarsColor2
+import ui.theme.chartBarsColor3
+import ui.theme.pieChartColors
 
 class StaticsViewModel(
     private val repository: PullRequestRepository
@@ -24,7 +24,10 @@ class StaticsViewModel(
         MutableStateFlow(UiState.Idle)
     val pullRequestInfoState = _pullRequestInfoState.asStateFlow()
 
-    suspend fun fetchPullRequestInformation(repositoryName: String) {
+    suspend fun fetchPullRequestInformation(
+        repositoryName: String,
+        delay: Long = 200L
+    ) {
         _pullRequestInfoState.value = UiState.Loading
         try {
             val repositoryData = repository.selectRepositoryBy(repositoryName)
@@ -32,7 +35,7 @@ class StaticsViewModel(
                     _pullRequestInfoState.value = UiState.Failure
                 }
             repository.fetchPullRequestApproves(repositoryData)
-            delay(200L)
+            delay(delay)
             repository.fetchPullRequestComments(repositoryData)
 
             generateStatics(repositoryData)
@@ -47,16 +50,17 @@ class StaticsViewModel(
 
         val stats = GithubStats(
             prsCount = pullRequestList.size,
+            // Bars
             pullRequestByOwner = calculatePrsCreatedByContributor(
                 pullRequestList,
                 activeOwners
-            ), // Bars
+            ),
             pullRequestReviewedByOwner = calculateApprovalsDistribution(
                 pullRequestList,
                 activeOwners
             ), // Bars
             pullRequestComments = calculateCommentsByPr(pullRequestList), // Line
-            ownerStats = calculatePrsAndCommentsCorrelation(
+            ownerStats = calculateCommentsByPR(
                 pullRequestList,
                 activeOwners
             ), // Double bars
@@ -65,7 +69,6 @@ class StaticsViewModel(
             ownerNames = generateOwnerNames(activeOwners)
         )
 
-        println("StaticsViewModel.generateStatics ---> $stats")
         _pullRequestInfoState.value = UiState.Success(stats)
     }
 
@@ -82,8 +85,8 @@ class StaticsViewModel(
      */
     private fun calculatePrsCreatedByContributor(
         staticData: List<StaticData>,
-        codeOwners: List<CodeOwnerData>
-    ): List<PullRequestByOwner> {
+        codeOwners: List<CodeOwnerData>,
+    ): BarChartData {
         val prsByContributor = staticData.groupingBy { it.author }
             .eachCount()
             .toMutableMap()
@@ -92,12 +95,20 @@ class StaticsViewModel(
             prsByContributor.putIfAbsent(codeOwner.name, 0)
         }
 
-        return prsByContributor.map { pr ->
-            PullRequestByOwner(
-                author = pr.key,
-                pullRequestCreated = pr.value
-            )
-        }
+        val bars = prsByContributor
+            .toList()
+            .sortedBy { it.first }
+            .map { pr ->
+                BarChartData.Bar(
+                    key = pr.first,
+                    value = pr.second.toFloat(),
+                )
+            }
+
+        return BarChartData(
+            bars = bars,
+            roundToIntegers = true,
+        )
     }
 
     /**
@@ -106,7 +117,7 @@ class StaticsViewModel(
     private fun calculateApprovalsDistribution(
         staticData: List<StaticData>,
         codeOwners: List<CodeOwnerData>
-    ): List<PullRequestReviewedByOwner> {
+    ): BarChartData {
         val codeOwnerNames = codeOwners.map { it.name }.toSet()
         val approvalCounts = mutableMapOf<String, Int>()
 
@@ -122,74 +133,112 @@ class StaticsViewModel(
             approvalCounts.putIfAbsent(codeOwner.name, 0)
         }
 
-        return approvalCounts.map {
-            PullRequestReviewedByOwner(
-                user = it.key,
-                pullRequestReviewed = it.value,
+        val bars = approvalCounts.map { pr ->
+            BarChartData.Bar(
+                key = pr.key,
+                value = pr.value.toFloat(),
+                color = chartBarsColor2
             )
         }
+
+        return BarChartData(
+            bars = bars,
+            maxBarValue = bars.maxOf { it.value },
+            roundToIntegers = true,
+        )
     }
 
     /**
      * Show the number of review comments for each PR
      */
-    private fun calculateCommentsByPr(staticData: List<StaticData>): List<PullRequestComments> {
+    private fun calculateCommentsByPr(staticData: List<StaticData>): List<Int> {
         return staticData
             .associate { it.id to it.reviewCommentsCount }
-            .map {
-                PullRequestComments(
-                    pullRequestId = it.key,
-                    reviewCommentsCount = it.value,
-                )
-            }
+            .map { it.value }
     }
 
     /**
      * Show the correlation between the number of PRs created by a contributor and the number of review comments on those PRs.
      */
-    private fun calculatePrsAndCommentsCorrelation(
+    private fun calculateCommentsByPR(
         staticData: List<StaticData>,
         codeOwners: List<CodeOwnerData>
-    ): List<OwnerStats> {
-        val prsByContributor = mutableMapOf<String, Int>()
+    ): PieChartData {
         val commentsByPR = mutableMapOf<String, Int>()
+        val slices = mutableListOf<PieChartData.Slice>()
 
         staticData.forEach { pr ->
-            prsByContributor[pr.author] = prsByContributor.getOrDefault(pr.author, 0) + 1
             commentsByPR[pr.author] =
                 commentsByPR.getOrDefault(pr.author, 0) + pr.reviewCommentsCount
         }
 
         codeOwners.forEach { codeOwner ->
-            prsByContributor.putIfAbsent(codeOwner.name, 0)
             commentsByPR.putIfAbsent(codeOwner.name, 0)
         }
 
-        return prsByContributor.keys.associateWith {
-            Pair(prsByContributor[it] ?: 0, commentsByPR[it] ?: 0)
-        }.map {
-            OwnerStats(
-                user = it.key,
-                pullRequestCreated = it.value.first,
-                commentsByPr = it.value.second
-            )
-        }
+        commentsByPR.toList()
+            .sortedBy { it.second }
+            .onEachIndexed { index, entry ->
+                slices.add(
+                    PieChartData.Slice(
+                        title = entry.first,
+                        value = entry.second,
+                        color = pieChartColors[index % pieChartColors.size]
+                    )
+                )
+            }
+
+        val sortedSlices = slices.sortedByDescending { it.value }
+        val uniqueTopNumbers = sortedSlices.distinctBy { it.value }.map { it.value }.take(5)
+        val topFiveSlices = sortedSlices
+            .filter { it.value in uniqueTopNumbers }
+
+        return PieChartData(
+            slices = topFiveSlices
+        )
     }
 
-    private fun calculateStatsByType(prStats: List<StaticData>): List<PullRequestType> {
+    private fun calculateStatsByType(prStats: List<StaticData>): BarChartData {
         val typeStatsMap = mutableMapOf<String, Int>()
+        availableTypes().forEach { type ->
+            typeStatsMap[type] = 0
+        }
+
         prStats.forEach { pr ->
             val type = extractPrType(pr.title)
             val count = typeStatsMap.getOrPut(type) { 0 }
             typeStatsMap[type] = count + 1
         }
 
-        return typeStatsMap.map {
-            PullRequestType(
-                type = it.key,
-                count = it.value
+        val bars = typeStatsMap.map {
+            BarChartData.Bar(
+                key = it.key,
+                value = it.value.toFloat(),
+                color = chartBarsColor3
             )
+        }.sortedByDescending {
+            it.value
         }
+
+        return BarChartData(
+            bars = bars,
+            maxBarValue = bars.maxOf { it.value },
+            roundToIntegers = true,
+        )
+    }
+
+    private fun availableTypes(): List<String> {
+        return listOf(
+            "FEAT",
+            "BUG",
+            "DOCS",
+            "STYLE",
+            "REFACTOR",
+            "PERF",
+            "TEST",
+            "CHORE",
+            "UNKNOWN",
+        )
     }
 
     private fun extractPrType(title: String): String {

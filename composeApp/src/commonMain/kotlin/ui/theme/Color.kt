@@ -37,3 +37,21 @@ val surfaceContainerLowLight = Color(0xFFF3F3FA)
 val surfaceContainerLight = Color(0xFFEDEDF4)
 val surfaceContainerHighLight = Color(0xFFE7E8EE)
 val surfaceContainerHighestLight = Color(0xFFE2E2E9)
+
+val chartBarsColor = Color(0xff9395D3)
+val chartBarsColor2 = Color(0xfff56565)
+val chartBarsColor3 = Color(0xffBA7BA1)
+
+val pieChartColors: List<Color> by lazy {
+    listOf(
+        Color(0xFFdf6251),
+        Color(0xff313E50),
+        Color(0xff3A435E),
+        Color(0xff455561),
+        Color(0xFF5C6672),
+        Color(0xFF6C6F7F),
+        Color(0xff9395D3),
+        Color(0xfff56565),
+        Color(0xffBA7BA1),
+    )
+}
