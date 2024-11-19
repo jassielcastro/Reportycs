@@ -90,11 +90,7 @@ fun App(
                 ) {
                     composable(route = GithubScreen.Splash.destination) {
                         SplashScreen { destination ->
-                            navController.navigate(route = destination.destination) {
-                                popUpTo(route = GithubScreen.Splash.destination) {
-                                    inclusive = true
-                                }
-                            }
+                            navController.navigate(route = destination.destination)
                         }
                     }
 

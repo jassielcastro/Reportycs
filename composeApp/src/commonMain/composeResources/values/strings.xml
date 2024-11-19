@@ -32,6 +32,16 @@
     <string name="restart_token_button">Restart Token</string>
     <string name="dashboard_repositories_title">All repositories</string>
     <string name="dashboard_add_new_repositories_button">Add new Repository</string>
+    <string name="dashboard_subtitle_prs_to_analyze">PRs to analyze</string>
+
+    <string name="statics_screen_analyzed_prs_title">Analyzed PRs</string>
+    <string name="statics_screen_code_owners_title">Code owners</string>
+    <string name="statics_screen_prs_merged_title">PullRequest merged</string>
+    <string name="statics_screen_owner_participation_title">Owner participation (reviews)</string>
+    <string name="statics_screen_comments_received_in_prs_title">Comments received in PRs</string>
+    <string name="statics_screen_issue_types_title">Issue types</string>
+    <string name="statics_screen_change_request_title">Change request in PR</string>
+    <string name="statics_screen_high_comments_concurrency_message">High comments concurrency</string>
 
     <string name="general_no_internet_error_message">Ooooh no... something weird happened...</string>
     <string name="general_unauthorized_error_message">Ooooh no... I think you are not authorized to perform this action, try refreshing your token.</string>

@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import jirareports.composeapp.generated.resources.Res
 import jirareports.composeapp.generated.resources.dashboard_add_new_repositories_button
 import jirareports.composeapp.generated.resources.dashboard_repositories_title
+import jirareports.composeapp.generated.resources.dashboard_subtitle_prs_to_analyze
 import jirareports.composeapp.generated.resources.dashboard_title
 import jirareports.composeapp.generated.resources.general_failure_error_message
 import jirareports.composeapp.generated.resources.general_no_internet_error_message
@@ -363,7 +364,7 @@ fun RepositoryHeader(
             )
 
             Text(
-                text = "${pullRequestToAnalyze()} PRs to analyze",
+                text = "${pullRequestToAnalyze()} " + stringResource(Res.string.dashboard_subtitle_prs_to_analyze),
                 color = MaterialTheme.colorScheme.onPrimary,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Light,
