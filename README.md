@@ -1,11 +1,70 @@
-This is a Kotlin Multiplatform project targeting Desktop.
+<div style="display: flex; justify-content: center;">
+    <div style="border: 0px solid black; padding: 15px; margin: 5px;">
+      <img src="" alt="reportycs" width="20%" />
+    </div>
+</div>
 
-* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - `commonMain` is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    `iosMain` would be the right folder for such calls.
+**Reportycs** is a cross-platform desktop application designed to provide insightful GitHub
+repository statistics. Built with **Kotlin Multiplatform** and **Jetpack Compose**, this tool
+leverages the **GitHub API** to deliver actionable metrics that help development teams understand
+their contributions and collaboration patterns.
 
+## 🚀 Features
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+With **Reportycs**, you can easily access repository statistics such as:
+
+- **Most PRs Created**: Identify the contributors generating the most pull requests.
+- **Top Reviewers**: Discover the team members who are most active in reviewing pull requests.
+- **PR Types**: Analyze the distribution of pull request types (e.g., features, bugs, etc.).
+- **Top Commenters**: See which users are getting the most feedback on pull requests.
+
+## 🛠️ Technologies
+
+- **Kotlin Multiplatform**: Enables the application to run seamlessly across platforms, including
+  macOS.
+- **Jetpack Compose**: Provides a modern, declarative UI framework for an intuitive and elegant user
+  experience.
+- **GitHub API**: Powers the application's data by fetching live statistics from your repositories.
+
+## 🌟 Why Reportycs?
+
+**Reportycs** isn't just about numbers—it's about fostering a more collaborative and productive
+development environment by making key metrics accessible and actionable. Whether you're tracking
+individual contributions or team dynamics, this tool simplifies the process.
+
+## 📖 How It Works
+
+1. **Connect Your GitHub Account**: Authenticate with GitHub to grant access to repository data.
+2. **Select a Repository**: Choose the repository you want to analyze.
+3. **Explore Insights**: Visualize key metrics through an intuitive interface.
+
+## 🖥️ Setup
+
+1. Clone the repository:
+   ```bash  
+   git clone https://github.com/your-username/Reportycs.git  
+   ```  
+2. Open the project in your preferred IDE (e.g., IntelliJ IDEA).
+3. Build and run the project for your desired platform (currently optimized for macOS).
+
+## 🤝 Contributing
+
+Contributions are welcome! If you’d like to improve Reportycs or add new features:
+
+1. Fork the repository.
+2. Create a feature branch.
+3. Submit a pull request for review.
+
+## ✨ Acknowledgments
+
+Special thanks to the open-source community and the incredible tools that made this project
+possible:
+
+- [Kotlin](https://kotlinlang.org/)
+- [Jetpack Compose](https://developer.android.com/jetpack/compose)
+- [GitHub API](https://docs.github.com/en/rest)
+
+## 💬 Let's Connect
+
+Have feedback or want to collaborate? Feel free to reach out or open an issue. Together, we can make
+**Reportycs** even better!
