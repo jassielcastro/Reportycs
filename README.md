@@ -25,6 +25,8 @@ With **Reportycs**, you can easily access repository statistics such as:
 - **Jetpack Compose**: Provides a modern, declarative UI framework for an intuitive and elegant user
   experience.
 - **GitHub API**: Powers the application's data by fetching live statistics from your repositories.
+- **SQLDelight**: Manages and creates structured, type-safe databases for efficient local data storage.
+- **Encrypted Data Storage**: All sensitive information, such as GitHub tokens, is securely encrypted to ensure user privacy and safety.
 
 ## 🌟 Why Reportycs?
 
@@ -63,6 +65,7 @@ possible:
 - [Kotlin](https://kotlinlang.org/)
 - [Jetpack Compose](https://developer.android.com/jetpack/compose)
 - [GitHub API](https://docs.github.com/en/rest)
+- [SQLDelight](https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-ktor-sqldelight.html)
 
 ## 💬 Let's Connect
 
