@@ -12,8 +12,11 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import usecase.ext.handleResponse
+import usecase.model.ResponseStatus
 import usecase.remote.model.request.UserContributionsRequest
 import usecase.remote.model.request.UserGraphQl
+import usecase.remote.model.response.GitHubContributionsResponse
 
 class RemoteUserUseCase(
     private val client: HttpClient,
@@ -43,17 +46,15 @@ class RemoteUserUseCase(
             contentType(ContentType.parse("application/json; charset=utf-8"))
             bearerAuth(token)
             setBody<UserContributionsRequest>(payload)
+        }.handleResponse<GitHubContributionsResponse>()
+
+        if (response is ResponseStatus.Success) {
+            println("RemoteUserUseCase.loadUserRepositories ---> ${response.response.data.user.contributionsCollection.contributionCalendar}")
+            println("RemoteUserUseCase.loadUserRepositories ---> ${response.response.data.user.contributionsCollection.commitContributionsByRepository}")
+            println("RemoteUserUseCase.loadUserRepositories ---> ${response.response.data.user.contributionsCollection.issueContributions}")
+            println("RemoteUserUseCase.loadUserRepositories ---> ${response.response.data.user.contributionsCollection.pullRequestContributions}")
+            println("RemoteUserUseCase.loadUserRepositories ---> ${response.response.data.user.contributionsCollection.pullRequestReviewContributions}")
         }
-
-        println("RemoteUserUseCase.loadUserRepositories ---> ${response.body<Any>()}")
-
-        //.handleResponse<List<UserEventsResponse>>()
-
-        /*if (response is ResponseStatus.Success) {
-            val repos = response.response.map { it.repo.name }.distinct()
-            println("RemoteUserUseCase.loadUserRepositories ---> ${repos.size}")
-            println("RemoteUserUseCase.loadUserRepositories ---> $repos")
-        }*/
     }
 
     private companion object {
@@ -61,12 +62,20 @@ class RemoteUserUseCase(
             query(${'$'}username: String!, ${'$'}from: DateTime!, ${'$'}to: DateTime!) {
                 user(login: ${'$'}username) {
                     contributionsCollection(from: ${'$'}from, to: ${'$'}to) {
+                        contributionCalendar {
+                            totalContributions
+                            weeks {
+                                contributionDays {
+                                    contributionCount
+                                }
+                            }
+                        }
                         commitContributionsByRepository {
                             repository {
                                 name
                                 url
                             }
-                            contributions(first: 100) {
+                            contributions(last: 100) {
                                 edges {
                                     node {
                                         commitCount
@@ -74,34 +83,31 @@ class RemoteUserUseCase(
                                 }
                             }
                         }
-                        issueContributions(first: 100) {
+                        issueContributions(last: 100) {
                             edges {
                                 node {
                                     issue {
                                         title
-                                        url
                                         createdAt
                                     }
                                 }
                             }
                         }
-                        pullRequestContributions(first: 100) {
+                        pullRequestContributions(last: 100) {
                             edges {
                                 node {
                                     pullRequest {
                                         title
-                                        url
                                         createdAt
                                     }
                                 }
                             }
                         }
-                        pullRequestReviewContributions(first: 100) {
+                        pullRequestReviewContributions(last: 100) {
                             edges {
                                 node {
                                     pullRequest {
                                         title
-                                        url
                                         createdAt
                                     }
                                 }
