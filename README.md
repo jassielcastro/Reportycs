@@ -6,13 +6,13 @@
 
 
 **Reportycs** is a cross-platform desktop application designed to provide insightful GitHub
-repository statistics. Built with **Kotlin Multiplatform** and **Jetpack Compose**, this tool
+usecase statistics. Built with **Kotlin Multiplatform** and **Jetpack Compose**, this tool
 leverages the **GitHub API** to deliver actionable metrics that help development teams understand
 their contributions and collaboration patterns.
 
 ## 🚀 Features
 
-With **Reportycs**, you can easily access repository statistics such as:
+With **Reportycs**, you can easily access usecase statistics such as:
 
 - **Most PRs Created**: Identify the contributors generating the most pull requests.
 - **Top Reviewers**: Discover the team members who are most active in reviewing pull requests.
@@ -37,13 +37,13 @@ individual contributions or team dynamics, this tool simplifies the process.
 
 ## 📖 How It Works
 
-1. **Connect Your GitHub Account**: Authenticate with GitHub to grant access to repository data.
-2. **Select a Repository**: Choose the repository you want to analyze.
+1. **Connect Your GitHub Account**: Authenticate with GitHub to grant access to usecase data.
+2. **Select a Repository**: Choose the usecase you want to analyze.
 3. **Explore Insights**: Visualize key metrics through an intuitive interface.
 
 ## 🖥️ Setup
 
-1. Clone the repository:
+1. Clone the usecase:
    ```bash  
    git clone https://github.com/your-username/Reportycs.git  
    ```  
@@ -54,7 +54,7 @@ individual contributions or team dynamics, this tool simplifies the process.
 
 Contributions are welcome! If you’d like to improve Reportycs or add new features:
 
-1. Fork the repository.
+1. Fork the usecase.
 2. Create a feature branch.
 3. Submit a pull request for review.
 

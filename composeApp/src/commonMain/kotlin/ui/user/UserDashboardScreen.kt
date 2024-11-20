@@ -6,11 +6,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import org.koin.compose.rememberKoinInject
-import repository.UserRepository
+import usecase.UserUseCase
 
 @Composable
 fun UserDashboardScreen() {
-    val viewModel = rememberKoinInject<UserRepository>()
+    val viewModel = rememberKoinInject<UserUseCase>()
 
     LaunchedEffect(Unit) {
         viewModel.loadUserRepositories(

@@ -54,8 +54,8 @@ import jirareports.composeapp.generated.resources.restart_token_button
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.rememberKoinInject
-import repository.model.PullRequestData
-import repository.model.RepositoryData
+import usecase.model.PullRequestData
+import usecase.model.RepositoryData
 import ui.components.DrawerItem
 import ui.components.FailureScreen
 import ui.components.IconButton

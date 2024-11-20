@@ -1,16 +1,16 @@
 package repository.mapper
 
-import repository.model.PullRequestData
-import repository.model.RepositoryData
-import repository.model.StaticData
-import usecase.model.PullRequestDto
-import usecase.model.RepositoryDto
-import usecase.model.StaticDto
-import usecase.remote.model.request.RepositoryRequest
-import usecase.remote.model.response.PullRequestResponse
+import cache.model.OwnerEntity
+import cache.model.PullRequestEntity
+import cache.model.RepositoryEntity
+import cache.model.StaticEntity
+import repository.model.OwnerDto
+import repository.model.PullRequestDto
+import repository.model.RepositoryDto
+import repository.model.StaticDto
 
-fun RepositoryDto.toRepositoryData(): RepositoryData {
-    return RepositoryData(
+fun RepositoryDto.toRepositoryEntity(): RepositoryEntity {
+    return RepositoryEntity(
         id = this.id,
         owner = this.owner,
         repository = this.repository,
@@ -18,7 +18,7 @@ fun RepositoryDto.toRepositoryData(): RepositoryData {
     )
 }
 
-fun RepositoryData.toRepositoryDto(): RepositoryDto {
+fun RepositoryEntity.toRepositoryDto(): RepositoryDto {
     return RepositoryDto(
         id = this.id,
         owner = this.owner,
@@ -27,27 +27,24 @@ fun RepositoryData.toRepositoryDto(): RepositoryDto {
     )
 }
 
-fun RepositoryData.toRepositoryRequest(): RepositoryRequest {
-    return RepositoryRequest(
-        id = this.id,
-        owner = this.owner,
-        repo = this.repository,
-        token = this.token,
+fun OwnerEntity.toOwnerDto(): OwnerDto {
+    return OwnerDto(
+        idOwner = this.idOwner,
+        user = this.user,
+        repositoryId = this.repositoryId,
     )
 }
 
-fun PullRequestResponse.toPullRequestDto(repositoryId: Int): PullRequestDto {
-    return PullRequestDto(
-        id = this.number,
-        repositoryId = repositoryId,
-        title = this.title,
-        author = this.user.name,
-        avatar = this.user.avatar,
+fun OwnerDto.toOwnerEntity(): OwnerEntity {
+    return OwnerEntity(
+        idOwner = this.idOwner,
+        user = this.user,
+        repositoryId = this.repositoryId,
     )
 }
 
-fun PullRequestDto.toPullRequestData(): PullRequestData {
-    return PullRequestData(
+fun PullRequestDto.toPullRequestEntity(): PullRequestEntity {
+    return PullRequestEntity(
         id = this.id,
         repositoryId = this.repositoryId,
         title = this.title,
@@ -56,8 +53,18 @@ fun PullRequestDto.toPullRequestData(): PullRequestData {
     )
 }
 
-fun StaticDto.toStaticData(): StaticData {
-    return StaticData(
+fun PullRequestEntity.toPullRequestDto(): PullRequestDto {
+    return PullRequestDto(
+        id = this.id,
+        repositoryId = this.repositoryId,
+        title = this.title,
+        author = this.author,
+        avatar = this.avatar,
+    )
+}
+
+fun StaticEntity.toStaticDto(): StaticDto {
+    return StaticDto(
         id = this.id,
         repositoryId = this.repositoryId,
         title = this.title,

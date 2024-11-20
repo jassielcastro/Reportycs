@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.sp
 import jirareports.composeapp.generated.resources.Res
 import jirareports.composeapp.generated.resources.ic_pull_request
 import org.jetbrains.compose.resources.painterResource
-import repository.model.PullRequestData
+import usecase.model.PullRequestData
 import ui.theme.dashboardColor
 
 @Composable

@@ -4,13 +4,13 @@ import androidx.lifecycle.ViewModel
 import crypt.CryptoHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import repository.PullRequestRepository
-import repository.model.RepositoryData
+import usecase.PullRequestUseCase
+import usecase.model.RepositoryData
 import ui.model.UiState
 
 class CreateNewRepositoryViewModel(
     private val cryptoHandler: CryptoHandler,
-    private val repository: PullRequestRepository
+    private val repository: PullRequestUseCase
 ) : ViewModel() {
 
     private val _saveRepositoryState: MutableStateFlow<UiState<String>> =

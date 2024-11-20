@@ -1,11 +1,11 @@
 package ui.splash
 
 import androidx.lifecycle.ViewModel
-import repository.PullRequestRepository
+import usecase.PullRequestUseCase
 import ui.GithubScreen
 
 class SplashViewModel(
-    private val repository: PullRequestRepository
+    private val repository: PullRequestUseCase
 ) : ViewModel() {
 
     fun getRepositoriesDestinationScreen(): GithubScreen {

@@ -48,7 +48,7 @@ import jirareports.composeapp.generated.resources.repository_token
 import jirareports.composeapp.generated.resources.repository_token_placeholder
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.rememberKoinInject
-import repository.model.RepositoryData
+import usecase.model.RepositoryData
 import ui.components.ReportycsButton
 import ui.components.dots.ConnectedDotsScreen
 import ui.model.UiState
