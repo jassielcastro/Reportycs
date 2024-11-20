@@ -144,12 +144,12 @@ class LocalPullRequestUseCase(
 
     fun hasPullRequestUpdated(): Boolean {
         val insertionDate = dataBase.getLastDateInsertion()
-        return now() == insertionDate
+        return now().toString() == insertionDate
     }
 
     fun needResetPullRequest(): Boolean {
         val insertionDate = dataBase.getLastDateInsertion() ?: return false
-        val now = now()
+        val now = now().toString()
         val diff = daysBetweenDates(insertionDate, now) > 2
         return diff
     }

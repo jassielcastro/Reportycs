@@ -17,4 +17,8 @@ class SplashViewModel(
             GithubScreen.Dashboard
         }
     }
+
+    fun getUserDestinationScreen(): GithubScreen {
+        return GithubScreen.UserDashboard
+    }
 }

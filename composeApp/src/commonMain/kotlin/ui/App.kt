@@ -23,6 +23,7 @@ import ui.repositories.CreateNewRepositoryScreen
 import ui.splash.SplashScreen
 import ui.statics.StaticsScreen
 import ui.theme.GithubStatsTheme
+import ui.user.UserDashboardScreen
 
 /**
  * enum values that represent the screens in the app
@@ -46,12 +47,15 @@ sealed class GithubScreen(
         }
     }
 
+    data object UserDashboard : GithubScreen(destination = "user_dashboard")
+
     companion object {
         fun valueOf(destination: String): GithubScreen {
             return when (destination) {
                 CreateRepository.destination -> CreateRepository
                 Dashboard.destination -> Dashboard
                 Statics.destination -> Statics
+                UserDashboard.destination -> UserDashboard
                 else -> Splash
             }
         }
@@ -129,6 +133,10 @@ fun App(
                         StaticsScreen(
                             repositoryName = repositoryName
                         )
+                    }
+
+                    composable(route = GithubScreen.UserDashboard.destination) {
+                        UserDashboardScreen()
                     }
                 }
             }

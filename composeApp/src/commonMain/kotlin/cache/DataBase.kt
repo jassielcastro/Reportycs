@@ -195,7 +195,7 @@ class DataBase(
     }
 
     fun updateLastDateOfInsertions() {
-        dbQuery.setDateOfInsertion(now())
+        dbQuery.setDateOfInsertion(now().toString())
     }
 
     /**
