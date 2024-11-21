@@ -14,7 +14,7 @@
     <string name="github_selector_user_large_message">Analyze profiles, activities and statistics of your platform users.</string>
 
     <string name="add_new_repository_form">Add new Github Repository</string>
-    <string name="add_new_repository_form_helper">Enter your usecase details below</string>
+    <string name="add_new_repository_form_helper">Enter your repository details below</string>
     <string name="repository_owner">Repository owner</string>
     <string name="repository_owner_placeholder">Owner</string>
     <string name="repository_name">Repository name</string>
@@ -24,7 +24,7 @@
     <string name="repository_owners">Code owners (Github user name)</string>
     <string name="repository_owners_placeholder">alan, rigo_tovar, mark_zucaritas</string>
     <string name="repository_owners_helper">Add the Owners separated by comma, this will help to perform the metrics per user later on</string>
-    <string name="add_button">Save usecase</string>
+    <string name="add_button">Save repository</string>
     <string name="repository_error_field">This field is required</string>
 
     <string name="dashboard_title">Dashboard</string>
