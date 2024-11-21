@@ -2,9 +2,9 @@ package usecase.di
 
 import org.koin.dsl.module
 import usecase.PullRequestUseCase
-import usecase.UserUseCase
+import usecase.UserContributionUseCase
 
 val repositoryModule = module {
     single { PullRequestUseCase(get(), get()) }
-    single { UserUseCase(get()) }
+    single { UserContributionUseCase(get(), get()) }
 }

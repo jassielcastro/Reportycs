@@ -1,15 +1,13 @@
 package ui.repositories
 
 import androidx.lifecycle.ViewModel
-import crypt.CryptoHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import ui.model.UiState
 import usecase.PullRequestUseCase
 import usecase.model.RepositoryData
-import ui.model.UiState
 
 class CreateNewRepositoryViewModel(
-    private val cryptoHandler: CryptoHandler,
     private val repository: PullRequestUseCase
 ) : ViewModel() {
 
@@ -40,9 +38,7 @@ class CreateNewRepositoryViewModel(
 
         if (!_createState.value.hasAnyError()) {
             _saveRepositoryState.value = UiState.Loading
-            val encryptedToken = cryptoHandler.encrypt(repositoryData.token)
-            val repositoryEncrypted = repositoryData.copy(token = encryptedToken)
-            repository.saveNewRepository(repositoryEncrypted)
+            repository.saveNewRepository(repositoryData)
             finisRepoConfiguration(repositoryData.repository, codeOwners)
         }
     }

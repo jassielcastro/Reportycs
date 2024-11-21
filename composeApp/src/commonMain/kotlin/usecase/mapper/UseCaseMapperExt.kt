@@ -6,8 +6,10 @@ import usecase.model.StaticData
 import repository.model.PullRequestDto
 import repository.model.RepositoryDto
 import repository.model.StaticDto
+import repository.model.TokenContributionDto
 import repository.remote.model.request.RepositoryRequest
 import repository.remote.model.response.PullRequestResponse
+import usecase.model.TokenForContributionData
 
 fun RepositoryDto.toRepositoryData(): RepositoryData {
     return RepositoryData(
@@ -65,5 +67,13 @@ fun StaticDto.toStaticData(): StaticData {
         avatar = this.avatar,
         reviewCommentsCount = this.reviewCommentsCount,
         approves = this.approves,
+    )
+}
+
+fun TokenContributionDto.toTokenData(): TokenForContributionData {
+    return TokenForContributionData(
+        id = this.id,
+        name = this.name,
+        token = this.token
     )
 }

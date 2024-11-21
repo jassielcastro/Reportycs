@@ -43,6 +43,12 @@ CREATE TABLE IF NOT EXISTS Metrics (
     FOREIGN KEY (repositoryId) REFERENCES Repository(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS TokenContributions (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    token TEXT NOT NULL
+);
+
 -- Repository CRUD
 
 insertRepository:
@@ -216,3 +222,24 @@ GROUP BY
     PullRequest.id, PullRequest.repositoryId, PullRequest.title, PullRequest.author, PullRequest.avatar
 ORDER BY PullRequest.id DESC
 LIMIT ?;
+
+-- Token for contributions
+
+insertTokenForContributions:
+INSERT OR REPLACE INTO
+    TokenContributions(name, token)
+VALUES(?, ?);
+
+selectAllTokenForContributions:
+SELECT
+    TokenContributions.id,
+    TokenContributions.name,
+    TokenContributions.token
+FROM
+    TokenContributions;
+
+deleteTokenForContributions:
+DELETE FROM
+    TokenContributions
+WHERE
+    TokenContributions.id = ?;

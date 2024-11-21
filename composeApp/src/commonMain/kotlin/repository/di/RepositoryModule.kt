@@ -7,7 +7,7 @@ import repository.remote.RemoteUserRepository
 
 val useCaseModule = module {
     single { RemotePullRequestRepository(get(), get()) }
-    single { LocalPullRequestRepository(get()) }
+    single { LocalPullRequestRepository(get(), get()) }
 
     single { RemoteUserRepository(get(), get()) }
 }

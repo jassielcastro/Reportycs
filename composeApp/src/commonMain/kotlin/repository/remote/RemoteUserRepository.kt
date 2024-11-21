@@ -22,10 +22,11 @@ class RemoteUserRepository(
     private val cryptoHandler: CryptoHandler
 ) {
 
-    suspend fun loadUserRepositories(
+    suspend fun loadUserContributions(
         token: String,
         userName: String
-    ) {
+    ): ResponseStatus<GitHubContributionsResponse> {
+        val decryptedToken = cryptoHandler.decrypt(token)
         val graphQLQuery = USER_CONTRIBUTION_GRAPH.trimIndent()
 
         val now = now().formatAsGithub()
@@ -36,24 +37,16 @@ class RemoteUserRepository(
             variables = UserGraphQl(
                 username = userName,
                 from = aYearAgo,
-                to =  now
+                to = now
             )
         )
 
-        val response = client.post("https://api.github.com/graphql") {
+        return client.post("https://api.github.com/graphql") {
             accept(ContentType.parse("application/json; charset=utf-8"))
             contentType(ContentType.parse("application/json; charset=utf-8"))
-            bearerAuth(token)
+            bearerAuth(decryptedToken)
             setBody<UserContributionsRequest>(payload)
         }.handleResponse<GitHubContributionsResponse>()
-
-        if (response is ResponseStatus.Success) {
-            println("RemoteUserUseCase.loadUserRepositories ---> ${response.response.data.user.contributionsCollection.contributionCalendar}")
-            println("RemoteUserUseCase.loadUserRepositories ---> ${response.response.data.user.contributionsCollection.commitContributionsByRepository}")
-            println("RemoteUserUseCase.loadUserRepositories ---> ${response.response.data.user.contributionsCollection.issueContributions}")
-            println("RemoteUserUseCase.loadUserRepositories ---> ${response.response.data.user.contributionsCollection.pullRequestContributions}")
-            println("RemoteUserUseCase.loadUserRepositories ---> ${response.response.data.user.contributionsCollection.pullRequestReviewContributions}")
-        }
     }
 
     private companion object {
