@@ -3,16 +3,16 @@ package ui.dashboard
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import repository.PullRequestRepository
-import repository.model.PullRequestData
-import repository.model.RepositoryData
+import usecase.PullRequestUseCase
+import usecase.model.PullRequestData
+import usecase.model.RepositoryData
 import ui.model.UiState
-import usecase.model.ErrorStatus
-import usecase.model.ResponseStatus
-import usecase.remote.model.request.StatsRequest
+import repository.model.ErrorStatus
+import repository.model.ResponseStatus
+import repository.remote.model.request.StatsRequest
 
 class DashboardViewModel(
-    private val repository: PullRequestRepository
+    private val repository: PullRequestUseCase
 ) : ViewModel() {
 
     private val _repositoriesState: MutableStateFlow<UiState<List<RepositoryData>>> =

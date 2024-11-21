@@ -4,10 +4,10 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import repository.PullRequestRepository
-import repository.model.CodeOwnerData
-import repository.model.RepositoryData
-import repository.model.StaticData
+import usecase.PullRequestUseCase
+import usecase.model.CodeOwnerData
+import usecase.model.RepositoryData
+import usecase.model.StaticData
 import ui.components.charts.BarChartData
 import ui.components.charts.PieChartData
 import ui.model.GithubStats
@@ -17,7 +17,7 @@ import ui.theme.chartBarsColor3
 import ui.theme.pieChartColors
 
 class StaticsViewModel(
-    private val repository: PullRequestRepository
+    private val repository: PullRequestUseCase
 ) : ViewModel() {
 
     private val _pullRequestInfoState: MutableStateFlow<UiState<GithubStats>> =

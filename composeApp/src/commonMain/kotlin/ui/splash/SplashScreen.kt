@@ -154,11 +154,9 @@ fun SplashRouterContainer(
                     largeMessage = Res.string.github_selector_user_large_message,
                     color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.55f),
                 ) {
-                    /*
                     navigateTo(
-                        viewModel.getRepositoriesDestinationScreen()
+                        viewModel.getUserDestinationScreen()
                     )
-                     */
                 }
             }
         }

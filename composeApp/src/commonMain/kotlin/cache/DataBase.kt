@@ -7,6 +7,7 @@ import cache.model.PrCommentsEntity
 import cache.model.PullRequestEntity
 import cache.model.RepositoryEntity
 import cache.model.StaticEntity
+import cache.model.TokenContributionEntity
 import com.ajcm.jira.cache.AppDatabaseQueries
 import ext.now
 
@@ -195,7 +196,7 @@ class DataBase(
     }
 
     fun updateLastDateOfInsertions() {
-        dbQuery.setDateOfInsertion(now())
+        dbQuery.setDateOfInsertion(now().toString())
     }
 
     /**
@@ -219,5 +220,35 @@ class DataBase(
                     approves = pullRequest.approvers.split(",").map { it.trim() },
                 )
             }
+    }
+
+    /**
+     * Token contributions CRUD
+     */
+
+    fun addNewTokenForContributions(
+        tokenName: String,
+        token: String
+    ) {
+        dbQuery.insertTokenForContributions(
+            name = tokenName,
+            token = token
+        )
+    }
+
+    fun getTokenContributionList(): List<TokenContributionEntity> {
+        return dbQuery.selectAllTokenForContributions()
+            .executeAsList()
+            .map { token ->
+                TokenContributionEntity(
+                    id = token.id.toInt(),
+                    name = token.name,
+                    token = token.token
+                )
+            }
+    }
+
+    fun deleteTokenForContributions(id: Int) {
+        dbQuery.deleteTokenForContributions(id.toLong())
     }
 }

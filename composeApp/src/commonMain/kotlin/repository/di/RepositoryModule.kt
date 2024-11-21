@@ -1,8 +1,13 @@
 package repository.di
 
 import org.koin.dsl.module
-import repository.PullRequestRepository
+import repository.local.LocalPullRequestRepository
+import repository.remote.RemotePullRequestRepository
+import repository.remote.RemoteUserRepository
 
-val repositoryModule = module {
-    single { PullRequestRepository(get(), get()) }
+val useCaseModule = module {
+    single { RemotePullRequestRepository(get(), get()) }
+    single { LocalPullRequestRepository(get(), get()) }
+
+    single { RemoteUserRepository(get(), get()) }
 }

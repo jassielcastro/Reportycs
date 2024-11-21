@@ -1,10 +1,10 @@
 package usecase.di
 
 import org.koin.dsl.module
-import usecase.local.LocalPullRequestUseCase
-import usecase.remote.RemotePullRequestUseCase
+import usecase.PullRequestUseCase
+import usecase.UserContributionUseCase
 
-val useCaseModule = module {
-    single { RemotePullRequestUseCase(get(), get()) }
-    single { LocalPullRequestUseCase(get()) }
+val repositoryModule = module {
+    single { PullRequestUseCase(get(), get()) }
+    single { UserContributionUseCase(get(), get()) }
 }

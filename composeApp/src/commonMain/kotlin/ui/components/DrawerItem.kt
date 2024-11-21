@@ -16,7 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import repository.model.RepositoryData
+import usecase.model.RepositoryData
 
 @Composable
 fun DrawerItem(

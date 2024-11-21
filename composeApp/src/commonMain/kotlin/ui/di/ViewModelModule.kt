@@ -9,8 +9,8 @@ import ui.statics.StaticsViewModel
 
 val viewModelModule = module {
     factory { SplashViewModel(get()) }
-    factory { CreateNewRepositoryViewModel(get(), get()) }
+    factory { CreateNewRepositoryViewModel(get()) }
     factory { DashboardViewModel(get()) }
-    factory { RestartTokenViewModel(get(), get()) }
+    factory { RestartTokenViewModel(get()) }
     factory { StaticsViewModel(get()) }
 }
