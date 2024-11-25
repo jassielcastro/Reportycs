@@ -1,8 +1,8 @@
 package ui.splash
 
 import androidx.lifecycle.ViewModel
-import usecase.PullRequestUseCase
 import ui.GithubScreen
+import usecase.PullRequestUseCase
 
 class SplashViewModel(
     private val repository: PullRequestUseCase

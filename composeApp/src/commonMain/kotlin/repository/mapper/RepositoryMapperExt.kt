@@ -14,7 +14,6 @@ fun RepositoryDto.toRepositoryEntity(): RepositoryEntity {
         id = this.id,
         owner = this.owner,
         repository = this.repository,
-        token = this.token,
     )
 }
 
@@ -23,7 +22,6 @@ fun RepositoryEntity.toRepositoryDto(): RepositoryDto {
         id = this.id,
         owner = this.owner,
         repository = this.repository,
-        token = this.token,
     )
 }
 

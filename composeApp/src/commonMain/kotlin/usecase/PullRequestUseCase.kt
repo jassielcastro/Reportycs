@@ -41,12 +41,8 @@ class PullRequestUseCase(
         localUseCase.removeRepository(repositoryId)
     }
 
-    fun updateRepositoryToken(repositoryId: Int, newToken: String) {
-        localUseCase.updateRepositoryToken(repositoryId, newToken)
-    }
-
-    fun clearRepositoryPullRequest(repositoryId: Int) {
-        localUseCase.clearPullRequest(repositoryId)
+    fun clearRepositoryPullRequest() {
+        localUseCase.clearPullRequest()
     }
 
     fun setRepositoryMetrics(repositoryId: Int, prsToAnalyze: Int) {
@@ -83,7 +79,7 @@ class PullRequestUseCase(
         reload: Boolean = false
     ): ResponseStatus<List<PullRequestData>> {
         if (localUseCase.needResetPullRequest()) {
-            localUseCase.clearPullRequest(repositoryData.id)
+            localUseCase.clearPullRequest()
         }
 
         val repositoryRequest = repositoryData.toRepositoryRequest()

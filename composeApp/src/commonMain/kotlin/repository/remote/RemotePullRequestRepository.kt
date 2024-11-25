@@ -6,6 +6,7 @@ import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import repository.ext.handleResponse
+import repository.local.LocalTokenRepository
 import repository.model.ErrorStatus
 import repository.model.ResponseStatus
 import repository.remote.model.request.RepositoryRequest
@@ -16,15 +17,15 @@ import repository.remote.model.response.PullRequestInfoResponse
 
 class RemotePullRequestRepository(
     private val client: HttpClient,
-    private val cryptoHandler: CryptoHandler
+    private val cryptoHandler: CryptoHandler,
+    private val localTokenRepository: LocalTokenRepository
 ) {
     suspend fun getPullRequest(
         repository: RepositoryRequest,
         stats: StatsRequest
     ): ResponseStatus<List<PullRequestResponse>> {
-        val token = cryptoHandler.decrypt(repository.token)
         val response = client.get("/repos/${repository.owner}/${repository.repo}/pulls") {
-            bearerAuth(token)
+            bearerAuth(getToken())
             parameter("page", stats.page)
             parameter("per_page", stats.perPage)
             parameter("base", stats.baseBranch)
@@ -52,9 +53,8 @@ class RemotePullRequestRepository(
         request: RepositoryRequest,
         pullRequestId: Int,
     ): ResponseStatus<PullRequestInfoResponse> {
-        val token = cryptoHandler.decrypt(request.token)
         return client.get("/repos/${request.owner}/${request.repo}/pulls/${pullRequestId}") {
-            bearerAuth(token)
+            bearerAuth(getToken())
         }.handleResponse()
     }
 
@@ -62,10 +62,9 @@ class RemotePullRequestRepository(
         request: RepositoryRequest,
         pullRequestId: Int,
     ): ResponseStatus<List<ApproveResponse>> {
-        val token = cryptoHandler.decrypt(request.token)
         val result =
             client.get("/repos/${request.owner}/${request.repo}/pulls/${pullRequestId}/reviews") {
-                bearerAuth(token)
+                bearerAuth(getToken())
             }.handleResponse<List<ApproveResponse>>()
 
         if (result is ResponseStatus.Success) {
@@ -80,5 +79,14 @@ class RemotePullRequestRepository(
         }
 
         return result
+    }
+
+    private fun getToken(): String {
+        val token = localTokenRepository
+            .getAllTokenContributionList()
+            .map { it.token }
+            .firstOrNull()
+            .orEmpty()
+        return cryptoHandler.decrypt(token)
     }
 }

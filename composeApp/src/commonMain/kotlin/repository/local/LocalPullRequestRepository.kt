@@ -3,7 +3,6 @@ package repository.local
 import cache.DataBase
 import cache.model.ApproveEntity
 import cache.model.PrCommentsEntity
-import crypt.CryptoHandler
 import ext.now
 import repository.mapper.toOwnerDto
 import repository.mapper.toOwnerEntity
@@ -22,18 +21,14 @@ import java.time.temporal.ChronoUnit
 
 class LocalPullRequestRepository(
     private val dataBase: DataBase,
-    private val cryptoHandler: CryptoHandler
 ) {
 
     /**
      * Repository CRUD
      */
     fun addNewRepository(repository: RepositoryDto) {
-        val encryptedRepo = repository.copy(
-            token = cryptoHandler.encrypt(repository.token)
-        )
         dataBase.insertNewRepository(
-            repository = encryptedRepo.toRepositoryEntity()
+            repository = repository.toRepositoryEntity()
         )
     }
 
@@ -49,10 +44,6 @@ class LocalPullRequestRepository(
 
     fun removeRepository(repositoryId: Int) {
         dataBase.removeRepository(repositoryId)
-    }
-
-    fun updateRepositoryToken(repositoryId: Int, newToken: String) {
-        dataBase.updateRepositoryToken(repositoryId, cryptoHandler.encrypt(newToken))
     }
 
     /**
@@ -104,8 +95,8 @@ class LocalPullRequestRepository(
         )
     }
 
-    fun clearPullRequest(repositoryId: Int) {
-        dataBase.clearPullRequest(repositoryId)
+    fun clearPullRequest() {
+        dataBase.clearPullRequest()
     }
 
     /**

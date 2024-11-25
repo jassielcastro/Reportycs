@@ -64,7 +64,7 @@ import ui.components.LoadingScreen
 import ui.components.NormalReportycsButton
 import ui.components.PullRequestItem
 import ui.components.ReportycsButton
-import ui.dashboard.token.RestartTokenScreen
+import ui.token.RestartTokenScreen
 import ui.model.UiState
 
 @Composable
@@ -189,9 +189,6 @@ fun PullRequestScreen(
                 onGenerateReportsClicked = {
                     repositorySelected?.let { onGenerateReportsClicked(it) }
                 },
-                onRestartTokenClicked = {
-                    showBottomSheet = true
-                },
                 onDeleteClicked = {
                     repositorySelected?.let { viewModel.deleteRepository(it.id) }
                 }
@@ -212,7 +209,7 @@ fun PullRequestScreen(
             )
         }
 
-        if (showBottomSheet && repositorySelected != null) {
+        if (showBottomSheet) {
             ModalBottomSheet(
                 onDismissRequest = {
                     showBottomSheet = false
@@ -220,7 +217,7 @@ fun PullRequestScreen(
                 containerColor = MaterialTheme.colorScheme.primary,
                 sheetState = sheetState
             ) {
-                RestartTokenScreen(repositorySelected.id) {
+                RestartTokenScreen {
                     scope.launch {
                         viewModel.loadRepositories()
                         sheetState.hide()
@@ -341,7 +338,6 @@ fun RepositoryHeader(
     showActions: Boolean,
     pullRequestToAnalyze: () -> Int,
     onGenerateReportsClicked: () -> Unit,
-    onRestartTokenClicked: () -> Unit,
     onDeleteClicked: () -> Unit
 ) {
     Row(
@@ -391,17 +387,6 @@ fun RepositoryHeader(
                     }
                 )
             }
-
-            NormalReportycsButton(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .wrapContentWidth()
-                    .height(48.dp),
-                text = stringResource(Res.string.restart_token_button),
-                onClick = {
-                    onRestartTokenClicked()
-                }
-            )
 
             IconButton(
                 icon = Res.drawable.ic_delete_forever,

@@ -7,5 +7,4 @@ data class RepositoryRequest(
     val id: Int,
     val owner: String,
     val repo: String,
-    val token: String
 )

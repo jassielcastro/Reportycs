@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -27,8 +26,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,16 +41,14 @@ import jirareports.composeapp.generated.resources.repository_owner_placeholder
 import jirareports.composeapp.generated.resources.repository_owners
 import jirareports.composeapp.generated.resources.repository_owners_helper
 import jirareports.composeapp.generated.resources.repository_owners_placeholder
-import jirareports.composeapp.generated.resources.repository_token
-import jirareports.composeapp.generated.resources.repository_token_placeholder
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.rememberKoinInject
-import usecase.model.RepositoryData
 import ui.components.ReportycsButton
 import ui.components.dots.ConnectedDotsScreen
 import ui.model.UiState
 import ui.theme.GithubTextOutlinedColor
 import ui.theme.dashboardColor
+import usecase.model.RepositoryData
 
 @Composable
 fun CreateNewRepositoryScreen(
@@ -67,7 +62,7 @@ fun CreateNewRepositoryScreen(
     ) {
         Surface(
             modifier = Modifier
-                .fillMaxSize(0.75f),
+                .fillMaxSize(0.6f),
             color = MaterialTheme.colorScheme.secondary,
             shape = MaterialTheme.shapes.large
         ) {
@@ -79,7 +74,7 @@ fun CreateNewRepositoryScreen(
                 AddRepositoryForm(
                     modifier = Modifier
                         .padding(24.dp)
-                        .fillMaxWidth(0.47f)
+                        .fillMaxWidth(0.55f)
                         .fillMaxHeight(),
                     onSuccess = onSuccess
                 )
@@ -100,7 +95,6 @@ fun CreateNewRepositoryScreen(
     }
 }
 
-
 @Composable
 fun AddRepositoryForm(
     modifier: Modifier = Modifier,
@@ -118,7 +112,6 @@ fun AddRepositoryForm(
 
     var ownerText by remember { mutableStateOf("") }
     var repositoryText by remember { mutableStateOf("") }
-    var tokenText by remember { mutableStateOf("") }
     var ownersText by remember { mutableStateOf("") }
 
     val createStateError by viewModel.createState.collectAsState()
@@ -217,44 +210,6 @@ fun AddRepositoryForm(
         )
 
         Text(
-            text = stringResource(Res.string.repository_token),
-            color = MaterialTheme.colorScheme.onPrimary,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Light,
-            textAlign = TextAlign.Start,
-            modifier = Modifier
-                .padding(bottom = 8.dp)
-                .fillMaxWidth()
-        )
-
-        OutlinedTextField(
-            value = tokenText,
-            onValueChange = {
-                tokenText = it
-                viewModel.updateTokenErrorState(tokenText.isEmpty())
-            },
-            placeholder = { TextPlaceHolder(stringResource(Res.string.repository_token_placeholder)) },
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            textStyle = TextStyle(
-                color = MaterialTheme.colorScheme.onPrimary,
-                fontWeight = FontWeight.Bold
-            ),
-            singleLine = true,
-            isError = createStateError.hasTokenError,
-            supportingText = {
-                if (createStateError.hasTokenError) {
-                    TextErrorHelper(stringResource(Res.string.repository_error_field))
-                }
-            },
-            shape = MaterialTheme.shapes.small,
-            colors = GithubTextOutlinedColor(),
-            modifier = Modifier
-                .padding(bottom = 24.dp)
-                .fillMaxWidth()
-        )
-
-        Text(
             text = stringResource(Res.string.repository_owners),
             color = MaterialTheme.colorScheme.onPrimary,
             fontSize = 16.sp,
@@ -313,7 +268,6 @@ fun AddRepositoryForm(
                     RepositoryData(
                         owner = ownerText,
                         repository = repositoryText,
-                        token = tokenText,
                     ),
                     ownersText
                 )

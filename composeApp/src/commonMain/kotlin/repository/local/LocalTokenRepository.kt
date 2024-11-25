@@ -5,7 +5,7 @@ import crypt.CryptoHandler
 import repository.mapper.toDto
 import repository.model.TokenContributionDto
 
-class LocalUserRepository(
+class LocalTokenRepository(
     private val dataBase: DataBase,
     private val cryptoHandler: CryptoHandler
 ) {
@@ -14,11 +14,14 @@ class LocalUserRepository(
      */
 
     fun addNewTokenForContributions(
-        userName: String,
+        tokenName: String,
         token: String
     ) {
         val encryptedToken = cryptoHandler.encrypt(token)
-        dataBase.addNewTokenForContributions(userName, encryptedToken)
+        dataBase.addNewTokenForContributions(
+            tokenName = tokenName,
+            token = encryptedToken
+        )
     }
 
     fun getAllTokenContributionList(): List<TokenContributionDto> {
@@ -27,7 +30,7 @@ class LocalUserRepository(
         }
     }
 
-    fun deleteTokenForContribution(id: Int) {
-        dataBase.deleteTokenForContributions(id)
+    fun deleteTokenForContribution() {
+        dataBase.deleteTokenForContributions()
     }
 }

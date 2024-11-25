@@ -4,7 +4,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,19 +23,25 @@ import jirareports.composeapp.generated.resources.Res
 import jirareports.composeapp.generated.resources.back_button
 import jirareports.composeapp.generated.resources.ic_arrow_back
 import jirareports.composeapp.generated.resources.ic_reportycs_logo_small
+import jirareports.composeapp.generated.resources.restart_token_button
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
+import org.koin.compose.rememberKoinInject
 import ui.GithubScreen
+import ui.TokenViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GithubAppBar(
+    modifier: Modifier = Modifier,
     currentScreen: GithubScreen,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
-    modifier: Modifier = Modifier
+    onUpdateTokenClick: () -> Unit
 ) {
+    val viewModel = rememberKoinInject<TokenViewModel>()
+
     TopAppBar(
         title = {
             AppBarLogo(
@@ -53,6 +61,11 @@ fun GithubAppBar(
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
+            }
+        },
+        actions = {
+            if (viewModel.getProjectToken() != null && currentScreen == GithubScreen.Splash) {
+                AppTokenMenu(onUpdateTokenClick = onUpdateTokenClick)
             }
         }
     )
@@ -80,4 +93,19 @@ fun AppBarLogo(
             )
         }
     }
+}
+
+@Composable
+fun AppTokenMenu(
+    modifier: Modifier = Modifier,
+    onUpdateTokenClick: () -> Unit
+) {
+    NormalReportycsButton(
+        modifier = modifier
+            .padding(horizontal = 16.dp)
+            .wrapContentWidth()
+            .height(48.dp),
+        text = stringResource(Res.string.restart_token_button),
+        onClick = onUpdateTokenClick
+    )
 }
