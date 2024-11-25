@@ -13,13 +13,11 @@ object FakeRepositoryData {
             id = 1,
             owner = "jassielcastro",
             repository = "Reportycs",
-            token = "",
         ),
         RepositoryData(
             id = 2,
             owner = "fake-repository",
             repository = "other-repo",
-            token = "",
         )
     )
 

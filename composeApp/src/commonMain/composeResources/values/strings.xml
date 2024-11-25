@@ -5,6 +5,10 @@
     <string name="statics_screen">Statics</string>
     <string name="back_button">Back</string>
 
+    <string name="splash_empty_token_title">Token</string>
+    <string name="splash_empty_token_subtitle">You have not yet added a token. Adding this token will allow you to make queries regarding the Repositories and Users you are interested in.</string>
+    <string name="splash_empty_token_message">Click here to add new Token</string>
+
     <string name="github_selector_repository_title">Repositories</string>
     <string name="github_selector_repository_message">Manage, browse and view statistics of your repositories</string>
     <string name="github_selector_repository_large_message">Access detailed information about your projects, partners and more.</string>
@@ -19,8 +23,6 @@
     <string name="repository_owner_placeholder">Owner</string>
     <string name="repository_name">Repository name</string>
     <string name="repository_name_placeholder">Name</string>
-    <string name="repository_token">Github Token</string>
-    <string name="repository_token_placeholder">Token</string>
     <string name="repository_owners">Code owners (Github user name)</string>
     <string name="repository_owners_placeholder">alan, rigo_tovar, mark_zucaritas</string>
     <string name="repository_owners_helper">Add the Owners separated by comma, this will help to perform the metrics per user later on</string>
@@ -48,11 +50,11 @@
     <string name="general_failure_error_message">Ooooh no... I think you don't have internet!</string>
     <string name="general_retry_button">Retry</string>
 
-    <string name="refresh_token_screen_title">Update the Github token</string>
-    <string name="refresh_token_screen_subtitle">Changing this token could affect the new requests... so be careful!</string>
+    <string name="refresh_token_screen_title">Github token</string>
+    <string name="refresh_token_screen_subtitle">Setting this token could affect the new requests... so be careful!</string>
     <string name="refresh_token_screen_helper">New Github Token</string>
     <string name="refresh_token_screen_placeholder">Token</string>
-    <string name="refresh_token_screen_button">Update</string>
+    <string name="refresh_token_screen_button">Confirm</string>
 
     <string name="loading_info_message_loading">Loading...</string>
     <string name="loading_info_message_1">Summoning the GitHub spirits... PRs inbound!</string>

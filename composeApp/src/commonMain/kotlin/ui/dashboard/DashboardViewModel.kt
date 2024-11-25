@@ -12,7 +12,7 @@ import repository.model.ResponseStatus
 import repository.remote.model.request.StatsRequest
 
 class DashboardViewModel(
-    private val repository: PullRequestUseCase
+    private val useCase: PullRequestUseCase
 ) : ViewModel() {
 
     private val _repositoriesState: MutableStateFlow<UiState<List<RepositoryData>>> =
@@ -25,7 +25,7 @@ class DashboardViewModel(
 
     fun loadRepositories() {
         runCatching {
-            repository.getAllRepositories()
+            useCase.getAllRepositories()
         }.onSuccess { repositories ->
             _repositoriesState.value = UiState.Success(repositories)
         }.onFailure {
@@ -37,13 +37,14 @@ class DashboardViewModel(
         _pullRequestState.value = UiState.Loading
 
         runCatching {
-            repository.getPullRequest(
+            useCase.getPullRequest(
                 repositoryData = repositoryData,
                 statRequest = StatsRequest()
             )
         }.onSuccess { pullRequest ->
             handlePullRequestLoad(pullRequest)
         }.onFailure {
+            it.printStackTrace()
             _pullRequestState.value = UiState.Failure
         }
     }
@@ -66,11 +67,11 @@ class DashboardViewModel(
     }
 
     fun loadPRsToAnalyze(repositoryId: Int): Int {
-        return repository.getPRsSizeToAnalyse(repositoryId)
+        return useCase.getPRsSizeToAnalyse(repositoryId)
     }
 
     fun deleteRepository(repositoryId: Int) {
-        repository.deleteRepository(repositoryId)
+        useCase.deleteRepository(repositoryId)
         loadRepositories()
     }
 }

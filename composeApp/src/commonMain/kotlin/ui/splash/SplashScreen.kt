@@ -1,10 +1,6 @@
 package ui.splash
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -44,8 +39,12 @@ import jirareports.composeapp.generated.resources.github_selector_user_large_mes
 import jirareports.composeapp.generated.resources.github_selector_user_message
 import jirareports.composeapp.generated.resources.github_selector_user_title
 import jirareports.composeapp.generated.resources.ic_folder_git
+import jirareports.composeapp.generated.resources.ic_key_plus
 import jirareports.composeapp.generated.resources.ic_users
 import jirareports.composeapp.generated.resources.reportycs_logo
+import jirareports.composeapp.generated.resources.splash_empty_token_message
+import jirareports.composeapp.generated.resources.splash_empty_token_subtitle
+import jirareports.composeapp.generated.resources.splash_empty_token_title
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
@@ -53,13 +52,16 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.rememberKoinInject
 import ui.GithubScreen
+import ui.TokenViewModel
 import ui.components.dots.ConnectedDotsScreen
 import ui.theme.dashboardColor
 
 @Composable
 fun SplashScreen(
     modifier: Modifier = Modifier,
-    navigateTo: (GithubScreen) -> Unit
+    reloadState: Boolean,
+    navigateTo: (GithubScreen) -> Unit,
+    onRequestAddTokenScreen: () -> Unit
 ) {
     Box(
         contentAlignment = Alignment.Center,
@@ -79,26 +81,27 @@ fun SplashScreen(
         )
 
         SplashRouterContainer(
-            navigateTo = navigateTo
+            reloadState = reloadState,
+            navigateTo = navigateTo,
+            onRequestAddTokenScreen = onRequestAddTokenScreen
         )
     }
 }
 
 @Composable
 fun SplashRouterContainer(
-    durationMillisAnimation: Long = 2_000,
-    navigateTo: (GithubScreen) -> Unit
+    reloadState: Boolean,
+    navigateTo: (GithubScreen) -> Unit,
+    onRequestAddTokenScreen: () -> Unit
 ) {
-    var visible by remember {
+    var hasActiveTokens by remember {
         mutableStateOf(false)
     }
-    val density = LocalDensity.current
 
-    val viewModel = rememberKoinInject<SplashViewModel>()
+    val tokenViewModel = rememberKoinInject<TokenViewModel>()
 
-    LaunchedEffect(key1 = true) {
-        delay(timeMillis = durationMillisAnimation)
-        visible = true
+    LaunchedEffect(key1 = reloadState) {
+        hasActiveTokens = tokenViewModel.getProjectToken() != null
     }
 
     Column(
@@ -115,50 +118,77 @@ fun SplashRouterContainer(
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
         )
 
-        AnimatedVisibility(
-            visible = visible,
-            enter = slideInVertically {
-                with(density) { -40.dp.roundToPx() }
-            } + expandVertically(
-                expandFrom = Alignment.Top
-            ) + fadeIn(
-                initialAlpha = 0.3f
-            ),
-            exit = slideOutVertically()
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                CardComponentSelector(
-                    modifier = Modifier
-                        .requiredWidthIn(800.dp, 500.dp)
-                        .wrapContentHeight(),
-                    image = Res.drawable.ic_folder_git,
-                    title = Res.string.github_selector_repository_title,
-                    message = Res.string.github_selector_repository_message,
-                    largeMessage = Res.string.github_selector_repository_large_message,
-                    color = dashboardColor.copy(alpha = 0.55f),
-                ) {
-                    navigateTo(
-                        viewModel.getRepositoriesDestinationScreen()
-                    )
-                }
-
-                CardComponentSelector(
-                    modifier = Modifier
-                        .requiredWidthIn(800.dp, 500.dp)
-                        .wrapContentHeight(),
-                    image = Res.drawable.ic_users,
-                    title = Res.string.github_selector_user_title,
-                    message = Res.string.github_selector_user_message,
-                    largeMessage = Res.string.github_selector_user_large_message,
-                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.55f),
-                ) {
-                    navigateTo(
-                        viewModel.getUserDestinationScreen()
-                    )
-                }
+        AnimatedContent(
+            targetState = hasActiveTokens
+        ) { targetState ->
+            if (targetState) {
+                CardsSelectorScreen(
+                    navigateTo = navigateTo
+                )
+            } else {
+                EmptyTokenScreen(onRequestAddTokenScreen = onRequestAddTokenScreen)
             }
+        }
+    }
+}
+
+@Composable
+fun EmptyTokenScreen(
+    modifier: Modifier = Modifier,
+    onRequestAddTokenScreen: () -> Unit
+) {
+    CardComponentSelector(
+        modifier = modifier
+            .requiredWidthIn(800.dp, 500.dp)
+            .wrapContentHeight(),
+        image = Res.drawable.ic_key_plus,
+        title = Res.string.splash_empty_token_title,
+        message = Res.string.splash_empty_token_subtitle,
+        largeMessage = Res.string.splash_empty_token_message,
+        color = dashboardColor.copy(alpha = 0.55f),
+        onClick = onRequestAddTokenScreen
+    )
+}
+
+@Composable
+fun CardsSelectorScreen(
+    modifier: Modifier = Modifier,
+    navigateTo: (GithubScreen) -> Unit
+) {
+    val viewModel = rememberKoinInject<SplashViewModel>()
+
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        CardComponentSelector(
+            modifier = Modifier
+                .requiredWidthIn(800.dp, 500.dp)
+                .wrapContentHeight(),
+            image = Res.drawable.ic_folder_git,
+            title = Res.string.github_selector_repository_title,
+            message = Res.string.github_selector_repository_message,
+            largeMessage = Res.string.github_selector_repository_large_message,
+            color = dashboardColor.copy(alpha = 0.55f),
+        ) {
+            navigateTo(
+                viewModel.getRepositoriesDestinationScreen()
+            )
+        }
+
+        CardComponentSelector(
+            modifier = Modifier
+                .requiredWidthIn(800.dp, 500.dp)
+                .wrapContentHeight(),
+            image = Res.drawable.ic_users,
+            title = Res.string.github_selector_user_title,
+            message = Res.string.github_selector_user_message,
+            largeMessage = Res.string.github_selector_user_large_message,
+            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.55f),
+        ) {
+            navigateTo(
+                viewModel.getUserDestinationScreen()
+            )
         }
     }
 }

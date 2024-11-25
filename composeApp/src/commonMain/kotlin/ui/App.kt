@@ -2,9 +2,17 @@ package ui
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavHostController
@@ -15,6 +23,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import di.appModule
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinApplication
 import ui.components.GithubAppBar
@@ -23,6 +32,7 @@ import ui.repositories.CreateNewRepositoryScreen
 import ui.splash.SplashScreen
 import ui.statics.StaticsScreen
 import ui.theme.GithubStatsTheme
+import ui.token.RestartTokenScreen
 import ui.user.UserDashboardScreen
 
 /**
@@ -62,6 +72,7 @@ sealed class GithubScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
 fun App(
@@ -76,12 +87,20 @@ fun App(
                 backStackEntry?.destination?.route ?: GithubScreen.Splash.destination
             )
 
+            val sheetState = rememberModalBottomSheetState()
+            val scope = rememberCoroutineScope()
+            var showBottomSheet by remember { mutableStateOf(false) }
+            var reloadState by remember { mutableStateOf(false) }
+
             Scaffold(
                 topBar = {
                     GithubAppBar(
                         currentScreen = currentScreen,
                         canNavigateBack = navController.previousBackStackEntry != null,
-                        navigateUp = { navController.navigateUp() }
+                        navigateUp = { navController.navigateUp() },
+                        onUpdateTokenClick = {
+                            showBottomSheet = true
+                        }
                     )
                 }
             ) { innerPadding ->
@@ -93,9 +112,15 @@ fun App(
                         .padding(innerPadding)
                 ) {
                     composable(route = GithubScreen.Splash.destination) {
-                        SplashScreen { destination ->
-                            navController.navigate(route = destination.destination)
-                        }
+                        SplashScreen(
+                            reloadState = reloadState,
+                            navigateTo = { destination ->
+                                navController.navigate(route = destination.destination)
+                            },
+                            onRequestAddTokenScreen = {
+                                showBottomSheet = true
+                            }
+                        )
                     }
 
                     composable(route = GithubScreen.CreateRepository.destination) {
@@ -137,6 +162,28 @@ fun App(
 
                     composable(route = GithubScreen.UserDashboard.destination) {
                         UserDashboardScreen()
+                    }
+                }
+
+                if (showBottomSheet) {
+                    reloadState = false
+                    ModalBottomSheet(
+                        onDismissRequest = {
+                            showBottomSheet = false
+                        },
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        sheetState = sheetState
+                    ) {
+                        RestartTokenScreen {
+                            scope.launch {
+                                reloadState = true
+                                sheetState.hide()
+                            }.invokeOnCompletion {
+                                if (!sheetState.isVisible) {
+                                    showBottomSheet = false
+                                }
+                            }
+                        }
                     }
                 }
             }

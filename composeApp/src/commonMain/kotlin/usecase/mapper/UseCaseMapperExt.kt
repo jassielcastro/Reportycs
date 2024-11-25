@@ -16,7 +16,6 @@ fun RepositoryDto.toRepositoryData(): RepositoryData {
         id = this.id,
         owner = this.owner,
         repository = this.repository,
-        token = this.token,
     )
 }
 
@@ -25,7 +24,6 @@ fun RepositoryData.toRepositoryDto(): RepositoryDto {
         id = this.id,
         owner = this.owner,
         repository = this.repository,
-        token = this.token,
     )
 }
 
@@ -34,7 +32,6 @@ fun RepositoryData.toRepositoryRequest(): RepositoryRequest {
         id = this.id,
         owner = this.owner,
         repo = this.repository,
-        token = this.token,
     )
 }
 

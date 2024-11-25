@@ -28,10 +28,6 @@ class CreateNewRepositoryViewModel(
             _createState.value = _createState.value.copy(hasNameError = true)
         }
 
-        if (repositoryData.token.isEmpty()) {
-            _createState.value = _createState.value.copy(hasTokenError = true)
-        }
-
         if (codeOwners.isEmpty()) {
             _createState.value = _createState.value.copy(hasCodeOwnersError = true)
         }
@@ -72,10 +68,6 @@ class CreateNewRepositoryViewModel(
         _createState.value = _createState.value.copy(hasNameError = newValue)
     }
 
-    fun updateTokenErrorState(newValue: Boolean) {
-        _createState.value = _createState.value.copy(hasTokenError = newValue)
-    }
-
     fun updateCodeOwnerErrorState(newValue: Boolean) {
         _createState.value = _createState.value.copy(hasCodeOwnersError = newValue)
     }
@@ -83,9 +75,8 @@ class CreateNewRepositoryViewModel(
     data class CreateState(
         var hasOwnerError: Boolean = false,
         var hasNameError: Boolean = false,
-        var hasTokenError: Boolean = false,
         var hasCodeOwnersError: Boolean = false
     ) {
-        fun hasAnyError() = hasOwnerError || hasNameError || hasTokenError || hasCodeOwnersError
+        fun hasAnyError() = hasOwnerError || hasNameError || hasCodeOwnersError
     }
 }

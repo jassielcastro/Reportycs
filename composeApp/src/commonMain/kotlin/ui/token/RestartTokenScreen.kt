@@ -1,4 +1,4 @@
-package ui.dashboard.token
+package ui.token
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,6 +32,7 @@ import jirareports.composeapp.generated.resources.refresh_token_screen_title
 import jirareports.composeapp.generated.resources.repository_error_field
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.rememberKoinInject
+import ui.TokenViewModel
 import ui.components.NormalReportycsButton
 import ui.repositories.TextErrorHelper
 import ui.repositories.TextPlaceHolder
@@ -39,10 +40,9 @@ import ui.theme.GithubTextOutlinedColor
 
 @Composable
 fun RestartTokenScreen(
-    selectedRepositoryId: Int,
-    onClicked: () -> Unit
+    onSaved: () -> Unit
 ) {
-    val viewModel = rememberKoinInject<RestartTokenViewModel>()
+    val viewModel = rememberKoinInject<TokenViewModel>()
     var tokenText by remember { mutableStateOf("") }
 
     Column(
@@ -112,8 +112,8 @@ fun RestartTokenScreen(
                 .height(48.dp),
             text = stringResource(Res.string.refresh_token_screen_button),
             onClick = {
-                viewModel.updateRepositoryToken(selectedRepositoryId, tokenText)
-                onClicked()
+                viewModel.updateProjectToken(tokenText)
+                onSaved()
             }
         )
     }

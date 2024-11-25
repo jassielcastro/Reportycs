@@ -1,8 +1,7 @@
 CREATE TABLE IF NOT EXISTS Repository (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     owner TEXT NOT NULL,
-    repository TEXT NOT NULL,
-    token TEXT NOT NULL
+    repository TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS PullRequest (
@@ -53,15 +52,14 @@ CREATE TABLE IF NOT EXISTS TokenContributions (
 
 insertRepository:
 INSERT OR REPLACE INTO
-    Repository(owner, repository, token)
-VALUES(?, ?, ?);
+    Repository(owner, repository)
+VALUES(?, ?);
 
 selectAllRepositories:
 SELECT
     Repository.id,
     Repository.owner,
-    Repository.repository,
-    Repository.token
+    Repository.repository
 FROM
     Repository;
 
@@ -69,8 +67,7 @@ selectRepository:
 SELECT
     Repository.id,
     Repository.owner,
-    Repository.repository,
-    Repository.token
+    Repository.repository
 FROM
     Repository
 WHERE
@@ -81,11 +78,6 @@ DELETE FROM
     Repository
 WHERE
     Repository.id = ?;
-
-updateRepositoryToken:
-UPDATE Repository
-    SET token = ?
-WHERE Repository.id = ?;
 
 -- Owners CRUD
 
@@ -147,10 +139,7 @@ ORDER BY PullRequest.id DESC
 LIMIT ?;
 
 clearPullRequest:
-DELETE FROM
-    PullRequest
-WHERE
-    PullRequest.repositoryId = ?;
+DELETE FROM PullRequest;
 
 -- Approves CRUD
 
@@ -239,7 +228,4 @@ FROM
     TokenContributions;
 
 deleteTokenForContributions:
-DELETE FROM
-    TokenContributions
-WHERE
-    TokenContributions.id = ?;
+DELETE FROM TokenContributions;

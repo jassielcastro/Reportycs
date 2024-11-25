@@ -25,7 +25,6 @@ class DataBase(
         dbQuery.insertRepository(
             owner = repository.owner,
             repository = repository.repository,
-            token = repository.token,
         )
     }
 
@@ -35,7 +34,6 @@ class DataBase(
                 repo.id.toInt(),
                 repo.owner,
                 repo.repository,
-                repo.token,
             )
         }
     }
@@ -49,18 +47,12 @@ class DataBase(
                 repo.id.toInt(),
                 repo.owner,
                 repo.repository,
-                repo.token,
             )
         }
     }
 
     fun removeRepository(repositoryId: Int) {
         dbQuery.deleteRepository(repositoryId.toLong())
-    }
-
-    fun updateRepositoryToken(repositoryId: Int, newToken: String) {
-        dbQuery.setDateOfInsertion(null)
-        dbQuery.updateRepositoryToken(newToken, repositoryId.toLong())
     }
 
     /**
@@ -145,8 +137,9 @@ class DataBase(
         }
     }
 
-    fun clearPullRequest(repositoryId: Int) {
-        dbQuery.clearPullRequest(repositoryId.toLong())
+    fun clearPullRequest() {
+        dbQuery.setDateOfInsertion(null)
+        dbQuery.clearPullRequest()
     }
 
     /**
@@ -192,7 +185,7 @@ class DataBase(
     fun getLastDateInsertion(): String? {
         return dbQuery.selectLastInsertion { date ->
             date.orEmpty()
-        }.executeAsList().lastOrNull()
+        }.executeAsList().lastOrNull()?.takeIf { it.isNotEmpty() }
     }
 
     fun updateLastDateOfInsertions() {
@@ -248,7 +241,7 @@ class DataBase(
             }
     }
 
-    fun deleteTokenForContributions(id: Int) {
-        dbQuery.deleteTokenForContributions(id.toLong())
+    fun deleteTokenForContributions() {
+        dbQuery.deleteTokenForContributions()
     }
 }
