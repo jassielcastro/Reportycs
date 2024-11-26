@@ -29,6 +29,15 @@
     <string name="add_button">Save repository</string>
     <string name="repository_error_field">This field is required</string>
 
+    <string name="users_dashboard_title">User metrics</string>
+    <string name="users_dashboard_message">Enter the GitHub username to view metrics.</string>
+    <string name="users_dashboard_search_hint">Username</string>
+    <string name="users_dashboard_search_helper">This is the public GitHub profile name</string>
+    <string name="users_dashboard_search_idle_state_title">Ready When You Are</string>
+    <string name="users_dashboard_search_idle_state_message">Type a GitHub username to uncover its secrets… or just some cool metrics. We’re here waiting patiently, no rush!</string>
+    <string name="users_dashboard_search_error_state_title">Oops! Something Went Wrong</string>
+    <string name="users_dashboard_search_error_state_message">We tried fetching the data, but it seems we hit a bug... or maybe GitHub needs a coffee break. Try again, or check the username!</string>
+
     <string name="dashboard_title">Dashboard</string>
     <string name="generate_reports_button">Generate report</string>
     <string name="restart_token_button">Restart Token</string>
@@ -45,9 +54,9 @@
     <string name="statics_screen_change_request_title">Change request in PR</string>
     <string name="statics_screen_high_comments_concurrency_message">High comments concurrency</string>
 
-    <string name="general_no_internet_error_message">Ooooh no... something weird happened...</string>
+    <string name="general_no_internet_error_message">Ooooh no... I think you don't have internet!</string>
     <string name="general_unauthorized_error_message">Ooooh no... I think you are not authorized to perform this action, try refreshing your token.</string>
-    <string name="general_failure_error_message">Ooooh no... I think you don't have internet!</string>
+    <string name="general_failure_error_message">Ooooh no... something weird happened...</string>
     <string name="general_retry_button">Retry</string>
 
     <string name="refresh_token_screen_title">Github token</string>

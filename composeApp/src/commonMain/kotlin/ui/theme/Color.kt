@@ -39,6 +39,8 @@ val surfaceContainerHighLight = Color(0xFFE7E8EE)
 val surfaceContainerHighestLight = Color(0xFFE2E2E9)
 
 val dashboardColor = Color(0xff9395D3)
+val userSearchDotsColor = Color(0xff9395D3)
+val userSearchDotsColor2 = Color(0xff455561)
 
 val chartBarsColor = Color(0xff9395D3)
 val chartBarsColor2 = Color(0xfff56565)
