@@ -12,6 +12,7 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import repository.ext.handleResponse
+import repository.local.LocalTokenRepository
 import repository.model.ResponseStatus
 import repository.remote.model.request.UserContributionsRequest
 import repository.remote.model.request.UserGraphQl
@@ -19,14 +20,13 @@ import repository.remote.model.response.GitHubContributionsResponse
 
 class RemoteUserRepository(
     private val client: HttpClient,
-    private val cryptoHandler: CryptoHandler
-) {
+    private val cryptoHandler: CryptoHandler,
+    private val localTokenRepository: LocalTokenRepository
+): TokenHandlerDelegate by TokenHandlerDelegate.Impl(localTokenRepository, cryptoHandler) {
 
     suspend fun loadUserContributions(
-        token: String,
         userName: String
     ): ResponseStatus<GitHubContributionsResponse> {
-        val decryptedToken = cryptoHandler.decrypt(token)
         val graphQLQuery = USER_CONTRIBUTION_GRAPH.trimIndent()
 
         val now = now().formatAsGithub()
@@ -44,7 +44,7 @@ class RemoteUserRepository(
         return client.post("https://api.github.com/graphql") {
             accept(ContentType.parse("application/json; charset=utf-8"))
             contentType(ContentType.parse("application/json; charset=utf-8"))
-            bearerAuth(decryptedToken)
+            bearerAuth(getDecryptedToken())
             setBody<UserContributionsRequest>(payload)
         }.handleResponse<GitHubContributionsResponse>()
     }
