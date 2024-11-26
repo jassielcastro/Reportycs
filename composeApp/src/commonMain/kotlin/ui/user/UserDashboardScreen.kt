@@ -41,13 +41,13 @@ import jirareports.composeapp.generated.resources.users_dashboard_search_idle_st
 import jirareports.composeapp.generated.resources.users_dashboard_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.rememberKoinInject
-import repository.remote.model.response.UserData
 import ui.components.dots.ConnectedDotsScreen
 import ui.model.UiState
 import ui.repositories.TextPlaceHolder
 import ui.theme.GithubTextOutlinedColor
 import ui.theme.userSearchDotsColor
 import ui.theme.userSearchDotsColor2
+import usecase.model.UserStaticsData
 
 @Composable
 fun UserDashboardScreen(
@@ -182,7 +182,7 @@ fun UserStatsScreen(
             }
 
             is UiState.Success -> {
-                UserStatsList(userData = state.data.data)
+                UserStatsList(userData = state.data)
             }
 
             UiState.Unauthorized -> {
@@ -198,7 +198,7 @@ fun UserStatsScreen(
 @Composable
 fun UserStatsList(
     modifier: Modifier = Modifier,
-    userData: UserData
+    userData: UserStaticsData
 ) {
     Box(
         modifier = modifier
@@ -206,7 +206,7 @@ fun UserStatsList(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "Total of contributions: ${userData.user.contributionsCollection.contributionCalendar.totalContributions}",
+            text = "Total of contributions: ${userData.totalContributions}",
             color = MaterialTheme.colorScheme.onPrimary,
             fontSize = 32.sp,
             fontWeight = FontWeight.ExtraBold,

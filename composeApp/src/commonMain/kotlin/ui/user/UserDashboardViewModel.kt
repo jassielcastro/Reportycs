@@ -9,9 +9,9 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import repository.model.ErrorStatus
 import repository.model.ResponseStatus
-import repository.remote.model.response.GitHubContributionsResponse
 import ui.model.UiState
 import usecase.UserContributionUseCase
+import usecase.model.UserStaticsData
 
 class UserDashboardViewModel(
     private val userContributionUseCase: UserContributionUseCase,
@@ -20,9 +20,9 @@ class UserDashboardViewModel(
 
     private val _username = MutableStateFlow("")
 
-    private val _userStats: MutableStateFlow<UiState<GitHubContributionsResponse>> =
+    private val _userStats: MutableStateFlow<UiState<UserStaticsData>> =
         MutableStateFlow(UiState.Idle)
-    val userStats: StateFlow<UiState<GitHubContributionsResponse>> = _userStats.asStateFlow()
+    val userStats: StateFlow<UiState<UserStaticsData>> = _userStats.asStateFlow()
 
     @OptIn(FlowPreview::class)
     suspend fun initUserNameListener() {
