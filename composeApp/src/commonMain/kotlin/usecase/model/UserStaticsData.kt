@@ -6,7 +6,8 @@ data class UserStaticsData(
     val commitContributionsByRepository: List<ContributionCommitsByRepository>,
     val issueContributions: List<IssueData>,
     val pullRequestContributions: List<PullRequestContributionData>,
-    val pullRequestReviewContributions: List<PullRequestContributionData>
+    val pullRequestReviewContributions: List<PullRequestContributionData>,
+    val contributionChartData: ContributionChart
 )
 
 data class ContributionWeek(
@@ -24,6 +25,7 @@ data class ContributionCommitsByRepository(
 
 data class RepositoryContributionData(
     val name: String,
+    val owner: String,
     val url: String
 )
 
@@ -38,5 +40,14 @@ data class IssueData(
 
 data class PullRequestContributionData(
     val title: String,
-    val createdAt: String
+    val createdAt: String,
+    val number: Int,
+    val author: String?,
+)
+
+data class ContributionChart(
+    val commitsCount: Int,
+    val pullRequestCount: Int,
+    val reviewsCount: Int,
+    val issueCount: Int,
 )

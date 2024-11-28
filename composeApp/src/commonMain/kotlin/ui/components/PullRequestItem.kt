@@ -21,19 +21,20 @@ import androidx.compose.ui.unit.sp
 import jirareports.composeapp.generated.resources.Res
 import jirareports.composeapp.generated.resources.ic_pull_request
 import org.jetbrains.compose.resources.painterResource
-import usecase.model.PullRequestData
 import ui.theme.dashboardColor
 
 @Composable
 fun PullRequestItem(
     modifier: Modifier = Modifier,
-    pullRequestData: PullRequestData
+    pullRequestNumber: Int,
+    pullRequestAuthor: String,
+    pullRequestTitle: String,
 ) {
     val annotatedString = buildAnnotatedString {
         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-            append("#${pullRequestData.id}")
+            append("#$pullRequestNumber")
         }
-        append(" by ${pullRequestData.author}")
+        append(" by $pullRequestAuthor")
     }
 
     Row(
@@ -54,7 +55,7 @@ fun PullRequestItem(
                 .fillMaxWidth()
         ) {
             Text(
-                text = pullRequestData.title,
+                text = pullRequestTitle,
                 color = MaterialTheme.colorScheme.onPrimary,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,

@@ -46,6 +46,20 @@ val chartBarsColor = Color(0xff9395D3)
 val chartBarsColor2 = Color(0xfff56565)
 val chartBarsColor3 = Color(0xffBA7BA1)
 
+val githubContributionColor1 = Color(0xff9395D3)
+val githubContributionColor2 = githubContributionColor1.copy(alpha = 0.75f)
+val githubContributionColor3 = githubContributionColor1.copy(alpha = 0.45f)
+val githubContributionColor4 = githubContributionColor1.copy(alpha = 0.25f)
+val githubContributionColor5 = githubContributionColor1.copy(alpha = 0.05f)
+
+val githubContributionColorList = listOf(
+    githubContributionColor5,
+    githubContributionColor4,
+    githubContributionColor3,
+    githubContributionColor2,
+    githubContributionColor1,
+)
+
 val pieChartColors: List<Color> by lazy {
     listOf(
         Color(0xFFdf6251),

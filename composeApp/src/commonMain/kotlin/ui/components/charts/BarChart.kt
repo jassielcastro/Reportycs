@@ -131,7 +131,7 @@ fun SimpleBarDrawer(
             }
 
             !isVertical && barEnd < minTextYPosition -> {
-                valueTextTop = (barEnd + 8f).coerceAtMost(barContainerLongitude)
+                valueTextTop = (barEnd + 12f).coerceAtMost(barContainerLongitude)
             }
 
             !isVertical && barEnd > minTextYPosition -> {

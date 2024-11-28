@@ -4,6 +4,7 @@ import repository.remote.model.response.CommitContributionsByRepository
 import repository.remote.model.response.CommitNode
 import repository.remote.model.response.ContributionDay
 import repository.remote.model.response.Contributions
+import repository.remote.model.response.ContributionsCollection
 import repository.remote.model.response.GitHubContributionsResponse
 import repository.remote.model.response.IssueNode
 import repository.remote.model.response.PullRequestNode
@@ -11,6 +12,7 @@ import repository.remote.model.response.Repository
 import repository.remote.model.response.Week
 import usecase.model.CommitData
 import usecase.model.Contribution
+import usecase.model.ContributionChart
 import usecase.model.ContributionCommitsByRepository
 import usecase.model.ContributionWeek
 import usecase.model.IssueData
@@ -27,6 +29,7 @@ fun GitHubContributionsResponse.toUserStaticData(): UserStaticsData =
             issueContributions = this.issueContributions.toIssueDataList(),
             pullRequestContributions = this.pullRequestContributions.toPullRequestContributionDataList(),
             pullRequestReviewContributions = this.pullRequestReviewContributions.toPullRequestContributionDataList(),
+            contributionChartData = this.toContributionChartData()
         )
     }
 
@@ -58,6 +61,7 @@ fun List<CommitContributionsByRepository>.toContributionCommitsByRepository(): L
 fun Repository.toRepositoryData(): RepositoryContributionData {
     return RepositoryContributionData(
         name = this.name,
+        owner = this.owner.login.orEmpty(),
         url = this.url,
     )
 }
@@ -84,6 +88,17 @@ fun Contributions<PullRequestNode>.toPullRequestContributionDataList(): List<Pul
         PullRequestContributionData(
             title = it.node.pullRequest.title,
             createdAt = it.node.pullRequest.createdAt,
+            number = it.node.pullRequest.number,
+            author = it.node.pullRequest.author?.login.orEmpty(),
         )
     }
+}
+
+fun ContributionsCollection.toContributionChartData(): ContributionChart {
+    return ContributionChart(
+        commitsCount = this.commitContributionsByRepository.sumOf { it.contributions.totalCount },
+        pullRequestCount = this.pullRequestContributions.totalCount,
+        reviewsCount = this.pullRequestReviewContributions.totalCount,
+        issueCount = this.issueContributions.totalCount,
+    )
 }

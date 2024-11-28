@@ -15,7 +15,7 @@ import usecase.model.UserStaticsData
 
 class UserDashboardViewModel(
     private val userContributionUseCase: UserContributionUseCase,
-    private val searchDelay: Long = 1_500L
+    private val searchDelay: Long = 800L
 ) : ViewModel() {
 
     private val _username = MutableStateFlow("")

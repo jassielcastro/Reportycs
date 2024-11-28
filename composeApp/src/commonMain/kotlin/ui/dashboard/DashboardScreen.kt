@@ -326,7 +326,9 @@ fun PullRequestItemListScreen(
     ) {
         items(pullRequest) { pr ->
             PullRequestItem(
-                pullRequestData = pr
+                pullRequestNumber = pr.id,
+                pullRequestAuthor = pr.author,
+                pullRequestTitle = pr.title,
             )
         }
     }

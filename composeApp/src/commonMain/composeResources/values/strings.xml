@@ -37,6 +37,7 @@
     <string name="users_dashboard_search_idle_state_message">Type a GitHub username to uncover its secrets… or just some cool metrics. We’re here waiting patiently, no rush!</string>
     <string name="users_dashboard_search_error_state_title">Oops! Something Went Wrong</string>
     <string name="users_dashboard_search_error_state_message">We tried fetching the data, but it seems we hit a bug... or maybe GitHub needs a coffee break. Try again, or check the username!</string>
+    <string name="users_dashboard_search_loading_state_title">Loading...</string>
 
     <string name="dashboard_title">Dashboard</string>
     <string name="generate_reports_button">Generate report</string>

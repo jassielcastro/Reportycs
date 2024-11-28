@@ -65,9 +65,13 @@ class RemoteUserRepository(
                         commitContributionsByRepository {
                             repository {
                                 name
+                                owner {
+                                    login
+                                }
                                 url
                             }
-                            contributions(last: 100) {
+                            contributions(last: 10) {
+                                totalCount
                                 edges {
                                     node {
                                         commitCount
@@ -75,7 +79,8 @@ class RemoteUserRepository(
                                 }
                             }
                         }
-                        issueContributions(last: 100) {
+                        issueContributions(last: 5) {
+                            totalCount
                             edges {
                                 node {
                                     issue {
@@ -85,22 +90,32 @@ class RemoteUserRepository(
                                 }
                             }
                         }
-                        pullRequestContributions(last: 100) {
+                        pullRequestContributions(last: 5) {
+                            totalCount
                             edges {
                                 node {
                                     pullRequest {
                                         title
                                         createdAt
+                                        number
+                                        author {
+                                            login
+                                        }
                                     }
                                 }
                             }
                         }
-                        pullRequestReviewContributions(last: 100) {
+                        pullRequestReviewContributions(last: 5) {
+                            totalCount
                             edges {
                                 node {
                                     pullRequest {
                                         title
                                         createdAt
+                                        number
+                                        author {
+                                            login
+                                        }
                                     }
                                 }
                             }
