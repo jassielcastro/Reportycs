@@ -6,6 +6,7 @@ import ui.TokenViewModel
 import ui.repositories.CreateNewRepositoryViewModel
 import ui.splash.SplashViewModel
 import ui.statics.StaticsViewModel
+import ui.user.UserDashboardViewModel
 
 val viewModelModule = module {
     factory { SplashViewModel(get()) }
@@ -13,4 +14,5 @@ val viewModelModule = module {
     factory { DashboardViewModel(get()) }
     factory { TokenViewModel(get(), get()) }
     factory { StaticsViewModel(get()) }
+    factory { UserDashboardViewModel(get()) }
 }

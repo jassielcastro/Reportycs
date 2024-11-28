@@ -51,11 +51,18 @@ data class CommitContributionsByRepository(
 @Serializable
 data class Repository(
     val name: String,
+    val owner: Author,
     val url: String
 )
 
 @Serializable
+data class Author(
+    val login: String?,
+)
+
+@Serializable
 data class Contributions<T>(
+    val totalCount: Int,
     val edges: List<Edge<T>>
 )
 
@@ -88,5 +95,7 @@ data class PullRequestNode(
 @Serializable
 data class PullRequest(
     val title: String,
-    val createdAt: String
+    val createdAt: String,
+    val number: Int,
+    val author: Author?
 )

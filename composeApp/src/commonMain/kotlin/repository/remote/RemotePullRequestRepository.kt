@@ -19,13 +19,13 @@ class RemotePullRequestRepository(
     private val client: HttpClient,
     private val cryptoHandler: CryptoHandler,
     private val localTokenRepository: LocalTokenRepository
-) {
+) : TokenHandlerDelegate by TokenHandlerDelegate.Impl(localTokenRepository, cryptoHandler) {
     suspend fun getPullRequest(
         repository: RepositoryRequest,
         stats: StatsRequest
     ): ResponseStatus<List<PullRequestResponse>> {
         val response = client.get("/repos/${repository.owner}/${repository.repo}/pulls") {
-            bearerAuth(getToken())
+            bearerAuth(getDecryptedToken())
             parameter("page", stats.page)
             parameter("per_page", stats.perPage)
             parameter("base", stats.baseBranch)
@@ -54,7 +54,7 @@ class RemotePullRequestRepository(
         pullRequestId: Int,
     ): ResponseStatus<PullRequestInfoResponse> {
         return client.get("/repos/${request.owner}/${request.repo}/pulls/${pullRequestId}") {
-            bearerAuth(getToken())
+            bearerAuth(getDecryptedToken())
         }.handleResponse()
     }
 
@@ -64,7 +64,7 @@ class RemotePullRequestRepository(
     ): ResponseStatus<List<ApproveResponse>> {
         val result =
             client.get("/repos/${request.owner}/${request.repo}/pulls/${pullRequestId}/reviews") {
-                bearerAuth(getToken())
+                bearerAuth(getDecryptedToken())
             }.handleResponse<List<ApproveResponse>>()
 
         if (result is ResponseStatus.Success) {
@@ -79,14 +79,5 @@ class RemotePullRequestRepository(
         }
 
         return result
-    }
-
-    private fun getToken(): String {
-        val token = localTokenRepository
-            .getAllTokenContributionList()
-            .map { it.token }
-            .firstOrNull()
-            .orEmpty()
-        return cryptoHandler.decrypt(token)
     }
 }

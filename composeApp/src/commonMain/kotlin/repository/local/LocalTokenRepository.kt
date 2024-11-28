@@ -10,7 +10,7 @@ class LocalTokenRepository(
     private val cryptoHandler: CryptoHandler
 ) {
     /**
-     * User contributions CRUD
+     * Token CRUD
      */
 
     fun addNewTokenForContributions(

@@ -12,6 +12,7 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import repository.ext.handleResponse
+import repository.local.LocalTokenRepository
 import repository.model.ResponseStatus
 import repository.remote.model.request.UserContributionsRequest
 import repository.remote.model.request.UserGraphQl
@@ -19,32 +20,30 @@ import repository.remote.model.response.GitHubContributionsResponse
 
 class RemoteUserRepository(
     private val client: HttpClient,
-    private val cryptoHandler: CryptoHandler
-) {
+    private val cryptoHandler: CryptoHandler,
+    private val localTokenRepository: LocalTokenRepository
+): TokenHandlerDelegate by TokenHandlerDelegate.Impl(localTokenRepository, cryptoHandler) {
 
     suspend fun loadUserContributions(
-        token: String,
-        userName: String
+        userName: String,
+        from: String,
+        to: String
     ): ResponseStatus<GitHubContributionsResponse> {
-        val decryptedToken = cryptoHandler.decrypt(token)
         val graphQLQuery = USER_CONTRIBUTION_GRAPH.trimIndent()
-
-        val now = now().formatAsGithub()
-        val aYearAgo = aYearAgo().formatAsGithub()
 
         val payload = UserContributionsRequest(
             query = graphQLQuery,
             variables = UserGraphQl(
                 username = userName,
-                from = aYearAgo,
-                to = now
+                from = from,
+                to = to
             )
         )
 
         return client.post("https://api.github.com/graphql") {
             accept(ContentType.parse("application/json; charset=utf-8"))
             contentType(ContentType.parse("application/json; charset=utf-8"))
-            bearerAuth(decryptedToken)
+            bearerAuth(getDecryptedToken())
             setBody<UserContributionsRequest>(payload)
         }.handleResponse<GitHubContributionsResponse>()
     }
@@ -65,9 +64,13 @@ class RemoteUserRepository(
                         commitContributionsByRepository {
                             repository {
                                 name
+                                owner {
+                                    login
+                                }
                                 url
                             }
-                            contributions(last: 100) {
+                            contributions(last: 10) {
+                                totalCount
                                 edges {
                                     node {
                                         commitCount
@@ -75,7 +78,8 @@ class RemoteUserRepository(
                                 }
                             }
                         }
-                        issueContributions(last: 100) {
+                        issueContributions(last: 5) {
+                            totalCount
                             edges {
                                 node {
                                     issue {
@@ -85,22 +89,32 @@ class RemoteUserRepository(
                                 }
                             }
                         }
-                        pullRequestContributions(last: 100) {
+                        pullRequestContributions(last: 5) {
+                            totalCount
                             edges {
                                 node {
                                     pullRequest {
                                         title
                                         createdAt
+                                        number
+                                        author {
+                                            login
+                                        }
                                     }
                                 }
                             }
                         }
-                        pullRequestReviewContributions(last: 100) {
+                        pullRequestReviewContributions(last: 5) {
+                            totalCount
                             edges {
                                 node {
                                     pullRequest {
                                         title
                                         createdAt
+                                        number
+                                        author {
+                                            login
+                                        }
                                     }
                                 }
                             }

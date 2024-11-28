@@ -61,7 +61,7 @@ fun PieChart(
     data: PieChartData,
     gapAngle: Float = 2f,
     highlightFactor: Float = 1.05f,
-    strokeWidth: Float = 65f
+    strokeWidth: Float = 50f
 ) {
     Canvas(modifier = modifier) {
         val chartRadius = size.minDimension / 2.5f
@@ -123,8 +123,8 @@ fun PieChart(
 
             PieChart(
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth(0.5f),
+                    .fillMaxHeight(0.7f)
+                    .fillMaxWidth(0.45f),
                 data = pieChartData,
             )
 
