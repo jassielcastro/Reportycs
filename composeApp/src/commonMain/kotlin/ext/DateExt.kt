@@ -15,6 +15,16 @@ fun aYearAgo(): LocalDate = Clock.System.now()
     .date
     .minus(1, DateTimeUnit.YEAR)
 
+fun aMonthAgo(): LocalDate = Clock.System.now()
+    .toLocalDateTime(TimeZone.UTC)
+    .date
+    .minus(1, DateTimeUnit.MONTH)
+
+fun aWeekAgo(): LocalDate = Clock.System.now()
+    .toLocalDateTime(TimeZone.UTC)
+    .date
+    .minus(1, DateTimeUnit.WEEK)
+
 fun LocalDate.formatAsGithub(): String {
     val customFormat = LocalDate.Format {
         year(); chars("-"); monthNumber(); chars("-");dayOfMonth(); chars("T00:00:00Z")

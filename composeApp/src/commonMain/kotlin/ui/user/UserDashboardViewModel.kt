@@ -1,6 +1,11 @@
 package ui.user
 
 import androidx.lifecycle.ViewModel
+import ext.aMonthAgo
+import ext.aWeekAgo
+import ext.aYearAgo
+import ext.formatAsGithub
+import ext.now
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -9,6 +14,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import repository.model.ErrorStatus
 import repository.model.ResponseStatus
+import ui.model.TimePeriod
 import ui.model.UiState
 import usecase.UserContributionUseCase
 import usecase.model.UserStaticsData
@@ -19,6 +25,7 @@ class UserDashboardViewModel(
 ) : ViewModel() {
 
     private val _username = MutableStateFlow("")
+    private var selectedTimePeriod: TimePeriod = TimePeriod.YEAR
 
     private val _userStats: MutableStateFlow<UiState<UserStaticsData>> =
         MutableStateFlow(UiState.Idle)
@@ -38,6 +45,14 @@ class UserDashboardViewModel(
         _username.value = newUsername
     }
 
+    suspend fun onPeriodSelected(selectedTimePeriod: TimePeriod) {
+        if (this.selectedTimePeriod == selectedTimePeriod) return
+        this.selectedTimePeriod = selectedTimePeriod
+        if (_username.value.isNotEmpty()) {
+            loadUserContributionFor(_username.value)
+        }
+    }
+
     private suspend fun loadUserContributionFor(
         username: String
     ) {
@@ -46,8 +61,17 @@ class UserDashboardViewModel(
             return
         }
 
+        val now = now().formatAsGithub()
+        val from = getDateFromPeriod()
+
         _userStats.value = UiState.Loading
-        when (val result = userContributionUseCase.loadUserContributions(username)) {
+
+        val result = userContributionUseCase.loadUserContributions(
+            userName = username,
+            from = from,
+            to = now
+        )
+        when (result) {
             is ResponseStatus.Error -> {
                 handleError(result.status)
             }
@@ -56,6 +80,14 @@ class UserDashboardViewModel(
                 _userStats.value = UiState.Success(result.response)
             }
         }
+    }
+
+    private fun getDateFromPeriod(): String {
+        return when (selectedTimePeriod) {
+            TimePeriod.YEAR -> aYearAgo()
+            TimePeriod.MONTH -> aMonthAgo()
+            TimePeriod.WEEK -> aWeekAgo()
+        }.formatAsGithub()
     }
 
     private fun handleError(status: ErrorStatus) {

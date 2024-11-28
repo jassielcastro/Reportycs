@@ -9,9 +9,16 @@ class UserContributionUseCase(
     private val remoteUserRepository: RemoteUserRepository,
 ) {
     suspend fun loadUserContributions(
-        userName: String
+        userName: String,
+        from: String,
+        to: String
     ): ResponseStatus<UserStaticsData> {
-        return when (val result = remoteUserRepository.loadUserContributions(userName)) {
+        val result = remoteUserRepository.loadUserContributions(
+            userName = userName,
+            from = from,
+            to = to
+        )
+        return when (result) {
             is ResponseStatus.Error -> result
 
             is ResponseStatus.Success -> {

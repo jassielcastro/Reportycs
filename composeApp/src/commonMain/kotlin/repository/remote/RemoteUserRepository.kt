@@ -25,19 +25,18 @@ class RemoteUserRepository(
 ): TokenHandlerDelegate by TokenHandlerDelegate.Impl(localTokenRepository, cryptoHandler) {
 
     suspend fun loadUserContributions(
-        userName: String
+        userName: String,
+        from: String,
+        to: String
     ): ResponseStatus<GitHubContributionsResponse> {
         val graphQLQuery = USER_CONTRIBUTION_GRAPH.trimIndent()
-
-        val now = now().formatAsGithub()
-        val aYearAgo = aYearAgo().formatAsGithub()
 
         val payload = UserContributionsRequest(
             query = graphQLQuery,
             variables = UserGraphQl(
                 username = userName,
-                from = aYearAgo,
-                to = now
+                from = from,
+                to = to
             )
         )
 

@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -43,6 +44,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,9 +66,11 @@ import jirareports.composeapp.generated.resources.users_dashboard_search_idle_st
 import jirareports.composeapp.generated.resources.users_dashboard_search_idle_state_title
 import jirareports.composeapp.generated.resources.users_dashboard_search_loading_state_title
 import jirareports.composeapp.generated.resources.users_dashboard_title
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.rememberKoinInject
 import ui.components.CountersItem
+import ui.components.NormalReportycsButton
 import ui.components.PullRequestItem
 import ui.components.charts.BarChart
 import ui.components.charts.BarChartData
@@ -74,9 +78,13 @@ import ui.components.charts.HorizontalBarChart
 import ui.components.charts.PieChart
 import ui.components.charts.PieChartData
 import ui.components.dots.ConnectedDotsScreen
+import ui.model.TimePeriod
 import ui.model.UiState
 import ui.repositories.TextPlaceHolder
+import ui.theme.GithubButtonOutlinedColor
 import ui.theme.GithubTextOutlinedColor
+import ui.theme.InverseGithubButtonOutlinedColor
+import ui.theme.InverseSelectedGithubButtonOutlinedColor
 import ui.theme.githubContributionColor1
 import ui.theme.githubContributionColor2
 import ui.theme.githubContributionColor3
@@ -120,6 +128,9 @@ fun UserDashboardScreen(
 fun UserSearchScreen(modifier: Modifier = Modifier) {
     var usernameText by remember { mutableStateOf("") }
     val viewModel = rememberKoinInject<UserDashboardViewModel>()
+
+    val scope = rememberCoroutineScope()
+    var selectedPeriod by remember { mutableStateOf(TimePeriod.YEAR) }
 
     LaunchedEffect(Unit) {
         viewModel.initUserNameListener()
@@ -169,11 +180,71 @@ fun UserSearchScreen(modifier: Modifier = Modifier) {
                 .padding(horizontal = 24.dp, vertical = 12.dp)
         )
 
+        TimePeriodSelector(
+            selectedPeriod = selectedPeriod,
+            onPeriodSelected = {
+                scope.launch {
+                    selectedPeriod = it
+                    viewModel.onPeriodSelected(selectedPeriod)
+                }
+            }
+        )
+
         UserStatsScreen(
             modifier = Modifier
                 .fillMaxSize(),
             viewModel = viewModel
         )
+    }
+}
+
+@Composable
+fun TimePeriodSelector(
+    selectedPeriod: TimePeriod,
+    onPeriodSelected: (TimePeriod) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val periods = TimePeriod.entries
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            modifier = modifier
+                .wrapContentSize(),
+        ) {
+            periods.forEach { period ->
+                val isSelected = period == selectedPeriod
+                NormalReportycsButton(
+                    text = period.displayName,
+                    onClick = {
+                        onPeriodSelected(period)
+                    },
+                    color = if (isSelected) {
+                        InverseSelectedGithubButtonOutlinedColor()
+                    } else {
+                        InverseGithubButtonOutlinedColor()
+                    },
+                    textColor = if (isSelected) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onPrimary
+                    },
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .wrapContentWidth()
+                        .height(48.dp)
+                )
+
+                Spacer(
+                    modifier = Modifier
+                        .size(16.dp)
+                )
+            }
+        }
     }
 }
 
