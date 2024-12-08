@@ -49,7 +49,7 @@ fun GithubAppBar(
             )
         },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.secondary
+            containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f)
         ),
         modifier = modifier,
         navigationIcon = {

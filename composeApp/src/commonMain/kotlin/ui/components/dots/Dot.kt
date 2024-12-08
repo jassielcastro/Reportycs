@@ -18,7 +18,7 @@ data class Dot(
     val radio: Float = 5f,
     var dirX: Float = Random.nextInt(-1, 1).toFloat(),
     var dirY: Float = Random.nextInt(-1, 1).toFloat(),
-    val velocity: Float = 0.15f,
+    val velocity: Float = 0.1f,
     val color: Color
 ) {
     fun draw(scope: DrawScope) = with(scope) {

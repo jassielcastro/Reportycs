@@ -22,18 +22,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -51,13 +44,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import jirareports.composeapp.generated.resources.Res
 import jirareports.composeapp.generated.resources.general_no_internet_error_message
 import jirareports.composeapp.generated.resources.general_unauthorized_error_message
-import jirareports.composeapp.generated.resources.ic_git_merge
 import jirareports.composeapp.generated.resources.users_dashboard_message
 import jirareports.composeapp.generated.resources.users_dashboard_search_error_state_message
 import jirareports.composeapp.generated.resources.users_dashboard_search_error_state_title
@@ -69,19 +60,15 @@ import jirareports.composeapp.generated.resources.users_dashboard_title
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.rememberKoinInject
-import ui.components.CountersItem
 import ui.components.NormalReportycsButton
 import ui.components.PullRequestItem
-import ui.components.charts.BarChart
 import ui.components.charts.BarChartData
 import ui.components.charts.HorizontalBarChart
 import ui.components.charts.PieChart
 import ui.components.charts.PieChartData
-import ui.components.dots.ConnectedDotsScreen
 import ui.model.TimePeriod
 import ui.model.UiState
 import ui.repositories.TextPlaceHolder
-import ui.theme.GithubButtonOutlinedColor
 import ui.theme.GithubTextOutlinedColor
 import ui.theme.InverseGithubButtonOutlinedColor
 import ui.theme.InverseSelectedGithubButtonOutlinedColor
@@ -91,10 +78,6 @@ import ui.theme.githubContributionColor3
 import ui.theme.githubContributionColor4
 import ui.theme.githubContributionColor5
 import ui.theme.githubContributionColorList
-import ui.theme.pieChartColors
-import ui.theme.userSearchDotsColor
-import ui.theme.userSearchDotsColor2
-import usecase.model.ContributionCommitsByRepository
 import usecase.model.ContributionWeek
 import usecase.model.IssueData
 import usecase.model.PullRequestContributionData
@@ -104,28 +87,6 @@ import usecase.model.UserStaticsData
 fun UserDashboardScreen(
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-    ) {
-
-        ConnectedDotsScreen(
-            modifier = Modifier
-                .fillMaxSize(),
-            dotsSize = 200,
-            dimension = 2,
-            dotColors = listOf(
-                userSearchDotsColor.copy(alpha = 0.05f),
-                userSearchDotsColor2.copy(alpha = 0.03f)
-            )
-        )
-
-        UserSearchScreen()
-    }
-}
-
-@Composable
-fun UserSearchScreen(modifier: Modifier = Modifier) {
     var usernameText by remember { mutableStateOf("") }
     val viewModel = rememberKoinInject<UserDashboardViewModel>()
 

@@ -24,6 +24,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -36,6 +37,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -137,7 +139,7 @@ fun DashboardRepositoriesScreen(
             modifier = Modifier
                 .fillMaxWidth(0.15f)
                 .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.secondary),
+                .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f)),
             onSelected = { selected ->
                 repositorySelected = selected
             },
@@ -171,42 +173,50 @@ fun PullRequestScreen(
     var showActionsOnSuccess by remember { mutableStateOf(false) }
 
     Scaffold(
-        modifier = modifier
+        modifier = modifier,
+        containerColor = Color.Transparent
     ) { padding ->
-        Column(
-            modifier = modifier
+        Surface(
+            modifier = Modifier
                 .padding(padding)
-                .fillMaxSize()
-                .padding(top = 16.dp)
+                .fillMaxSize(),
+            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f),
+            shape = MaterialTheme.shapes.large
         ) {
-            RepositoryHeader(
-                showActions = showActionsOnSuccess,
-                pullRequestToAnalyze = {
-                    repositorySelected?.let { selected ->
-                        viewModel.loadPRsToAnalyze(selected.id)
-                    } ?: 0
-                },
-                onGenerateReportsClicked = {
-                    repositorySelected?.let { onGenerateReportsClicked(it) }
-                },
-                onDeleteClicked = {
-                    repositorySelected?.let { viewModel.deleteRepository(it.id) }
-                }
-            )
-
-            PullRequestListScreen(
+            Column(
                 modifier = Modifier
+                    .fillMaxSize()
                     .padding(top = 16.dp)
-                    .fillMaxSize(),
-                viewModel = viewModel,
-                repositorySelected = repositorySelected,
-                onUnauthorizedToken = {
-                    showBottomSheet = true
-                },
-                onStatusChanged = { showButton ->
-                    showActionsOnSuccess = showButton
-                }
-            )
+            ) {
+                RepositoryHeader(
+                    showActions = showActionsOnSuccess,
+                    pullRequestToAnalyze = {
+                        repositorySelected?.let { selected ->
+                            viewModel.loadPRsToAnalyze(selected.id)
+                        } ?: 0
+                    },
+                    onGenerateReportsClicked = {
+                        repositorySelected?.let { onGenerateReportsClicked(it) }
+                    },
+                    onDeleteClicked = {
+                        repositorySelected?.let { viewModel.deleteRepository(it.id) }
+                    }
+                )
+
+                PullRequestListScreen(
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .fillMaxSize(),
+                    viewModel = viewModel,
+                    repositorySelected = repositorySelected,
+                    onUnauthorizedToken = {
+                        showBottomSheet = true
+                    },
+                    onStatusChanged = { showButton ->
+                        showActionsOnSuccess = showButton
+                    }
+                )
+            }
         }
 
         if (showBottomSheet) {

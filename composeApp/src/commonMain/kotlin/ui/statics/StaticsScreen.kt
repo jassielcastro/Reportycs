@@ -200,8 +200,7 @@ fun StaticsItemsScreen(
                 ) {
                     Surface(
                         shape = MaterialTheme.shapes.medium,
-                        color = MaterialTheme.colorScheme.secondary,
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
+                        color = MaterialTheme.colorScheme.secondary.copy(0.8f),
                         modifier = Modifier
                             .fillMaxWidth(0.45f)
                             .fillMaxHeight()
@@ -216,8 +215,7 @@ fun StaticsItemsScreen(
 
                     Surface(
                         shape = MaterialTheme.shapes.medium,
-                        color = MaterialTheme.colorScheme.secondary,
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
+                        color = MaterialTheme.colorScheme.secondary.copy(0.8f),
                         modifier = Modifier
                             .fillMaxWidth()
                             .fillMaxHeight()
@@ -242,8 +240,7 @@ fun StaticsItemsScreen(
             ) {
                 Surface(
                     shape = MaterialTheme.shapes.medium,
-                    color = MaterialTheme.colorScheme.secondary,
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
+                    color = MaterialTheme.colorScheme.secondary.copy(0.8f),
                     modifier = Modifier
                         .padding(vertical = 16.dp)
                         .fillMaxWidth(0.45f)
@@ -260,8 +257,7 @@ fun StaticsItemsScreen(
 
                 Surface(
                     shape = MaterialTheme.shapes.medium,
-                    color = MaterialTheme.colorScheme.secondary,
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
+                    color = MaterialTheme.colorScheme.secondary.copy(0.8f),
                     modifier = Modifier
                         .padding(vertical = 16.dp)
                         .fillMaxWidth()
@@ -281,8 +277,7 @@ fun StaticsItemsScreen(
         item {
             Surface(
                 shape = MaterialTheme.shapes.medium,
-                color = MaterialTheme.colorScheme.secondary,
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
+                color = MaterialTheme.colorScheme.secondary.copy(0.8f),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(320.dp)

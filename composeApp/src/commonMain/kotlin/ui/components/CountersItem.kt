@@ -1,5 +1,6 @@
 package ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,7 +32,8 @@ fun CountersItem(
 ) {
     Surface(
         shape = MaterialTheme.shapes.medium,
-        color = MaterialTheme.colorScheme.secondary,
+        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f),
+        border = BorderStroke(2.dp, MaterialTheme.colorScheme.onPrimary.copy(0.3f)),
         modifier = modifier
     ) {
 

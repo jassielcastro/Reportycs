@@ -45,7 +45,6 @@ import jirareports.composeapp.generated.resources.reportycs_logo
 import jirareports.composeapp.generated.resources.splash_empty_token_message
 import jirareports.composeapp.generated.resources.splash_empty_token_subtitle
 import jirareports.composeapp.generated.resources.splash_empty_token_title
-import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
@@ -53,7 +52,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.rememberKoinInject
 import ui.GithubScreen
 import ui.TokenViewModel
-import ui.components.dots.ConnectedDotsScreen
 import ui.theme.dashboardColor
 
 @Composable
@@ -68,18 +66,6 @@ fun SplashScreen(
         modifier = modifier
             .fillMaxSize()
     ) {
-
-        ConnectedDotsScreen(
-            modifier = Modifier
-                .fillMaxSize(),
-            dotsSize = 200,
-            dimension = 2,
-            dotColors = listOf(
-                MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.05f),
-                MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.03f)
-            )
-        )
-
         SplashRouterContainer(
             reloadState = reloadState,
             navigateTo = navigateTo,
