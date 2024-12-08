@@ -27,11 +27,13 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinApplication
 import ui.components.GithubAppBar
+import ui.components.dots.ConnectedDotsScreen
 import ui.dashboard.DashboardScreen
 import ui.repositories.CreateNewRepositoryScreen
 import ui.splash.SplashScreen
 import ui.statics.StaticsScreen
 import ui.theme.GithubStatsTheme
+import ui.theme.dashboardColor
 import ui.token.RestartTokenScreen
 import ui.user.UserDashboardScreen
 
@@ -76,7 +78,7 @@ sealed class GithubScreen(
 @Composable
 @Preview
 fun App(
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
 ) {
     KoinApplication(application = {
         modules(appModule)
@@ -104,6 +106,16 @@ fun App(
                     )
                 }
             ) { innerPadding ->
+                ConnectedDotsScreen(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    dotsCount = 300,
+                    dotColors = listOf(
+                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.07f),
+                        dashboardColor.copy(alpha = 0.055f)
+                    )
+                )
+
                 NavHost(
                     navController = navController,
                     startDestination = GithubScreen.Splash.destination,

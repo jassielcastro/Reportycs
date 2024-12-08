@@ -69,7 +69,7 @@ fun SplashScreen(
             .fillMaxSize()
     ) {
 
-        ConnectedDotsScreen(
+        /*ConnectedDotsScreen(
             modifier = Modifier
                 .fillMaxSize(),
             dotsSize = 200,
@@ -78,7 +78,7 @@ fun SplashScreen(
                 MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.05f),
                 MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.03f)
             )
-        )
+        )*/
 
         SplashRouterContainer(
             reloadState = reloadState,

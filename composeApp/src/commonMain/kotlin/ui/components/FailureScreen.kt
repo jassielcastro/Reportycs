@@ -35,7 +35,7 @@ fun FailureScreen(
         contentAlignment = Alignment.Center
     ) {
 
-        ConnectedDotsScreen(
+        /*ConnectedDotsScreen(
             modifier = Modifier
                 .fillMaxSize(),
             dotsSize = 200,
@@ -44,7 +44,7 @@ fun FailureScreen(
                 MaterialTheme.colorScheme.error.copy(alpha = 0.05f),
                 MaterialTheme.colorScheme.error.copy(alpha = 0.03f)
             )
-        )
+        )*/
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally

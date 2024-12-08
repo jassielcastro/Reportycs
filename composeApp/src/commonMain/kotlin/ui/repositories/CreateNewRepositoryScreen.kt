@@ -22,7 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -44,10 +43,8 @@ import jirareports.composeapp.generated.resources.repository_owners_placeholder
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.rememberKoinInject
 import ui.components.ReportycsButton
-import ui.components.dots.ConnectedDotsScreen
 import ui.model.UiState
 import ui.theme.GithubTextOutlinedColor
-import ui.theme.dashboardColor
 import usecase.model.RepositoryData
 
 @Composable
@@ -63,7 +60,7 @@ fun CreateNewRepositoryScreen(
         Surface(
             modifier = Modifier
                 .fillMaxSize(0.6f),
-            color = MaterialTheme.colorScheme.secondary,
+            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f),
             shape = MaterialTheme.shapes.large
         ) {
 
@@ -79,17 +76,12 @@ fun CreateNewRepositoryScreen(
                     onSuccess = onSuccess
                 )
 
-                ConnectedDotsScreen(
+                // TODO: add image
+                /*Image(
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(MaterialTheme.shapes.medium),
-                    dotsSize = 100,
-                    dimension = 2,
-                    dotColors = listOf(
-                        dashboardColor.copy(alpha = 0.15f),
-                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.25f)
-                    )
-                )
+                )*/
             }
         }
     }

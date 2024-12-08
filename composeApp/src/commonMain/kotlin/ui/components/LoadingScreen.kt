@@ -37,7 +37,7 @@ fun LoadingScreen(
         contentAlignment = Alignment.Center
     ) {
 
-        ConnectedDotsScreen(
+        /*ConnectedDotsScreen(
             modifier = Modifier
                 .fillMaxSize(),
             dotsSize = 300,
@@ -45,7 +45,7 @@ fun LoadingScreen(
             dotColors = listOf(
                 MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f)
             )
-        )
+        )*/
 
         LoadingText(loadingText, displayTime)
     }
