@@ -41,6 +41,12 @@ fun InverseGithubButtonOutlinedColor(): ButtonColors = ButtonDefaults.buttonColo
 )
 
 @Composable
+fun InverseSelectedGithubButtonOutlinedColor(): ButtonColors = ButtonDefaults.buttonColors(
+    containerColor = MaterialTheme.colorScheme.onPrimary,
+    contentColor = MaterialTheme.colorScheme.primary,
+)
+
+@Composable
 fun InverseDeleteButtonOutlinedColor(): ButtonColors = ButtonDefaults.buttonColors(
     containerColor = MaterialTheme.colorScheme.primary,
     contentColor = MaterialTheme.colorScheme.onPrimary,

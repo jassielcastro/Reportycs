@@ -10,6 +10,6 @@ val repositoryModule = module {
     single { RemotePullRequestRepository(get(), get(), get()) }
     single { LocalPullRequestRepository(get()) }
 
-    single { RemoteUserRepository(get(), get()) }
+    single { RemoteUserRepository(get(), get(), get()) }
     single { LocalTokenRepository(get(), get()) }
 }
