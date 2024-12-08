@@ -1,4 +1,4 @@
-package repository.remote.model.request
+package repository.local.model
 
 import kotlinx.serialization.Serializable
 

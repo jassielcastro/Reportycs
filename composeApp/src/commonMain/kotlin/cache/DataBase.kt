@@ -1,12 +1,9 @@
 package cache
 
 import app.cash.sqldelight.db.SqlDriver
-import cache.model.ApproveEntity
 import cache.model.OwnerEntity
-import cache.model.PrCommentsEntity
 import cache.model.PullRequestEntity
 import cache.model.RepositoryEntity
-import cache.model.StaticEntity
 import cache.model.TokenContributionEntity
 import com.ajcm.jira.cache.AppDatabaseQueries
 import ext.now
@@ -143,42 +140,6 @@ class DataBase(
     }
 
     /**
-     * Approves CRUD
-     */
-
-    fun insertApproves(approves: List<ApproveEntity>) {
-        approves.forEach { approver ->
-            dbQuery.insertApproves(
-                pr_id = approver.prId.toLong(),
-                user = approver.user
-            )
-        }
-    }
-
-    fun hasApproves(pullRequestId: Int): Boolean {
-        val count = dbQuery.selectApprovesCount(pullRequestId.toLong())
-            .executeAsList()
-        return count.isNotEmpty()
-    }
-
-    /**
-     * Comments CRUD
-     */
-
-    fun insertPrComments(comment: PrCommentsEntity) {
-        dbQuery.insertComments(
-            pr_id = comment.prId.toLong(),
-            reviewCommentsCount = comment.reviewCommentsCount.toLong()
-        )
-    }
-
-    fun hasComments(pullRequestId: Int): Boolean {
-        val count = dbQuery.selectCommentsCount(pullRequestId.toLong())
-            .executeAsList()
-        return count.isNotEmpty()
-    }
-
-    /**
      * Date CRUD
      */
 
@@ -190,29 +151,6 @@ class DataBase(
 
     fun updateLastDateOfInsertions() {
         dbQuery.setDateOfInsertion(now().toString())
-    }
-
-    /**
-     * Statistics CRUD
-     */
-
-    fun getPullRequestInformation(repositoryId: Int): List<StaticEntity> {
-        val limit = getPullRequestSize(repositoryId)
-        return dbQuery.selectPullRequestStatistics(
-            repositoryId.toLong(),
-            limit.toLong()
-        ).executeAsList()
-            .map { pullRequest ->
-                StaticEntity(
-                    id = pullRequest.id.toInt(),
-                    repositoryId = pullRequest.repositoryId.toInt(),
-                    title = pullRequest.title,
-                    author = pullRequest.author,
-                    avatar = pullRequest.avatar,
-                    reviewCommentsCount = pullRequest.comments?.toInt() ?: 0,
-                    approves = pullRequest.approvers.split(",").map { it.trim() },
-                )
-            }
     }
 
     /**

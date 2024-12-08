@@ -9,7 +9,6 @@ import usecase.model.RepositoryData
 import ui.model.UiState
 import repository.model.ErrorStatus
 import repository.model.ResponseStatus
-import repository.remote.model.request.StatsRequest
 
 class DashboardViewModel(
     private val useCase: PullRequestUseCase
@@ -39,7 +38,6 @@ class DashboardViewModel(
         runCatching {
             useCase.getPullRequest(
                 repositoryData = repositoryData,
-                statRequest = StatsRequest()
             )
         }.onSuccess { pullRequest ->
             handlePullRequestLoad(pullRequest)

@@ -10,8 +10,8 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.client.request.accept
-import io.ktor.client.request.header
 import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
@@ -32,9 +32,9 @@ actual fun provideClient(): HttpClient = HttpClient(CIO) {
     }
 
     defaultRequest {
-        header("X-GitHub-Api-Version", "2022-11-28")
-        accept(ContentType.parse("application/vnd.github+json"))
-        url("https://api.github.com")
+        accept(ContentType.parse("application/json; charset=utf-8"))
+        contentType(ContentType.parse("application/json; charset=utf-8"))
+        url("https://api.github.com/graphql")
     }
 
     install(ContentNegotiation) {

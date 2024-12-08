@@ -141,36 +141,6 @@ LIMIT ?;
 clearPullRequest:
 DELETE FROM PullRequest;
 
--- Approves CRUD
-
-insertApproves:
-INSERT OR REPLACE INTO
-    Approves(pr_id, user)
-VALUES(?, ?);
-
-selectApprovesCount:
-SELECT
-    *
-FROM
-    Approves
-WHERE
-    Approves.pr_id = ?;
-
--- Comments CRUD
-
-insertComments:
-INSERT OR REPLACE INTO
-    PrComments(pr_id, reviewCommentsCount)
-VALUES(?, ?);
-
-selectCommentsCount:
-SELECT
-    *
-FROM
-    PrComments
-WHERE
-    PrComments.pr_id = ?;
-
 -- Date CRUD
 
 setDateOfInsertion:
@@ -183,34 +153,6 @@ SELECT
     LastDate.date
 FROM
     LastDate;
-
--- Statistics
-
-selectPullRequestStatistics:
-SELECT
-    PullRequest.id,
-    PullRequest.repositoryId,
-    PullRequest.title,
-    PullRequest.author,
-    PullRequest.avatar,
-    PrComments.reviewCommentsCount AS comments,
-    COALESCE(GROUP_CONCAT(DISTINCT Approves.user), '') AS approvers
-FROM
-    PullRequest
-LEFT JOIN
-    Approves
-ON
-    PullRequest.id = Approves.pr_id
-LEFT JOIN
-    PrComments
-ON
-    PullRequest.id = PrComments.pr_id
-WHERE
-    PullRequest.repositoryId = ?
-GROUP BY
-    PullRequest.id, PullRequest.repositoryId, PullRequest.title, PullRequest.author, PullRequest.avatar
-ORDER BY PullRequest.id DESC
-LIMIT ?;
 
 -- Token for contributions
 

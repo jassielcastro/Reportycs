@@ -1,8 +1,6 @@
 package repository.local
 
 import cache.DataBase
-import cache.model.ApproveEntity
-import cache.model.PrCommentsEntity
 import ext.now
 import repository.mapper.toOwnerDto
 import repository.mapper.toOwnerEntity
@@ -10,11 +8,9 @@ import repository.mapper.toPullRequestDto
 import repository.mapper.toPullRequestEntity
 import repository.mapper.toRepositoryDto
 import repository.mapper.toRepositoryEntity
-import repository.mapper.toStaticDto
 import repository.model.OwnerDto
 import repository.model.PullRequestDto
 import repository.model.RepositoryDto
-import repository.model.StaticDto
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -100,37 +96,6 @@ class LocalPullRequestRepository(
     }
 
     /**
-     * Approves CRUD
-     */
-
-    fun addApprovesByPR(pullRequestId: Int, approves: List<String>) {
-        dataBase.insertApproves(
-            approves = approves.map { approve ->
-                ApproveEntity(
-                    prId = pullRequestId,
-                    user = approve
-                )
-            }
-        )
-    }
-
-    fun hasApproves(pullRequestId: Int): Boolean = dataBase.hasApproves(pullRequestId)
-
-    /**
-     * Comments CRUD
-     */
-    fun addCommentsByPR(pullRequestId: Int, commentsCount: Int) {
-        dataBase.insertPrComments(
-            comment = PrCommentsEntity(
-                prId = pullRequestId,
-                reviewCommentsCount = commentsCount
-            )
-        )
-    }
-
-    fun hasComments(pullRequestId: Int): Boolean = dataBase.hasComments(pullRequestId)
-
-    /**
      * Date CRUD
      */
 
@@ -155,15 +120,5 @@ class LocalPullRequestRepository(
         val firstDate = LocalDate.parse(date1, formatter)
         val secondDate = LocalDate.parse(date2, formatter)
         return ChronoUnit.DAYS.between(firstDate, secondDate)
-    }
-
-    /**
-     * Get Pull Request information
-     */
-
-    fun getPullRequestInformation(repositoryId: Int): List<StaticDto> {
-        return dataBase.getPullRequestInformation(repositoryId).map { entity ->
-            entity.toStaticDto()
-        }
     }
 }
