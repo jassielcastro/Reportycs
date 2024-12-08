@@ -2,7 +2,6 @@ package ui.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,7 +20,6 @@ import jirareports.composeapp.generated.resources.Res
 import jirareports.composeapp.generated.resources.general_retry_button
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import ui.components.dots.ConnectedDotsScreen
 
 @Composable
 fun FailureScreen(
@@ -34,18 +32,6 @@ fun FailureScreen(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-
-        /*ConnectedDotsScreen(
-            modifier = Modifier
-                .fillMaxSize(),
-            dotsSize = 200,
-            dimension = 2,
-            dotColors = listOf(
-                MaterialTheme.colorScheme.error.copy(alpha = 0.05f),
-                MaterialTheme.colorScheme.error.copy(alpha = 0.03f)
-            )
-        )*/
-
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

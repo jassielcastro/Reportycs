@@ -3,7 +3,6 @@ package ui.components
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,7 +23,6 @@ import jirareports.composeapp.generated.resources.loading_info_message_loading
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import ui.components.dots.ConnectedDotsScreen
 
 @Composable
 fun LoadingScreen(
@@ -36,17 +34,6 @@ fun LoadingScreen(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-
-        /*ConnectedDotsScreen(
-            modifier = Modifier
-                .fillMaxSize(),
-            dotsSize = 300,
-            dimension = 1,
-            dotColors = listOf(
-                MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f)
-            )
-        )*/
-
         LoadingText(loadingText, displayTime)
     }
 }
