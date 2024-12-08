@@ -1,23 +1,37 @@
 package repository.remote.model.response
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PullRequestResponse(
-    val number: Int,
-    val title: String,
-    val user: User,
-    @SerialName("requested_reviewers")
-    val requestedReviews: List<User>,
-    @SerialName("merged_at")
-    val mergedAt: String?
+data class RepositoryRemoteResponseData(
+    val data: RepositoryData
 )
 
 @Serializable
-data class User(
-    @SerialName("login")
-    val name: String,
-    @SerialName("avatar_url")
-    val avatar: String
+data class RepositoryData(
+    val repository: PullRequestByRepository
+)
+
+@Serializable
+data class PullRequestByRepository(
+    val pullRequests: PullRequestsRemoteData
+)
+
+@Serializable
+data class PullRequestsRemoteData(
+    val nodes: List<PullRequestRemoteInfo>
+)
+
+@Serializable
+data class PullRequestRemoteInfo(
+    val number: Int,
+    val title: String,
+    val author: PRAuthorInfo,
+    val mergedAt: String?,
+)
+
+@Serializable
+data class PRAuthorInfo(
+    val login: String,
+    val avatarUrl: String
 )

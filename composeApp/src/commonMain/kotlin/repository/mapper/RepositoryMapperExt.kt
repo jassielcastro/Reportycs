@@ -3,11 +3,9 @@ package repository.mapper
 import cache.model.OwnerEntity
 import cache.model.PullRequestEntity
 import cache.model.RepositoryEntity
-import cache.model.StaticEntity
 import repository.model.OwnerDto
 import repository.model.PullRequestDto
 import repository.model.RepositoryDto
-import repository.model.StaticDto
 
 fun RepositoryDto.toRepositoryEntity(): RepositoryEntity {
     return RepositoryEntity(
@@ -58,17 +56,5 @@ fun PullRequestEntity.toPullRequestDto(): PullRequestDto {
         title = this.title,
         author = this.author,
         avatar = this.avatar,
-    )
-}
-
-fun StaticEntity.toStaticDto(): StaticDto {
-    return StaticDto(
-        id = this.id,
-        repositoryId = this.repositoryId,
-        title = this.title,
-        author = this.author,
-        avatar = this.avatar,
-        reviewCommentsCount = this.reviewCommentsCount,
-        approves = this.approves,
     )
 }

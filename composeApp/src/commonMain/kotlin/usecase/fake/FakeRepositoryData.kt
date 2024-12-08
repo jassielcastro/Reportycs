@@ -3,7 +3,6 @@ package usecase.fake
 import usecase.model.CodeOwnerData
 import usecase.model.PullRequestData
 import usecase.model.RepositoryData
-import usecase.model.StaticData
 import kotlin.random.Random
 
 object FakeRepositoryData {
@@ -122,25 +121,6 @@ object FakeRepositoryData {
                 title = title,
                 author = author.name,
                 avatar = ""
-            )
-        }
-    }
-
-    fun buildFakeStatics(): List<StaticData> {
-        return buildFakePullRequest().map { pr ->
-            val reviewers = buildFakeCodeOwners()
-                .shuffled()
-                .take(Random.nextInt(0, 5))
-                .map { it.name }
-
-            StaticData(
-                id = pr.id,
-                repositoryId = pr.repositoryId,
-                title = pr.title,
-                author = pr.author,
-                avatar = pr.avatar,
-                reviewCommentsCount = Random.nextInt(0, 5),
-                approves = reviewers,
             )
         }
     }

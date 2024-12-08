@@ -1,14 +1,12 @@
 package usecase.mapper
 
-import usecase.model.PullRequestData
-import usecase.model.RepositoryData
-import usecase.model.StaticData
+import repository.local.model.RepositoryRequest
 import repository.model.PullRequestDto
 import repository.model.RepositoryDto
-import repository.model.StaticDto
 import repository.model.TokenContributionDto
-import repository.remote.model.request.RepositoryRequest
-import repository.remote.model.response.PullRequestResponse
+import repository.remote.model.response.PullRequestRemoteInfo
+import usecase.model.PullRequestData
+import usecase.model.RepositoryData
 import usecase.model.TokenForContributionData
 
 fun RepositoryDto.toRepositoryData(): RepositoryData {
@@ -35,13 +33,13 @@ fun RepositoryData.toRepositoryRequest(): RepositoryRequest {
     )
 }
 
-fun PullRequestResponse.toPullRequestDto(repositoryId: Int): PullRequestDto {
+fun PullRequestRemoteInfo.toPullRequestDto(repositoryId: Int): PullRequestDto {
     return PullRequestDto(
         id = this.number,
         repositoryId = repositoryId,
         title = this.title,
-        author = this.user.name,
-        avatar = this.user.avatar,
+        author = this.author.login,
+        avatar = this.author.avatarUrl,
     )
 }
 
@@ -52,18 +50,6 @@ fun PullRequestDto.toPullRequestData(): PullRequestData {
         title = this.title,
         author = this.author,
         avatar = this.avatar,
-    )
-}
-
-fun StaticDto.toStaticData(): StaticData {
-    return StaticData(
-        id = this.id,
-        repositoryId = this.repositoryId,
-        title = this.title,
-        author = this.author,
-        avatar = this.avatar,
-        reviewCommentsCount = this.reviewCommentsCount,
-        approves = this.approves,
     )
 }
 

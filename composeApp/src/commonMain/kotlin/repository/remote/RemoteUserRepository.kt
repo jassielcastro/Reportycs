@@ -40,9 +40,7 @@ class RemoteUserRepository(
             )
         )
 
-        return client.post("https://api.github.com/graphql") {
-            accept(ContentType.parse("application/json; charset=utf-8"))
-            contentType(ContentType.parse("application/json; charset=utf-8"))
+        return client.post {
             bearerAuth(getDecryptedToken())
             setBody<UserContributionsRequest>(payload)
         }.handleResponse<GitHubContributionsResponse>()

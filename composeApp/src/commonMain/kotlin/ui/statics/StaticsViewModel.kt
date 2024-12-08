@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import usecase.PullRequestUseCase
 import usecase.model.CodeOwnerData
 import usecase.model.RepositoryData
-import usecase.model.StaticData
 import ui.components.charts.BarChartData
 import ui.components.charts.PieChartData
 import ui.model.GithubStats
@@ -15,9 +14,10 @@ import ui.model.UiState
 import ui.theme.chartBarsColor2
 import ui.theme.chartBarsColor3
 import ui.theme.pieChartColors
+import usecase.model.PullRequestStaticsData
 
 class StaticsViewModel(
-    private val repository: PullRequestUseCase
+    private val useCase: PullRequestUseCase
 ) : ViewModel() {
 
     private val _pullRequestInfoState: MutableStateFlow<UiState<GithubStats>> =
@@ -26,45 +26,42 @@ class StaticsViewModel(
 
     suspend fun fetchPullRequestInformation(
         repositoryName: String,
-        delay: Long = 200L
     ) {
         _pullRequestInfoState.value = UiState.Loading
         try {
-            val repositoryData = repository.selectRepositoryBy(repositoryName)
+            val repositoryData = useCase.selectRepositoryBy(repositoryName)
                 ?: return run {
                     _pullRequestInfoState.value = UiState.Failure
                 }
-            repository.fetchPullRequestApproves(repositoryData)
-            delay(delay)
-            repository.fetchPullRequestComments(repositoryData)
+            val statics = useCase.getPullRequestInfo(repositoryData)
 
-            generateStatics(repositoryData)
+            generateStatics(statics, repositoryData)
         } catch (ignore: Exception) {
+            ignore.printStackTrace()
             _pullRequestInfoState.value = UiState.Failure
         }
     }
 
-    private fun generateStatics(repositoryData: RepositoryData) {
-        val pullRequestList = repository.getPullRequestInformation(repositoryData.id)
-        val activeOwners = repository.getCodeOwners(repositoryData)
+    private fun generateStatics(statics: List<PullRequestStaticsData>, repositoryData: RepositoryData) {
+        val activeOwners = useCase.getCodeOwners(repositoryData)
 
         val stats = GithubStats(
-            prsCount = pullRequestList.size,
+            prsCount = statics.size,
             // Bars
             pullRequestByOwner = calculatePrsCreatedByContributor(
-                pullRequestList,
+                statics,
                 activeOwners
             ),
             pullRequestReviewedByOwner = calculateApprovalsDistribution(
-                pullRequestList,
+                statics,
                 activeOwners
             ), // Bars
-            pullRequestComments = calculateCommentsByPr(pullRequestList), // Line
+            pullRequestComments = calculateCommentsByPr(statics), // Line
             ownerStats = calculateCommentsByPR(
-                pullRequestList,
+                statics,
                 activeOwners
             ), // Double bars
-            statsByType = calculateStatsByType(pullRequestList), // Bubble
+            statsByType = calculateStatsByType(statics), // Bubble
             activeDevelopers = activeOwners.size,
             ownerNames = generateOwnerNames(activeOwners)
         )
@@ -84,7 +81,7 @@ class StaticsViewModel(
      * Show the number of PRs created by each author
      */
     private fun calculatePrsCreatedByContributor(
-        staticData: List<StaticData>,
+        staticData: List<PullRequestStaticsData>,
         codeOwners: List<CodeOwnerData>,
     ): BarChartData {
         val prsByContributor = staticData.groupingBy { it.author }
@@ -115,7 +112,7 @@ class StaticsViewModel(
      * Show the distribution of approvals among the different code owners
      */
     private fun calculateApprovalsDistribution(
-        staticData: List<StaticData>,
+        staticData: List<PullRequestStaticsData>,
         codeOwners: List<CodeOwnerData>
     ): BarChartData {
         val codeOwnerNames = codeOwners.map { it.name }.toSet()
@@ -123,8 +120,8 @@ class StaticsViewModel(
 
         staticData.forEach { pr ->
             pr.approves.forEach { approver ->
-                if (approver in codeOwnerNames) {
-                    approvalCounts[approver] = approvalCounts.getOrDefault(approver, 0) + 1
+                if (approver.author in codeOwnerNames) {
+                    approvalCounts[approver.author] = approvalCounts.getOrDefault(approver.author, 0) + 1
                 }
             }
         }
@@ -151,32 +148,35 @@ class StaticsViewModel(
     /**
      * Show the number of review comments for each PR
      */
-    private fun calculateCommentsByPr(staticData: List<StaticData>): List<Int> {
-        return staticData
-            .associate { it.id to it.reviewCommentsCount }
-            .map { it.value }
+    private fun calculateCommentsByPr(staticData: List<PullRequestStaticsData>): List<Int> {
+        return staticData.map { it.comments.size }
     }
 
     /**
      * Show the correlation between the number of PRs created by a contributor and the number of review comments on those PRs.
      */
     private fun calculateCommentsByPR(
-        staticData: List<StaticData>,
+        staticData: List<PullRequestStaticsData>,
         codeOwners: List<CodeOwnerData>
     ): PieChartData {
-        val commentsByPR = mutableMapOf<String, Int>()
-        val slices = mutableListOf<PieChartData.Slice>()
+        val codeOwnerNames = codeOwners.map { it.name }.toSet()
+        val commentsCounts = mutableMapOf<String, Int>()
 
         staticData.forEach { pr ->
-            commentsByPR[pr.author] =
-                commentsByPR.getOrDefault(pr.author, 0) + pr.reviewCommentsCount
+            pr.comments.forEach { comment ->
+                if (comment.author in codeOwnerNames) {
+                    commentsCounts[pr.author] = commentsCounts.getOrDefault(pr.author, 0) + 1
+                }
+            }
         }
 
         codeOwners.forEach { codeOwner ->
-            commentsByPR.putIfAbsent(codeOwner.name, 0)
+            commentsCounts.putIfAbsent(codeOwner.name, 0)
         }
 
-        commentsByPR.toList()
+        val slices = mutableListOf<PieChartData.Slice>()
+
+        commentsCounts.toList()
             .sortedBy { it.second }
             .onEachIndexed { index, entry ->
                 slices.add(
@@ -198,7 +198,7 @@ class StaticsViewModel(
         )
     }
 
-    private fun calculateStatsByType(prStats: List<StaticData>): BarChartData {
+    private fun calculateStatsByType(prStats: List<PullRequestStaticsData>): BarChartData {
         val typeStatsMap = mutableMapOf<String, Int>()
         availableTypes().forEach { type ->
             typeStatsMap[type] = 0
